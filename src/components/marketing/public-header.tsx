@@ -10,7 +10,7 @@ export function PublicHeader() {
               C1
             </div>
             <div className="min-w-0">
-              <p className="truncate text-[10px] uppercase tracking-[0.28em] text-cyan-700">Northstar Defence</p>
+              <p className="truncate text-[10px] uppercase tracking-[0.28em] text-cyan-700">CPCSC readiness</p>
               <h1 className="mt-1 truncate text-base font-semibold text-slate-950">ComplianceOne</h1>
             </div>
           </Link>
@@ -18,6 +18,9 @@ export function PublicHeader() {
           <nav className="hidden items-center gap-2 md:flex">
             <Link href="/pricing" className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
               Pricing
+            </Link>
+            <Link href="/security" className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
+              Security
             </Link>
             <Link href="/login" className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
               Log in
@@ -29,6 +32,12 @@ export function PublicHeader() {
         </div>
 
         <nav className="mt-4 flex gap-2 md:hidden">
+          <Link
+            href="/pricing"
+            className="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+          >
+            Pricing
+          </Link>
           <Link
             href="/login"
             className="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"

@@ -156,12 +156,13 @@ export function SignupForm({ initialPlan = "start" }: { initialPlan?: "start" | 
       <PasswordInput id="password" name="password" label="Password" placeholder="Create a strong password" />
       <PasswordInput id="confirm-password" name="confirmPassword" label="Confirm password" placeholder="Re-enter your password" />
 
-      <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-7 text-slate-600">
-        Password best practices: use 12+ characters, mix words and symbols, avoid reusing credentials, and confirm the password carefully before continuing.
+      <div className="grid gap-3 rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-7 text-slate-600">
+        <p>Password best practices: use 12+ characters, mix words and symbols, avoid reusing credentials, and confirm the password carefully before continuing.</p>
+        <p>Next step: after your account is created, you will be sent to Stripe checkout for the selected plan. Your workspace unlocks when the subscription is active.</p>
       </div>
 
       <button className="rounded-full bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800" disabled={loading}>
-        {loading ? "Creating account…" : "Create account and continue to checkout"}
+        {loading ? "Creating account…" : "Create account and continue to secure checkout"}
       </button>
 
       {error ? <p className="text-sm text-rose-500">{error}</p> : null}

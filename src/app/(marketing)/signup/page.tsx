@@ -17,8 +17,8 @@ export default async function SignupPage({
   return (
     <PublicShell>
       <AuthCard
-        title="Create your workspace"
-        description="Start your organization with secure account setup, stronger password handling, and a clean path into subscription checkout and CPCSC readiness."
+        title="Create your CPCSC readiness workspace"
+        description="Set up your organization account first. After signup, you will continue to Stripe checkout; once billing is active, your protected readiness workspace opens automatically."
       >
         <SignupForm initialPlan={initialPlan} />
 

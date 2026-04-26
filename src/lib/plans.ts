@@ -20,9 +20,9 @@ const billingPlanCatalog: Record<BillingPlanSlug, Omit<BillingPlan, "stripeProdu
     description: "For smaller suppliers getting their CPCSC readiness operation in place.",
     features: [
       "1 organization workspace",
-      "13 control readiness workspace",
+      "13 CPCSC Level 1 controls",
       "Evidence vault and exportable reports",
-      "Secure login and workspace access",
+      "Secure login and subscription-gated access",
     ],
   },
   growth: {
@@ -35,7 +35,7 @@ const billingPlanCatalog: Record<BillingPlanSlug, Omit<BillingPlan, "stripeProdu
       "Multi-user readiness workspace",
       "Expanded reporting and plan management",
       "Evidence organization across teams",
-      "Priority support posture",
+      "Priority onboarding and support response",
     ],
   },
 };

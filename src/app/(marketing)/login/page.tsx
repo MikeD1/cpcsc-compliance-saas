@@ -11,7 +11,7 @@ export default async function LoginPage() {
     <PublicShell>
       <AuthCard
         title="Log in to ComplianceOne"
-        description="Securely access your organization workspace, evidence vault, and reporting center."
+        description="Access your organization workspace, continue CPCSC Level 1 readiness work, and review evidence and reports in one place."
       >
         <LoginForm />
 

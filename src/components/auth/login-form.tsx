@@ -72,8 +72,12 @@ export function LoginForm() {
 
       <PasswordInput id="password" name="password" label="Password" placeholder="Enter your password" />
 
+      <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-7 text-slate-600">
+        If checkout is not complete yet, login will take you to the activation step so you can finish billing and unlock the workspace.
+      </div>
+
       <button className="rounded-full bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800" disabled={loading}>
-        {loading ? "Logging in…" : "Log in"}
+        {loading ? "Logging in…" : "Log in to workspace"}
       </button>
 
       {error ? <p className="text-sm text-rose-500">{error}</p> : null}
