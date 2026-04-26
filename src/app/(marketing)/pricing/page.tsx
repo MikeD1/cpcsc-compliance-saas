@@ -1,8 +1,10 @@
 import { CheckoutButton } from "@/components/marketing/checkout-button";
 import { PublicShell } from "@/components/marketing/public-shell";
-import { billingPlans } from "@/lib/plans";
+import { getBillingPlansForDisplay } from "@/lib/plans";
 
 export default function PricingPage() {
+  const billingPlans = getBillingPlansForDisplay();
+
   return (
     <PublicShell>
       <section className="rounded-[2.25rem] border border-white/10 bg-[linear-gradient(135deg,#07111f_0%,#0b1831_36%,#103560_100%)] p-8 text-white shadow-[0_40px_120px_rgba(7,16,31,0.38)] lg:p-10">

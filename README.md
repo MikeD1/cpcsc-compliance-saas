@@ -1,6 +1,6 @@
 # CPCSC Compliance SaaS
 
-ComplianceOne is a CPCSC Level 1 readiness SaaS for Canadian defence suppliers. This repo contains the marketing site, signup/login flow, Stripe billing hooks, and the protected compliance workspace for controls, evidence, and reporting.
+ComplianceOne is a CPCSC Level 1 readiness SaaS for Canadian defence suppliers. This repo contains the marketing site, Supabase-backed auth and workspace data, Stripe billing hooks, and the protected compliance workspace for controls, evidence, and reporting.
 
 ## Current state
 
@@ -16,8 +16,8 @@ Working now:
 - production build passes
 
 Known cleanup items:
-- Prisma schema is present, but the app currently behaves as a Supabase-first product
-- local Prisma SQLite artifacts should not be treated as production data
+- auth and billing flows still need production hardening
+- Stripe plan/config values are still code-defined
 - env/config setup must be completed before live billing tests
 
 ## Stack
@@ -28,7 +28,6 @@ Known cleanup items:
 - Tailwind CSS 4
 - Supabase (auth + app data)
 - Stripe (subscriptions)
-- Prisma (currently transitional / partial)
 
 ## Key routes
 
@@ -71,9 +70,6 @@ Required for billing:
 - `STRIPE_WEBHOOK_SECRET`
 - `NEXT_PUBLIC_APP_URL`
 
-Optional / local:
-- `DATABASE_URL`
-
 ## Local development
 
 ```bash
@@ -99,8 +95,14 @@ Before external testing:
 4. verify signup creates org, membership, subscription row, and controls
 5. verify checkout success updates organization subscription status
 6. verify gated routes unlock after billing
-7. remove local-only tracked artifacts like `prisma/dev.db`
 
-## Product note
+## Architecture note
 
-Right now, the real source of truth appears to be Supabase-backed product flows, not Prisma/SQLite. Keep that explicit while testing so the architecture stays understandable.
+This app is intentionally **Supabase-first** right now.
+
+- Supabase Auth handles identity
+- Supabase tables hold organizations, memberships, subscriptions, controls, profiles, and evidence metadata
+- Stripe handles billing and webhook-driven subscription state
+- Next.js provides the marketing site, app shell, and server routes
+
+If Prisma returns later, it should be added for a clear reason and against the real production datastore rather than as a leftover local SQLite path.

@@ -1,13 +1,8 @@
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
-const SESSION_COOKIE_CANDIDATES = [
-  "sb-access-token",
-  "sb-dznaipvkmyfmcfbeqfil-auth-token",
-  "complianceone_access_token",
-];
-
 const APP_SESSION_COOKIE = "complianceone_access_token";
+const SESSION_MAX_AGE_SECONDS = 60 * 60 * 8;
 
 type AppUser = {
   id: string;
@@ -34,53 +29,26 @@ export async function createSession(accessToken: string) {
   cookieStore.set(APP_SESSION_COOKIE, accessToken, {
     httpOnly: true,
     sameSite: "lax",
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
     path: "/",
+    maxAge: SESSION_MAX_AGE_SECONDS,
   });
 }
 
 export async function clearSession() {
   const cookieStore = await cookies();
-  cookieStore.delete(APP_SESSION_COOKIE);
-}
-
-export async function verifyPassword() {
-  return false;
-}
-
-function extractAccessTokenFromCookieValue(raw: string | undefined) {
-  if (!raw) return null;
-
-  try {
-    const parsed = JSON.parse(raw);
-
-    if (Array.isArray(parsed)) {
-      const tokenLike = parsed.find((item) => typeof item === "string" && item.split(".").length === 3);
-      return tokenLike ?? null;
-    }
-
-    if (typeof parsed === "object" && parsed && "access_token" in parsed && typeof parsed.access_token === "string") {
-      return parsed.access_token;
-    }
-  } catch {
-    // ignore non-JSON cookie values
-  }
-
-  if (raw.split(".").length === 3) {
-    return raw;
-  }
-
-  return null;
+  cookieStore.set(APP_SESSION_COOKIE, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 0,
+  });
 }
 
 export async function getCurrentUser(): Promise<AppUser | null> {
   const cookieStore = await cookies();
-  const headerStore = await headers();
-
-  const bearer = headerStore.get("authorization");
-  const tokenFromHeader = bearer?.startsWith("Bearer ") ? bearer.slice(7) : null;
-  const tokenFromCookie = SESSION_COOKIE_CANDIDATES.map((name) => extractAccessTokenFromCookieValue(cookieStore.get(name)?.value)).find(Boolean) ?? null;
-  const token = tokenFromHeader || tokenFromCookie;
+  const token = cookieStore.get(APP_SESSION_COOKIE)?.value ?? null;
 
   if (!token) {
     return null;

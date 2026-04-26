@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { getStripeServer } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { getPlanSlugByPriceId } from "@/lib/plans";
 
 const statusMap: Record<string, string> = {
   trialing: "trialing",
@@ -13,6 +14,42 @@ const statusMap: Record<string, string> = {
   unpaid: "past_due",
   paused: "past_due",
 };
+
+async function syncOrganizationSubscription(
+  supabase: ReturnType<typeof getSupabaseAdmin>,
+  payload: {
+    organizationId: string;
+    stripeSubscriptionId: string;
+    stripePriceId: string | null;
+    status: string;
+    planCode: string;
+    currentPeriodStart?: string | null;
+    currentPeriodEnd?: string | null;
+    cancelAtPeriodEnd: boolean;
+  },
+) {
+  await supabase.from("subscriptions").upsert(
+    {
+      organization_id: payload.organizationId,
+      stripe_subscription_id: payload.stripeSubscriptionId,
+      stripe_price_id: payload.stripePriceId,
+      plan_code: payload.planCode,
+      status: payload.status,
+      current_period_start: payload.currentPeriodStart ?? null,
+      current_period_end: payload.currentPeriodEnd ?? null,
+      cancel_at_period_end: payload.cancelAtPeriodEnd,
+    },
+    { onConflict: "stripe_subscription_id" },
+  );
+
+  await supabase
+    .from("organizations")
+    .update({
+      plan_code: payload.planCode,
+      subscription_status: payload.status,
+    })
+    .eq("id", payload.organizationId);
+}
 
 export async function POST(request: Request) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -42,34 +79,30 @@ export async function POST(request: Request) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const organizationId = session.metadata?.organizationId;
-    const planSlug = session.metadata?.plan;
 
-    if (organizationId && planSlug) {
-      let stripePriceId: string | null = null;
-      if (typeof session.subscription === "string") {
-        const stripeSubscription = await stripe.subscriptions.retrieve(session.subscription);
-        stripePriceId = stripeSubscription.items.data[0]?.price?.id ?? null;
-      }
+    if (organizationId && typeof session.subscription === "string") {
+      const stripeSubscription = await stripe.subscriptions.retrieve(session.subscription);
+      const stripePriceId = stripeSubscription.items.data[0]?.price?.id ?? null;
+      const planCode =
+        stripeSubscription.metadata?.plan ||
+        session.metadata?.plan ||
+        getPlanSlugByPriceId(stripePriceId) ||
+        "start";
 
-      await supabase.from("subscriptions").upsert(
-        {
-          organization_id: organizationId,
-          stripe_subscription_id: typeof session.subscription === "string" ? session.subscription : null,
-          stripe_price_id: stripePriceId,
-          plan_code: planSlug,
-          status: "active",
-          cancel_at_period_end: false,
-        },
-        { onConflict: "stripe_subscription_id" },
-      );
-
-      await supabase
-        .from("organizations")
-        .update({
-          plan_code: planSlug,
-          subscription_status: "active",
-        })
-        .eq("id", organizationId);
+      await syncOrganizationSubscription(supabase, {
+        organizationId,
+        stripeSubscriptionId: stripeSubscription.id,
+        stripePriceId,
+        status: statusMap[stripeSubscription.status] ?? "incomplete",
+        planCode,
+        currentPeriodStart: stripeSubscription.items.data[0]?.current_period_start
+          ? new Date(stripeSubscription.items.data[0].current_period_start * 1000).toISOString()
+          : null,
+        currentPeriodEnd: stripeSubscription.items.data[0]?.current_period_end
+          ? new Date(stripeSubscription.items.data[0].current_period_end * 1000).toISOString()
+          : null,
+        cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
+      });
     }
   }
 
@@ -77,35 +110,37 @@ export async function POST(request: Request) {
     const subscription = event.data.object as Stripe.Subscription;
     const status = statusMap[subscription.status] ?? "incomplete";
 
-    await supabase.from("subscriptions").upsert(
-      {
-        organization_id: typeof subscription.metadata?.organizationId === "string" ? subscription.metadata.organizationId : undefined,
-        stripe_subscription_id: subscription.id,
-        stripe_price_id: subscription.items.data[0]?.price?.id ?? null,
-        plan_code: typeof subscription.metadata?.plan === "string" ? subscription.metadata.plan : "start",
+    let organizationId = typeof subscription.metadata?.organizationId === "string" ? subscription.metadata.organizationId : null;
+    if (!organizationId) {
+      const { data: existing } = await supabase
+        .from("subscriptions")
+        .select("organization_id")
+        .eq("stripe_subscription_id", subscription.id)
+        .single();
+      organizationId = existing?.organization_id ?? null;
+    }
+
+    if (organizationId) {
+      const stripePriceId = subscription.items.data[0]?.price?.id ?? null;
+      const planCode =
+        (typeof subscription.metadata?.plan === "string" ? subscription.metadata.plan : null) ||
+        getPlanSlugByPriceId(stripePriceId) ||
+        "start";
+
+      await syncOrganizationSubscription(supabase, {
+        organizationId,
+        stripeSubscriptionId: subscription.id,
+        stripePriceId,
         status,
-        current_period_start: subscription.items.data[0]?.current_period_start
+        planCode,
+        currentPeriodStart: subscription.items.data[0]?.current_period_start
           ? new Date(subscription.items.data[0].current_period_start * 1000).toISOString()
           : null,
-        current_period_end: subscription.items.data[0]?.current_period_end
+        currentPeriodEnd: subscription.items.data[0]?.current_period_end
           ? new Date(subscription.items.data[0].current_period_end * 1000).toISOString()
           : null,
-        cancel_at_period_end: subscription.cancel_at_period_end,
-      },
-      { onConflict: "stripe_subscription_id" },
-    );
-
-    const { data: existing } = await supabase
-      .from("subscriptions")
-      .select("organization_id")
-      .eq("stripe_subscription_id", subscription.id)
-      .single();
-
-    if (existing?.organization_id) {
-      await supabase
-        .from("organizations")
-        .update({ subscription_status: status })
-        .eq("id", existing.organization_id);
+        cancelAtPeriodEnd: subscription.cancel_at_period_end,
+      });
     }
   }
 

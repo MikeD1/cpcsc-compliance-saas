@@ -1,5 +1,7 @@
+export type BillingPlanSlug = "start" | "growth";
+
 export type BillingPlan = {
-  slug: "start" | "growth";
+  slug: BillingPlanSlug;
   name: string;
   cadence: string;
   priceCad: number;
@@ -9,14 +11,12 @@ export type BillingPlan = {
   features: string[];
 };
 
-export const billingPlans: BillingPlan[] = [
-  {
+const billingPlanCatalog: Record<BillingPlanSlug, Omit<BillingPlan, "stripeProductId" | "stripePriceId">> = {
+  start: {
     slug: "start",
     name: "Start",
     cadence: "monthly",
     priceCad: 149,
-    stripeProductId: "prod_UNo9gim8j9sDx8",
-    stripePriceId: "price_1TP2Xa04be8INTzee9UwTJFI",
     description: "For smaller suppliers getting their CPCSC readiness operation in place.",
     features: [
       "1 organization workspace",
@@ -25,13 +25,11 @@ export const billingPlans: BillingPlan[] = [
       "Secure login and workspace access",
     ],
   },
-  {
+  growth: {
     slug: "growth",
     name: "Growth",
     cadence: "monthly",
     priceCad: 349,
-    stripeProductId: "prod_UNoAIdDFbplooV",
-    stripePriceId: "price_1TP2Xq04be8INTzeToSQJ7WF",
     description: "For growing suppliers with more stakeholders, evidence, and reporting needs.",
     features: [
       "Multi-user readiness workspace",
@@ -40,8 +38,49 @@ export const billingPlans: BillingPlan[] = [
       "Priority support posture",
     ],
   },
-];
+};
+
+function getRequiredPlanEnv(slug: BillingPlanSlug, field: "product" | "price") {
+  const envKey = `STRIPE_${slug.toUpperCase()}_${field.toUpperCase()}_ID` as const;
+  const value = process.env[envKey];
+
+  if (!value) {
+    throw new Error(`Missing ${envKey} for billing plan ${slug}.`);
+  }
+
+  return value;
+}
+
+function getPlanEnv(slug: BillingPlanSlug, field: "product" | "price") {
+  const envKey = `STRIPE_${slug.toUpperCase()}_${field.toUpperCase()}_ID` as const;
+  return process.env[envKey] ?? null;
+}
+
+export function getBillingPlans(): BillingPlan[] {
+  return (Object.keys(billingPlanCatalog) as BillingPlanSlug[]).map((slug) => ({
+    ...billingPlanCatalog[slug],
+    stripeProductId: getRequiredPlanEnv(slug, "product"),
+    stripePriceId: getRequiredPlanEnv(slug, "price"),
+  }));
+}
+
+export function getBillingPlansForDisplay(): BillingPlan[] {
+  return (Object.keys(billingPlanCatalog) as BillingPlanSlug[]).map((slug) => ({
+    ...billingPlanCatalog[slug],
+    stripeProductId: getPlanEnv(slug, "product") ?? "Configured at deploy time",
+    stripePriceId: getPlanEnv(slug, "price") ?? "Configured at deploy time",
+  }));
+}
 
 export function getPlanBySlug(slug: string) {
-  return billingPlans.find((plan) => plan.slug === slug);
+  return getBillingPlans().find((plan) => plan.slug === slug);
+}
+
+export function getPlanSlugByPriceId(priceId: string | null | undefined): BillingPlanSlug | null {
+  if (!priceId) {
+    return null;
+  }
+
+  const plan = getBillingPlans().find((candidate) => candidate.stripePriceId === priceId);
+  return plan?.slug ?? null;
 }

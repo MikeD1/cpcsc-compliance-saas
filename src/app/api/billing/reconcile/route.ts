@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getStripeServer } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
+import { getPlanSlugByPriceId } from "@/lib/plans";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -8,6 +10,11 @@ export async function POST(request: Request) {
 
   if (!organizationId) {
     return NextResponse.json({ error: "organizationId is required." }, { status: 400 });
+  }
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser?.organizationMembership || currentUser.organizationMembership.organizationId !== organizationId) {
+    return NextResponse.json({ error: "Unauthorized." }, { status: 403 });
   }
 
   const supabase = getSupabaseAdmin();
@@ -34,16 +41,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No Stripe subscription found for this organization." }, { status: 404 });
   }
 
-  const status = latest.status;
-  const planCode = latest.metadata?.plan || (latest.items.data[0]?.price?.id === "price_1TP2Xq04be8INTzeToSQJ7WF" ? "growth" : "start");
+  const stripePriceId = latest.items.data[0]?.price?.id ?? null;
+  const planCode = latest.metadata?.plan || getPlanSlugByPriceId(stripePriceId) || currentUser.organization?.planCode || "start";
 
   await supabase.from("subscriptions").upsert(
     {
       organization_id: organizationId,
       stripe_subscription_id: latest.id,
-      stripe_price_id: latest.items.data[0]?.price?.id ?? null,
+      stripe_price_id: stripePriceId,
       plan_code: planCode,
-      status,
+      status: latest.status,
       current_period_start: latest.items.data[0]?.current_period_start
         ? new Date(latest.items.data[0].current_period_start * 1000).toISOString()
         : null,
@@ -59,9 +66,9 @@ export async function POST(request: Request) {
     .from("organizations")
     .update({
       plan_code: planCode,
-      subscription_status: status,
+      subscription_status: latest.status,
     })
     .eq("id", organizationId);
 
-  return NextResponse.json({ ok: true, subscriptionId: latest.id, status });
+  return NextResponse.json({ ok: true, subscriptionId: latest.id, status: latest.status });
 }

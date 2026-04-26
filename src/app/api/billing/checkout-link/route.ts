@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getPlanBySlug } from "@/lib/plans";
 import { getStripeServer } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -15,6 +16,11 @@ export async function GET(request: Request) {
 
   if (!process.env.STRIPE_SECRET_KEY) {
     return NextResponse.redirect(new URL(`/signup?plan=${plan.slug}&billing=missing`, request.url));
+  }
+
+  const currentUser = await getCurrentUser();
+  if (!currentUser?.organizationMembership || currentUser.organizationMembership.organizationId !== organizationId) {
+    return NextResponse.redirect(new URL("/login?error=unauthorized_billing", request.url));
   }
 
   const supabase = getSupabaseAdmin();
@@ -66,6 +72,7 @@ export async function GET(request: Request) {
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
+    client_reference_id: organization.id,
     success_url: `${baseUrl}/dashboard?checkout=success`,
     cancel_url: `${baseUrl}/pricing?plan=${plan.slug}&checkout=cancelled`,
     line_items: [
@@ -78,6 +85,12 @@ export async function GET(request: Request) {
       plan: plan.slug,
       organizationId: organization.id,
       product_id: plan.stripeProductId,
+    },
+    subscription_data: {
+      metadata: {
+        plan: plan.slug,
+        organizationId: organization.id,
+      },
     },
     allow_promotion_codes: true,
   });
