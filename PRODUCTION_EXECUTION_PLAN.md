@@ -6,7 +6,7 @@ Status: active. Current target is **controlled private tester readiness**, not b
 
 ## Purpose
 
-Use this file after `PRODUCTION_READINESS.md` to answer:
+Use this file alongside `PRODUCTION_READINESS.md` and `PRODUCTION_FUNCTIONALITY_GAPS.md` to answer:
 
 - what still blocks production readiness
 - who owns each workstream

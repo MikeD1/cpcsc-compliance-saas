@@ -124,6 +124,7 @@ npm start
 ## Documentation
 
 - `PRODUCTION_READINESS.md` — product-readiness tracker
+- `PRODUCTION_FUNCTIONALITY_GAPS.md` — production-level missing functionality inventory
 - `EXTERNAL_TESTER_SCRIPT.md` — private-launch test script
 - `docs/supabase-schema.md` — current schema assumptions and migration checklist
 - `supabase/migrations/20260427015000_production_foundation.sql` — executable baseline tables, RLS policies, invitation foundation, audit/support tables, and Stripe webhook idempotency table
