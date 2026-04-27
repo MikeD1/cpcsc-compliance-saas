@@ -26,12 +26,43 @@ export function SubscriptionGate({
 }) {
   const [message, setMessage] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
+  const [startingCheckout, setStartingCheckout] = useState<string | null>(null);
   const normalizedPlan = plan === "growth" ? "growth" : "start";
   const checkoutHref = organizationId ? `/api/billing/checkout-link?plan=${normalizedPlan}&organizationId=${organizationId}` : "/pricing";
   const billingIssueMessage =
     billingIssue === "missing_config"
       ? "Checkout could not start because Stripe plan IDs or the Stripe secret key are not configured in this deployment. Add the Stripe environment variables, redeploy, then resume checkout here."
       : null;
+
+  async function startCheckout(selectedPlan: "start" | "growth") {
+    if (!organizationId) {
+      window.location.href = "/pricing";
+      return;
+    }
+
+    setStartingCheckout(selectedPlan);
+    setMessage(null);
+
+    try {
+      const response = await fetch("/api/billing/resume-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: selectedPlan, organizationId }),
+      });
+      const text = await response.text();
+      const result = text ? JSON.parse(text) : null;
+
+      if (!response.ok || !result?.url) {
+        throw new Error(result?.error || "Checkout could not be started.");
+      }
+
+      window.location.href = result.url;
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Checkout could not be started.");
+    } finally {
+      setStartingCheckout(null);
+    }
+  }
 
   async function recheckBilling() {
     if (!organizationId) {
@@ -85,19 +116,23 @@ export function SubscriptionGate({
       {billingIssueMessage ? <p className="mt-4 rounded-[1rem] border border-amber-300/30 bg-amber-300/10 px-4 py-3 text-sm text-amber-50">{billingIssueMessage}</p> : null}
       {message ? <p className="mt-4 rounded-[1rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-100">{message}</p> : null}
       <div className="mt-8 flex flex-wrap gap-3">
-        <Link href={checkoutHref} className="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 transition hover:bg-slate-100">
-          Resume {normalizedPlan} checkout
-        </Link>
         {organizationId ? (
           <>
-            <Link href={`/api/billing/checkout-link?plan=start&organizationId=${organizationId}`} className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10">
-              Use Start plan
-            </Link>
-            <Link href={`/api/billing/checkout-link?plan=growth&organizationId=${organizationId}`} className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10">
-              Use Growth plan
-            </Link>
+            <button type="button" onClick={() => startCheckout(normalizedPlan)} disabled={Boolean(startingCheckout)} className="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60">
+              {startingCheckout === normalizedPlan ? "Opening checkout…" : `Resume ${normalizedPlan} checkout`}
+            </button>
+            <button type="button" onClick={() => startCheckout("start")} disabled={Boolean(startingCheckout)} className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60">
+              {startingCheckout === "start" ? "Opening…" : "Use Start plan"}
+            </button>
+            <button type="button" onClick={() => startCheckout("growth")} disabled={Boolean(startingCheckout)} className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60">
+              {startingCheckout === "growth" ? "Opening…" : "Use Growth plan"}
+            </button>
           </>
-        ) : null}
+        ) : (
+          <Link href={checkoutHref} className="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 transition hover:bg-slate-100">
+            Choose plan
+          </Link>
+        )}
         <button type="button" onClick={recheckBilling} disabled={checking} className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60">
           {checking ? "Checking…" : "Recheck billing"}
         </button>
