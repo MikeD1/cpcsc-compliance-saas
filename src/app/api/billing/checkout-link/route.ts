@@ -16,7 +16,21 @@ export async function GET(request: Request) {
   }
 
   const currentUser = await getCurrentUser();
-  const organizationId = requestedOrganizationId || currentUser?.organization?.id || currentUser?.organizationMembership?.organizationId || "";
+  const supabase = getSupabaseAdmin();
+
+  let fallbackOrganizationId = currentUser?.organization?.id || currentUser?.organizationMembership?.organizationId || "";
+
+  if (currentUser && !fallbackOrganizationId) {
+    const { data: memberships } = await supabase
+      .from("organization_memberships")
+      .select("organization_id")
+      .eq("user_id", currentUser.id)
+      .order("created_at", { ascending: true })
+      .limit(1);
+    fallbackOrganizationId = memberships?.[0]?.organization_id ?? "";
+  }
+
+  const organizationId = requestedOrganizationId || fallbackOrganizationId;
 
   if (!organizationId) {
     return NextResponse.redirect(new URL(`/controls?billing=missing_org_context&plan=${selectedPlan.slug}`, request.url));
@@ -26,11 +40,13 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL(`/dashboard?billing=missing_config&plan=${selectedPlan.slug}`, request.url));
   }
 
-  if (!currentUser?.organizationMembership || currentUser.organizationMembership.organizationId !== organizationId) {
+  if (!currentUser) {
     return NextResponse.redirect(new URL("/login?error=unauthorized_billing", request.url));
   }
 
-  const supabase = getSupabaseAdmin();
+  if (currentUser.organizationMembership?.organizationId && currentUser.organizationMembership.organizationId !== organizationId) {
+    return NextResponse.redirect(new URL("/login?error=unauthorized_billing", request.url));
+  }
   const { data: organization } = await supabase
     .from("organizations")
     .select("id, name")
@@ -38,14 +54,14 @@ export async function GET(request: Request) {
     .single();
 
   if (!organization) {
-    return NextResponse.redirect(new URL("/signup?billing=missing_org", request.url));
+    return NextResponse.redirect(new URL(`/controls?billing=missing_org&plan=${selectedPlan.slug}`, request.url));
   }
 
   const { data: billingCustomer } = await supabase
     .from("billing_customers")
     .select("stripe_customer_id, billing_email")
     .eq("organization_id", organization.id)
-    .single();
+    .maybeSingle();
 
   const billingEmail = billingCustomer?.billing_email ?? currentUser.email ?? undefined;
 
