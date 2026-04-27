@@ -96,7 +96,7 @@ Verified/general signals carried forward:
 - [x] Add `organization_invitations` schema foundation for the team invite lifecycle.
 - [x] Add owner/admin route-level permission helpers and protect organization settings, billing management, and invitation management.
 - [ ] Generate or document TypeScript DB types once schema stabilizes.
-- [ ] Add DB/RLS verification commands to the README/runbook.
+- [x] Add DB/RLS verification commands to the README/runbook.
 
 **Exit gate:** one authenticated organization can safely save/reload workspace data with tenant isolation proven by tests or scripted checks.
 
@@ -117,7 +117,7 @@ Verified/general signals carried forward:
 
 - [x] Add manual team invite flow for owners/admins: create invite link, list invitations, revoke pending invitations, and accept invite after sign-in.
 - [x] Add owner/admin member lifecycle controls: edit role, disable/reactivate membership, and protect the last active owner.
-- [ ] Add first-run onboarding around organization confirmation, scope, members, first controls, first evidence record, and report export.
+- [x] Add first-run onboarding around organization confirmation, members, first controls, first evidence record, and report export.
 - [ ] Improve controls page into work management: filters, detail flow, gaps, review queue.
 - [ ] Add better error recovery actions: retry, contact support, setup guidance, copy diagnostic details where useful.
 - [ ] Keep evidence register-only until Storage/RLS/retention posture is designed.

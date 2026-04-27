@@ -101,6 +101,10 @@ Recommended for launch:
 - `NEXT_PUBLIC_SECURITY_EMAIL`
 - `ADMIN_EMAILS`
 
+Optional for transactional invite email delivery:
+- `RESEND_API_KEY`
+- `INVITE_FROM_EMAIL`
+
 ## Local development
 
 ```bash
@@ -124,6 +128,7 @@ npm start
 - `docs/supabase-schema.md` — current schema assumptions and migration checklist
 - `supabase/migrations/20260427015000_production_foundation.sql` — executable baseline tables, RLS policies, invitation foundation, audit/support tables, and Stripe webhook idempotency table
 - `docs/security-boundaries.md` — authorization and service-role boundaries
+- `docs/db-rls-verification.md` — migration, RLS, invitation, and webhook verification runbook
 
 ## Launch-test checklist
 
@@ -135,6 +140,7 @@ Before external testing:
 5. verify signup creates org, membership, subscription row, and controls
 6. verify checkout success updates organization subscription status and records webhook events once
 7. verify gated routes unlock after billing
+8. run `docs/db-rls-verification.md` against the target Supabase project
 
 ## Architecture note
 

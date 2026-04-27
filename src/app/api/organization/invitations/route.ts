@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { canInviteMembers } from "@/lib/permissions";
+import { sendTeamInviteEmail } from "@/lib/email";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
 const inviteSchema = z.object({
@@ -98,9 +99,17 @@ export async function POST(request: Request) {
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const inviteUrl = `${baseUrl}/invite/accept?token=${token}`;
+  const delivery = await sendTeamInviteEmail({
+    to: parsed.data.email,
+    organizationName: user.organization.name,
+    inviteUrl,
+    invitedByEmail: user.email,
+  });
+
   return NextResponse.json({
     invitation: data,
-    inviteUrl: `${baseUrl}/invite/accept?token=${token}`,
-    delivery: "manual",
+    inviteUrl,
+    delivery,
   });
 }

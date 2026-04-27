@@ -53,13 +53,8 @@ Reason: before we invite real users, the product must not break trust at signup,
 ### First-use product clarity
 
 - [x] Add post-activation onboarding checklist.
-  - Suggested items:
-    - confirm organization profile
-    - define readiness scope
-    - assign first controls
-    - add first evidence record
-    - generate readiness report
-    - invite teammate / add owner when team management exists
+  - Completed: dashboard now includes a first-run checklist for organization profile, team/invites, control owners, evidence records, and readiness report export.
+  - Still pending: richer scope wizard after organization scope fields are added.
 
 - [x] Reposition “Evidence vault” as “Evidence register” until file upload/storage exists.
   - Current product does metadata/location tracking, not actual file vaulting.
@@ -178,7 +173,7 @@ Reason: before we invite real users, the product must not break trust at signup,
 
 The remaining work is now mostly schema/ops depth rather than product-surface polish:
 
-1. Apply the production foundation migration to Supabase and verify tenant isolation/RLS behavior.
+1. Apply the production foundation migration to Supabase and verify tenant isolation/RLS behavior using `docs/db-rls-verification.md`.
 2. Run Stripe webhook idempotency through Stripe test-mode events.
 3. Add transactional email delivery and deeper member lifecycle polish for invitations.
 4. Decide and implement Supabase Storage evidence uploads, signed URLs, and retention policy.

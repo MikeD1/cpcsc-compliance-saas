@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { StatusBadge } from "@/components/status-badge";
 import { SubscriptionGate } from "@/components/auth/subscription-gate";
+import { FirstRunChecklist } from "@/components/onboarding/first-run-checklist";
 import { getCurrentAccess } from "@/lib/access";
 import { getDashboardData } from "@/lib/dashboard";
 
@@ -20,7 +21,7 @@ export default async function DashboardPage() {
     );
   }
 
-  const { organization, assessment, controlCards, statusCounts, actionSummary, priorityActions } = await getDashboardData();
+  const { organization, assessment, controlCards, statusCounts, actionSummary, priorityActions, members } = await getDashboardData();
 
   return (
     <AppShell organizationName={access.user.organization?.name}>
@@ -59,6 +60,14 @@ export default async function DashboardPage() {
           </dl>
         </div>
       </section>
+
+      <FirstRunChecklist
+        organizationName={organization.name}
+        memberCount={members.length}
+        unassignedControls={actionSummary.unassigned}
+        missingEvidence={actionSummary.missingEvidence}
+        reviewedControls={actionSummary.reviewed}
+      />
 
       <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
         <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Action queue</p>

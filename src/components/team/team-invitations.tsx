@@ -21,6 +21,7 @@ export function TeamInvitations({ canInvite, initialInvitations }: TeamInvitatio
   const [role, setRole] = useState("member");
   const [invitations, setInvitations] = useState(initialInvitations);
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
+  const [deliveryMessage, setDeliveryMessage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const pendingInvitations = useMemo(() => invitations.filter((invite) => invite.status === "pending"), [invitations]);
@@ -30,6 +31,7 @@ export function TeamInvitations({ canInvite, initialInvitations }: TeamInvitatio
     setSaving(true);
     setError(null);
     setInviteUrl(null);
+    setDeliveryMessage(null);
 
     try {
       const response = await fetch("/api/organization/invitations", {
@@ -45,6 +47,13 @@ export function TeamInvitations({ canInvite, initialInvitations }: TeamInvitatio
 
       setInvitations((current) => [payload.invitation, ...current]);
       setInviteUrl(payload.inviteUrl ?? null);
+      if (payload.delivery?.status === "sent") {
+        setDeliveryMessage("Invite email sent.");
+      } else if (payload.delivery?.status === "failed") {
+        setDeliveryMessage(`Invite created, but email delivery failed: ${payload.delivery.error ?? "unknown error"}. Copy the link manually.`);
+      } else {
+        setDeliveryMessage("Invite created. Email delivery is not configured, so copy the link manually.");
+      }
       setEmail("");
       setRole("member");
     } catch (caughtError) {
@@ -78,7 +87,7 @@ export function TeamInvitations({ canInvite, initialInvitations }: TeamInvitatio
           <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Team invitations</p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Invite teammates into this workspace</h2>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-            Owners and admins can create invite links for teammates. Email delivery is intentionally manual until transactional email is configured.
+            Owners and admins can invite teammates by email when transactional delivery is configured. A manual invite link is always shown as a fallback.
           </p>
         </div>
         <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">{pendingInvitations.length} pending</span>
@@ -116,7 +125,8 @@ export function TeamInvitations({ canInvite, initialInvitations }: TeamInvitatio
 
       {inviteUrl ? (
         <div className="mt-5 rounded-[1.25rem] border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm leading-7 text-emerald-900">
-          Invite created. Copy and send this link manually: <span className="break-all font-medium">{inviteUrl}</span>
+          {deliveryMessage ? <p>{deliveryMessage}</p> : null}
+          <p className="mt-2">Invite link: <span className="break-all font-medium">{inviteUrl}</span></p>
         </div>
       ) : null}
       {error ? <p className="mt-4 text-sm text-rose-500">{error}</p> : null}
