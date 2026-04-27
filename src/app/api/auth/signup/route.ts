@@ -103,6 +103,8 @@ export async function POST(request: Request) {
       status: "not-started",
       implementation_prompt: control.exampleImplementation,
       guidance: {
+        officialId: control.officialId,
+        officialName: control.officialName,
         objective: control.objective,
         whatToDo: control.whatToDo,
         evidenceExamples: control.evidenceExamples,

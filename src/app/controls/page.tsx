@@ -43,7 +43,7 @@ export default async function ControlsPage() {
             members={members}
             control={{
               id: control.response?.id ?? String(control.id),
-              displayId: control.id,
+              displayId: control.officialId,
               title: control.title,
               category: control.category,
               objective: control.objective,

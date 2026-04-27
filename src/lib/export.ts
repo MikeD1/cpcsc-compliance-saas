@@ -2,6 +2,8 @@ import { jsPDF } from "jspdf";
 
 type ExportControl = {
   controlId: number;
+  officialId: string;
+  officialName: string;
   status: "NOT_STARTED" | "IN_PROGRESS" | "READY_FOR_REVIEW" | "COMPLETE";
   title: string;
   category: string;
@@ -77,9 +79,10 @@ export function buildAssessmentPdf(payload: ExportPayload) {
     doc.roundedRect(margin, y, usableWidth, 24, 12, 12);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
-    doc.text(`Control ${response.controlId}: ${response.title}`, margin + 14, y + 16);
+    doc.text(`${response.officialId}: ${response.title}`, margin + 14, y + 16);
     y += 36;
 
+    writeParagraph(`Official control: ${response.officialName}`, 10, 10);
     writeParagraph(`Category: ${response.category}`, 10, 10);
     writeParagraph(`Status: ${statusLabel[response.status]}`, 10, 10);
     writeParagraph(`Owner: ${response.owner ?? "Not assigned"}`, 10, 10);

@@ -74,7 +74,7 @@ export default async function ReportsPage() {
             <div className="mt-4 grid gap-3">
               {controlCards.filter((control) => control.response?.status !== "COMPLETE" || !control.response?.ownerMembershipId || (control.response?.evidenceItems.length ?? 0) === 0).slice(0, 8).map((control) => (
                 <div key={control.id} className="rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-                  Control {control.id}: {control.title}
+                  {control.officialId}: {control.title}
                 </div>
               ))}
             </div>
@@ -86,7 +86,7 @@ export default async function ReportsPage() {
               {recentEvidence.map((item) => (
                 <div key={item.id} className="rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
                   <p className="font-medium text-slate-950">{item.title}</p>
-                  <p className="mt-1 text-slate-500">Control {item.controlId} · {item.artifactType}</p>
+                  <p className="mt-1 text-slate-500">Control {item.officialId ?? item.controlId} · {item.artifactType}</p>
                 </div>
               ))}
             </div>

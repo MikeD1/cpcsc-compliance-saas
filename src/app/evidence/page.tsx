@@ -24,7 +24,7 @@ export default async function EvidencePage() {
   const { recentEvidence, controlCards } = await getDashboardData();
   const controlOptions = controlCards.filter((control) => control.response).map((control) => ({
     id: control.response!.id,
-    displayId: control.id,
+    displayId: control.officialId,
     title: control.title,
     category: control.category,
   }));
@@ -50,7 +50,7 @@ export default async function EvidencePage() {
             ) : null}
             {recentEvidence.map((item) => (
               <div key={item.id} className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Control {item.controlId}</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Control {item.officialId ?? item.controlId}</p>
                 <h2 className="mt-2 text-lg font-semibold text-slate-950">{item.title}</h2>
                 <p className="mt-2 text-sm text-slate-600">{item.controlTitle}</p>
                 <div className="mt-4 flex items-center justify-between gap-3 text-sm text-slate-500">
@@ -73,7 +73,7 @@ export default async function EvidencePage() {
             <article key={control.id} className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
               <div className="flex items-center justify-between gap-3">
                 <h3 className="text-lg font-semibold text-slate-950">
-                  Control {control.id}: {control.title}
+                  {control.officialId}: {control.title}
                 </h3>
                 <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
                   {(control.response?.evidenceItems ?? []).length} items

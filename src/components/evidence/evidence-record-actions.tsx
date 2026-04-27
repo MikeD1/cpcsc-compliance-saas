@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 type ControlOption = {
   id: string;
-  displayId: number;
+  displayId: string;
   title: string;
 };
 
@@ -106,7 +106,7 @@ export function EvidenceRecordActions({ evidence, controlId, controls }: Evidenc
         </select>
         <select value={selectedControlId} onChange={(event) => setSelectedControlId(event.target.value)} className="rounded-[0.8rem] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-cyan-400">
           {controls.map((control) => (
-            <option key={control.id} value={control.id}>Control {control.displayId}: {control.title}</option>
+            <option key={control.id} value={control.id}>{control.displayId}: {control.title}</option>
           ))}
         </select>
       </div>

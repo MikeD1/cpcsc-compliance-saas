@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 type EvidenceCaptureProps = {
   controls: Array<{
     id: string;
-    displayId: number;
+    displayId: string;
     title: string;
     category: string;
   }>;
@@ -73,7 +73,7 @@ export function EvidenceCapture({ controls }: EvidenceCaptureProps) {
           >
             {controls.map((control) => (
               <option key={control.id} value={control.id}>
-                Control {control.displayId}: {control.title}
+                {control.displayId}: {control.title}
               </option>
             ))}
           </select>

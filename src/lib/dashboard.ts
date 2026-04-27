@@ -138,6 +138,7 @@ export async function getDashboardData() {
     .flatMap((item) =>
       (item.response?.evidenceItems ?? []).map((evidence) => ({
         controlId: item.id,
+        officialId: item.officialId,
         controlTitle: item.title,
         category: item.category,
         controlRowId: item.response?.id ?? "",

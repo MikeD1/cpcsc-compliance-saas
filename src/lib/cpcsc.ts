@@ -1,5 +1,7 @@
 export type ControlDefinition = {
   id: number;
+  officialId: string;
+  officialName: string;
   category: string;
   title: string;
   objective: string;
@@ -23,6 +25,8 @@ export const evidenceRetentionGuidance = [
 export const controls: ControlDefinition[] = [
   {
     id: 1,
+    officialId: "03.01.01",
+    officialName: "Account management",
     category: "Access control",
     title: "Manage user accounts",
     objective:
@@ -44,6 +48,8 @@ export const controls: ControlDefinition[] = [
   },
   {
     id: 2,
+    officialId: "03.01.02",
+    officialName: "Access enforcement",
     category: "Access control",
     title: "Give people only the access they need",
     objective:
@@ -64,6 +70,8 @@ export const controls: ControlDefinition[] = [
   },
   {
     id: 3,
+    officialId: "03.01.20",
+    officialName: "Use of external systems",
     category: "Access control",
     title: "Use only approved systems and devices",
     objective:
@@ -84,6 +92,8 @@ export const controls: ControlDefinition[] = [
   },
   {
     id: 4,
+    officialId: "03.01.22",
+    officialName: "Publicly accessible content",
     category: "Access control",
     title: "Prevent sensitive information from being shared publicly",
     objective:
@@ -104,6 +114,8 @@ export const controls: ControlDefinition[] = [
   },
   {
     id: 5,
+    officialId: "03.05.01",
+    officialName: "User identification, authentication, and re-authentication",
     category: "Identification and authentication",
     title: "Use individual accounts and strong passwords",
     objective:
@@ -124,6 +136,8 @@ export const controls: ControlDefinition[] = [
   },
   {
     id: 6,
+    officialId: "03.05.02",
+    officialName: "Device identification and authentication",
     category: "Identification and authentication",
     title: "Approve devices before they connect",
     objective:
@@ -143,6 +157,8 @@ export const controls: ControlDefinition[] = [
   },
   {
     id: 7,
+    officialId: "03.05.03",
+    officialName: "Multi-factor authentication",
     category: "Identification and authentication",
     title: "Enable multifactor authentication",
     objective:
@@ -163,6 +179,8 @@ export const controls: ControlDefinition[] = [
   },
   {
     id: 8,
+    officialId: "03.08.03",
+    officialName: "Media sanitization",
     category: "Media protection",
     title: "Wipe or destroy old devices",
     objective:
@@ -182,6 +200,8 @@ export const controls: ControlDefinition[] = [
   },
   {
     id: 9,
+    officialId: "03.10.01",
+    officialName: "Physical access authorizations",
     category: "Physical protection",
     title: "Keep a list of who can access secure areas",
     objective:
@@ -201,6 +221,8 @@ export const controls: ControlDefinition[] = [
   },
   {
     id: 10,
+    officialId: "03.10.07",
+    officialName: "Physical access control",
     category: "Physical protection",
     title: "Control physical entry",
     objective:
@@ -221,6 +243,8 @@ export const controls: ControlDefinition[] = [
   },
   {
     id: 11,
+    officialId: "03.13.01",
+    officialName: "Boundary protection",
     category: "Systems and communications protection",
     title: "Use basic network protections",
     objective:
@@ -241,6 +265,8 @@ export const controls: ControlDefinition[] = [
   },
   {
     id: 12,
+    officialId: "03.14.01",
+    officialName: "Flaw remediation",
     category: "System and information integrity",
     title: "Apply security updates",
     objective:
@@ -261,6 +287,8 @@ export const controls: ControlDefinition[] = [
   },
   {
     id: 13,
+    officialId: "03.14.02",
+    officialName: "Malicious code protection",
     category: "System and information integrity",
     title: "Use antivirus and anti-malware software",
     objective:

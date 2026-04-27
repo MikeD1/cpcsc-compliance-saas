@@ -103,7 +103,7 @@ export default async function DashboardPage() {
                 <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-slate-500">{control.category}</p>
                   <h3 className="mt-2 text-lg font-semibold text-slate-950">
-                    Control {control.id}: {control.title}
+                    {control.officialId}: {control.title}
                   </h3>
                 </div>
                 {control.response ? <StatusBadge status={control.response.status} /> : null}

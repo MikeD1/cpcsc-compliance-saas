@@ -15,6 +15,8 @@ export async function GET() {
       .filter((control): control is typeof control & { response: NonNullable<typeof control.response> } => Boolean(control.response))
       .map((control) => ({
         controlId: control.id,
+        officialId: control.officialId,
+        officialName: control.officialName,
         title: control.title,
         category: control.category,
         status: (control.response.status ?? "NOT_STARTED") as "NOT_STARTED" | "IN_PROGRESS" | "READY_FOR_REVIEW" | "COMPLETE",

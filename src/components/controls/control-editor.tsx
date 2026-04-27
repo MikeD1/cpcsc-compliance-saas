@@ -7,7 +7,7 @@ type ControlEditorProps = {
   members: OrganizationMember[];
   control: {
     id: string;
-    displayId: number;
+    displayId: string;
     title: string;
     category: string;
     objective: string;
@@ -97,7 +97,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
           <div>
             <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-300">{control.category}</p>
             <h2 className="mt-2 text-2xl font-semibold lg:text-3xl">
-              Control {control.displayId}: {control.title}
+              {control.displayId}: {control.title}
             </h2>
             <p className="mt-2 text-sm text-slate-300">{reviewedAt ? `Last reviewed ${new Date(reviewedAt).toISOString().slice(0, 10)}` : "Not reviewed yet"}</p>
           </div>
