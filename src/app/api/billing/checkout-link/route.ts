@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   }
 
   if (!process.env.STRIPE_SECRET_KEY || !plan) {
-    return NextResponse.redirect(new URL(`/signup?plan=${selectedPlan.slug}&billing=missing`, request.url));
+    return NextResponse.redirect(new URL(`/dashboard?billing=missing_config&plan=${selectedPlan.slug}`, request.url));
   }
 
   const currentUser = await getCurrentUser();
@@ -50,6 +50,18 @@ export async function GET(request: Request) {
       .single();
     billingEmail = profile?.email ?? undefined;
   }
+
+  await Promise.all([
+    supabase
+      .from("organizations")
+      .update({ plan_code: selectedPlan.slug, subscription_status: "incomplete" })
+      .eq("id", organization.id),
+    supabase
+      .from("subscriptions")
+      .update({ plan_code: selectedPlan.slug, stripe_price_id: plan.stripePriceId, status: "incomplete" })
+      .eq("organization_id", organization.id)
+      .is("stripe_subscription_id", null),
+  ]);
 
   const stripe = getStripeServer();
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
