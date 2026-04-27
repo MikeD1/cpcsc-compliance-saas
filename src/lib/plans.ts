@@ -50,6 +50,18 @@ function getPlanEnv(slug: BillingPlanSlug, field: "product" | "price") {
   return process.env[envKey] || null;
 }
 
+export function normalizeBillingPlanSlug(slug: string | null | undefined): BillingPlanSlug | null {
+  if (slug === "start" || slug === "starter") {
+    return "start";
+  }
+
+  if (slug === "growth") {
+    return "growth";
+  }
+
+  return null;
+}
+
 function hydratePlan(slug: BillingPlanSlug): BillingPlan {
   return {
     ...billingPlanCatalog[slug],
@@ -71,11 +83,13 @@ export function getBillingPlansForDisplay(): BillingPlan[] {
 }
 
 export function getPlanBySlug(slug: string): BillingPlan | null {
-  if (slug !== "start" && slug !== "growth") {
+  const normalizedSlug = normalizeBillingPlanSlug(slug);
+
+  if (!normalizedSlug) {
     return null;
   }
 
-  return hydratePlan(slug);
+  return hydratePlan(normalizedSlug);
 }
 
 export function getConfiguredPlanBySlug(slug: string): ConfiguredBillingPlan | null {

@@ -1,5 +1,6 @@
 import { CheckoutButton } from "@/components/marketing/checkout-button";
 import { PublicShell } from "@/components/marketing/public-shell";
+import { getCurrentAccess } from "@/lib/access";
 import { getBillingPlansForDisplay } from "@/lib/plans";
 
 const reassurance = [
@@ -8,8 +9,10 @@ const reassurance = [
   "No hidden implementation fees in the listed monthly price",
 ];
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const access = await getCurrentAccess();
   const billingPlans = getBillingPlansForDisplay();
+  const activationOrganizationId = access.user && !access.hasActiveSubscription ? access.user.organization?.id : null;
 
   return (
     <PublicShell>
@@ -17,7 +20,9 @@ export default function PricingPage() {
         <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-300">Pricing</p>
         <h1 className="mt-3 text-5xl font-semibold tracking-tight lg:text-6xl">Simple monthly plans for CPCSC Level 1 readiness.</h1>
         <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-300">
-          Choose the workspace size that matches your team. Both plans include the core control workspace, evidence organization, and reporting needed to manage readiness work.
+          {activationOrganizationId
+            ? "Choose a plan to finish checkout for your existing workspace. This will not create a duplicate account."
+            : "Choose the workspace size that matches your team. Both plans include the core control workspace, evidence organization, and reporting needed to manage readiness work."}
         </p>
       </section>
 
@@ -52,6 +57,8 @@ export default function PricingPage() {
             </div>
             <CheckoutButton
               plan={tier.slug}
+              organizationId={activationOrganizationId}
+              isActivationRecovery={Boolean(activationOrganizationId)}
               className={`mt-4 inline-flex w-full items-center justify-center rounded-full px-4 py-3 text-sm font-medium transition ${
                 tier.slug === "growth"
                   ? "bg-white text-slate-950 hover:bg-slate-100"
