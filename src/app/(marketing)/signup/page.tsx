@@ -1,18 +1,31 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { AuthCard } from "@/components/auth/auth-card";
-import { redirectIfAuthenticated } from "@/components/auth/auth-redirect";
 import { SignupForm } from "@/components/auth/signup-form";
 import { PublicShell } from "@/components/marketing/public-shell";
+import { getCurrentAccess } from "@/lib/access";
 
 export default async function SignupPage({
   searchParams,
 }: {
   searchParams: Promise<{ plan?: string }>;
 }) {
-  await redirectIfAuthenticated();
-
   const params = await searchParams;
   const initialPlan = params.plan === "growth" ? "growth" : "start";
+  const access = await getCurrentAccess();
+
+  if (access.user) {
+    if (access.hasActiveSubscription) {
+      redirect("/dashboard");
+    }
+
+    const organizationId = access.user.organization?.id ?? access.user.organizationMembership?.organizationId;
+    if (organizationId) {
+      redirect(`/api/billing/checkout-link?plan=${initialPlan}&organizationId=${organizationId}`);
+    }
+
+    redirect(`/controls?billing=missing_org_context&plan=${initialPlan}`);
+  }
 
   return (
     <PublicShell>
