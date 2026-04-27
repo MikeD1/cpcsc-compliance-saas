@@ -4,6 +4,10 @@ import { getStripeServer } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { getCurrentUser } from "@/lib/auth";
 
+function appUrl(path: string) {
+  return new URL(path, process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000");
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const planSlug = searchParams.get("plan") || "";
@@ -12,7 +16,7 @@ export async function GET(request: Request) {
   const plan = getConfiguredPlanBySlug(planSlug);
 
   if (!selectedPlan) {
-    return NextResponse.redirect(new URL("/pricing", request.url));
+    return NextResponse.redirect(appUrl("/pricing"));
   }
 
   const currentUser = await getCurrentUser();
@@ -33,19 +37,19 @@ export async function GET(request: Request) {
   const organizationId = requestedOrganizationId || fallbackOrganizationId;
 
   if (!organizationId) {
-    return NextResponse.redirect(new URL(`/controls?billing=missing_org_context&plan=${selectedPlan.slug}`, request.url));
+    return NextResponse.redirect(appUrl(`/controls?billing=missing_org_context&plan=${selectedPlan.slug}`));
   }
 
   if (!process.env.STRIPE_SECRET_KEY || !plan) {
-    return NextResponse.redirect(new URL(`/dashboard?billing=missing_config&plan=${selectedPlan.slug}`, request.url));
+    return NextResponse.redirect(appUrl(`/dashboard?billing=missing_config&plan=${selectedPlan.slug}`));
   }
 
   if (!currentUser) {
-    return NextResponse.redirect(new URL("/login?error=unauthorized_billing", request.url));
+    return NextResponse.redirect(appUrl("/login?error=unauthorized_billing"));
   }
 
   if (currentUser.organizationMembership?.organizationId && currentUser.organizationMembership.organizationId !== organizationId) {
-    return NextResponse.redirect(new URL("/login?error=unauthorized_billing", request.url));
+    return NextResponse.redirect(appUrl("/login?error=unauthorized_billing"));
   }
   const { data: organization } = await supabase
     .from("organizations")
@@ -54,7 +58,7 @@ export async function GET(request: Request) {
     .single();
 
   if (!organization) {
-    return NextResponse.redirect(new URL(`/controls?billing=missing_org&plan=${selectedPlan.slug}`, request.url));
+    return NextResponse.redirect(appUrl(`/controls?billing=missing_org&plan=${selectedPlan.slug}`));
   }
 
   const { data: billingCustomer } = await supabase
