@@ -17,6 +17,18 @@ export async function POST(request: Request) {
   }
 
   const supabase = getSupabaseAdmin();
+  const { data: control } = await supabase
+    .from("controls")
+    .select("id")
+    .eq("id", controlId)
+    .eq("organization_id", user.organization.id)
+    .limit(1)
+    .maybeSingle();
+
+  if (!control) {
+    return NextResponse.json({ error: "Evidence must be linked to a control in this organization." }, { status: 400 });
+  }
+
   const { data, error } = await supabase
     .from("evidence_items")
     .insert({

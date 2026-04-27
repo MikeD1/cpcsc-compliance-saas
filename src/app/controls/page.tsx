@@ -55,6 +55,7 @@ export default async function ControlsPage() {
                     owner: control.response.owner,
                     ownerMembershipId: control.response.ownerMembershipId,
                     reviewCadence: control.response.reviewCadence,
+                    reviewedAt: control.response.reviewedAt,
                     evidenceItems: control.response.evidenceItems,
                   }
                 : null,

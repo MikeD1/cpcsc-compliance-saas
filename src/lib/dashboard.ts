@@ -76,12 +76,15 @@ export async function getDashboardData() {
             implementationDetails: row.implementation_prompt ?? control.exampleImplementation,
             owner: getMemberDisplayName(membersById.get(row.owner_membership_id ?? "")) ?? "Unassigned",
             ownerMembershipId: row.owner_membership_id ?? null,
-            reviewCadence: row.reviewed_at ? "Reviewed" : "Set cadence",
+            reviewCadence: row.reviewed_at ? `Reviewed ${new Date(row.reviewed_at).toISOString().slice(0, 10)}` : "Not reviewed yet",
+            reviewedAt: row.reviewed_at ?? null,
             evidenceItems: relatedEvidence.map((item) => ({
               id: item.id,
               title: item.file_name,
               location: item.storage_path,
               artifactType: item.evidence_type ?? "Document",
+              status: item.status ?? "active",
+              createdAt: item.created_at ?? null,
             })),
           }
         : null,
@@ -94,6 +97,27 @@ export async function getDashboardData() {
     inProgress: controlCards.filter((response) => response.response?.status === "IN_PROGRESS").length,
     notStarted: controlCards.filter((response) => !response.response || response.response.status === "NOT_STARTED").length,
   };
+
+  const actionSummary = {
+    readinessPercent: Math.round((statusCounts.complete / Math.max(controlCards.length, 1)) * 100),
+    unassigned: controlCards.filter((control) => !control.response?.ownerMembershipId).length,
+    missingEvidence: controlCards.filter((control) => (control.response?.evidenceItems.length ?? 0) === 0).length,
+    readyForReview: statusCounts.review,
+    reviewed: controlCards.filter((control) => Boolean(control.response?.reviewedAt)).length,
+  };
+
+  const priorityActions = controlCards
+    .filter((control) => !control.response?.ownerMembershipId || (control.response?.evidenceItems.length ?? 0) === 0 || control.response?.status === "READY_FOR_REVIEW")
+    .slice(0, 6)
+    .map((control) => ({
+      controlId: control.id,
+      title: control.title,
+      owner: control.response?.owner ?? "Unassigned",
+      status: control.response?.status ?? "NOT_STARTED",
+      needsOwner: !control.response?.ownerMembershipId,
+      needsEvidence: (control.response?.evidenceItems.length ?? 0) === 0,
+      readyForReview: control.response?.status === "READY_FOR_REVIEW",
+    }));
 
   const categorySummaries = Array.from(
     new Map(
@@ -116,6 +140,7 @@ export async function getDashboardData() {
         controlId: item.id,
         controlTitle: item.title,
         category: item.category,
+        controlRowId: item.response?.id ?? "",
         ...evidence,
       })),
     )
@@ -132,6 +157,8 @@ export async function getDashboardData() {
     },
     controlCards,
     statusCounts,
+    actionSummary,
+    priorityActions,
     categorySummaries,
     recentEvidence,
     members,

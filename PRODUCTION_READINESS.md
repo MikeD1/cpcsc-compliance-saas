@@ -105,65 +105,40 @@ Reason: before we invite real users, the product must not break trust at signup,
 
 ### Control workflow
 
-- [ ] Replace review cadence text with real review workflow.
-  - Cadence enum.
-  - Next review date.
-  - Last reviewed date.
-  - Reviewed by.
-  - Request review / mark reviewed flow.
+- [x] Replace review cadence text with real review workflow.
+  - Completed: current-schema-safe request review / mark reviewed / clear review date actions use status and `reviewed_at`.
+  - Still schema-blocked: cadence enum, next review date, reviewed by, and richer review history need explicit columns/tables.
 
 - [ ] Add control comments/activity history.
-  - Track status changes.
-  - Track owner changes.
-  - Track evidence additions.
-  - Show recent activity per control.
+  - Schema-blocked: needs activity/comment table before tracking status, owner, evidence additions, and comments safely.
 
 - [ ] Improve controls page from “all editors” to work management.
-  - List/detail pattern.
-  - Filters by owner/status/category.
-  - Unassigned controls.
-  - Due reviews.
-  - Required evidence checklist.
+  - Partially complete: editors now include member ownership and review actions.
+  - Still pending: list/detail pattern, filters, due reviews, and required evidence checklist.
 
 ### Evidence workflow
 
-- [ ] Decide evidence model: register-only now vs storage-backed upload.
-  - If register-only: copy and UI must stay honest.
-  - If upload-backed: implement Supabase Storage.
+- [x] Decide evidence model: register-only now vs storage-backed upload.
+  - Decision: stay register-only until Supabase Storage, retention, and signed URL posture are designed.
+  - Copy/UI explicitly present evidence as metadata and location references, not a file vault.
 
-- [ ] Add evidence management actions.
-  - Edit.
-  - Delete/archive.
-  - Relink to another control.
-  - Status/review flag.
-  - Notes/source/uploader/date.
+- [x] Add evidence management actions.
+  - Completed: edit title/location/type, relink to another control, and archive evidence records.
+  - Still schema-blocked: notes/source/uploader/date review UX needs clearer columns and activity model.
 
 - [ ] Add Supabase Storage-backed file upload/download if moving beyond register.
-  - Upload.
-  - Signed download URLs.
-  - Preview/download.
-  - Replace/version.
-  - Delete/archive.
-  - Retention posture.
+  - Deferred intentionally: register-only is the current production-safe model.
+  - Needs storage buckets, signed download URLs, preview/download, replace/version, delete/archive, and retention posture.
 
 ### Dashboard and reports
 
-- [ ] Make dashboard action-oriented.
-  - My tasks.
-  - Unassigned controls.
-  - Missing evidence.
-  - Due/stale reviews.
-  - Recent activity.
-  - Readiness percentage.
+- [x] Make dashboard action-oriented.
+  - Completed: readiness percentage, unassigned controls, missing evidence, review queue, reviewed count, and priority action cards.
+  - Still schema-blocked: due/stale reviews and recent activity need review schedule/activity tables.
 
-- [ ] Improve reports for leadership/procurement use.
-  - Executive summary.
-  - Evidence inventory.
-  - Exceptions/gaps.
-  - Owner accountability.
-  - Report date/scope.
-  - Clear limitations.
-  - Customer branding.
+- [x] Improve reports for leadership/procurement use.
+  - Completed: executive summary, evidence inventory, exceptions/gaps, owner accountability via member display, and clear limitations.
+  - Still pending: deeper customer branding and richer report scope fields after org schema expansion.
 
 ---
 

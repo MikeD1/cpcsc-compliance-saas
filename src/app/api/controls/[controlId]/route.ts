@@ -65,7 +65,20 @@ export async function PATCH(request: Request, context: { params: Promise<{ contr
     }
   }
 
-  if (body.reviewCadence !== undefined) {
+  if (body.reviewAction !== undefined) {
+    if (body.reviewAction === "mark-reviewed") {
+      payload.reviewed_at = new Date().toISOString();
+      payload.status = "implemented";
+    } else if (body.reviewAction === "request-review") {
+      payload.status = "needs-review";
+    } else if (body.reviewAction === "clear-review") {
+      payload.reviewed_at = null;
+    } else {
+      return NextResponse.json({ error: "Invalid review action." }, { status: 400 });
+    }
+  }
+
+  if (body.reviewCadence !== undefined && body.reviewAction === undefined) {
     payload.reviewed_at = body.reviewCadence ? new Date().toISOString() : null;
   }
 

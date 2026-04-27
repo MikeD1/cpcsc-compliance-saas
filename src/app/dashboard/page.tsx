@@ -20,7 +20,7 @@ export default async function DashboardPage() {
     );
   }
 
-  const { organization, assessment, controlCards, statusCounts } = await getDashboardData();
+  const { organization, assessment, controlCards, statusCounts, actionSummary, priorityActions } = await getDashboardData();
 
   return (
     <AppShell organizationName={access.user.organization?.name}>
@@ -39,7 +39,8 @@ export default async function DashboardPage() {
               <p className="mt-2 text-lg font-semibold text-slate-950">{assessment.title}</p>
             </div>
           </div>
-          <div className="mt-8 grid gap-4 md:grid-cols-4">
+          <div className="mt-8 grid gap-4 md:grid-cols-5">
+            <Kpi title="Ready" value={`${actionSummary.readinessPercent}%`} tone="emerald" />
             <Kpi title="Complete" value={String(statusCounts.complete)} tone="emerald" />
             <Kpi title="Review" value={String(statusCounts.review)} tone="sky" />
             <Kpi title="In progress" value={String(statusCounts.inProgress)} tone="amber" />
@@ -60,13 +61,31 @@ export default async function DashboardPage() {
       </section>
 
       <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
-        <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">First steps</p>
-        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Start with a practical readiness loop</h2>
+        <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Action queue</p>
+        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Work that moves readiness forward</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <NextStep title="Confirm scope" description="Use the organization metadata as your starting point, then document systems and teams in scope." />
-          <NextStep title="Assign owners" description="Pick the first controls that need attention and assign an accountable owner." />
-          <NextStep title="Add evidence records" description="Register where supporting documents live for each control." />
-          <NextStep title="Export report" description="Generate a readiness PDF after the first round of updates." />
+          <NextStep title="Assign owners" description={`${actionSummary.unassigned} controls are unassigned.`} />
+          <NextStep title="Add evidence" description={`${actionSummary.missingEvidence} controls have no evidence records.`} />
+          <NextStep title="Review queue" description={`${actionSummary.readyForReview} controls are ready for review.`} />
+          <NextStep title="Reviewed" description={`${actionSummary.reviewed} controls have a review date recorded.`} />
+        </div>
+        <div className="mt-6 grid gap-3">
+          {priorityActions.length === 0 ? (
+            <div className="rounded-[1.4rem] border border-emerald-200 bg-emerald-50 p-4 text-sm leading-7 text-emerald-800">
+              No priority actions right now. Export the readiness report or start a deeper review pass.
+            </div>
+          ) : null}
+          {priorityActions.map((action) => (
+            <div key={action.controlId} className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4">
+              <p className="text-sm font-semibold text-slate-950">Control {action.controlId}: {action.title}</p>
+              <p className="mt-2 text-sm text-slate-600">Owner: {action.owner}</p>
+              <div className="mt-3 flex flex-wrap gap-2 text-xs font-medium">
+                {action.needsOwner ? <span className="rounded-full bg-amber-100 px-3 py-1 text-amber-800">Needs owner</span> : null}
+                {action.needsEvidence ? <span className="rounded-full bg-sky-100 px-3 py-1 text-sky-800">Needs evidence</span> : null}
+                {action.readyForReview ? <span className="rounded-full bg-emerald-100 px-3 py-1 text-emerald-800">Ready for review</span> : null}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

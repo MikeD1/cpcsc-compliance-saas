@@ -18,6 +18,7 @@ type ControlEditorProps = {
       owner?: string | null;
       ownerMembershipId?: string | null;
       reviewCadence?: string | null;
+      reviewedAt?: string | null;
       evidenceItems: Array<{ id: string; title: string; location?: string | null }>;
     } | null;
   };
@@ -38,14 +39,14 @@ function memberLabel(member: OrganizationMember) {
 export function ControlEditor({ control, members }: ControlEditorProps) {
   const activeMembers = members.filter((member) => member.status === "active");
   const [status, setStatus] = useState(control.response?.status ?? "NOT_STARTED");
+  const [reviewedAt, setReviewedAt] = useState(control.response?.reviewedAt ?? null);
   const [implementationDetails, setImplementationDetails] = useState(control.response?.implementationDetails ?? "");
   const [ownerMembershipId, setOwnerMembershipId] = useState(control.response?.ownerMembershipId ?? "");
-  const [reviewCadence, setReviewCadence] = useState(control.response?.reviewCadence ?? "");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSave() {
+  async function saveControl(reviewAction?: "request-review" | "mark-reviewed" | "clear-review") {
     setSaving(true);
     setSaved(null);
     setError(null);
@@ -60,7 +61,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
           status,
           implementationDetails,
           ownerMembershipId: ownerMembershipId || null,
-          reviewCadence,
+          reviewAction,
         }),
       });
 
@@ -69,7 +70,19 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
         throw new Error(payload?.error || "Unable to save control.");
       }
 
-      setSaved("Saved");
+      if (reviewAction === "request-review") {
+        setStatus("READY_FOR_REVIEW");
+        setSaved("Review requested");
+      } else if (reviewAction === "mark-reviewed") {
+        setStatus("COMPLETE");
+        setReviewedAt(new Date().toISOString());
+        setSaved("Marked reviewed");
+      } else if (reviewAction === "clear-review") {
+        setReviewedAt(null);
+        setSaved("Review date cleared");
+      } else {
+        setSaved("Saved");
+      }
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "Unable to save control.");
     } finally {
@@ -86,8 +99,9 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
             <h2 className="mt-2 text-2xl font-semibold lg:text-3xl">
               Control {control.displayId}: {control.title}
             </h2>
+            <p className="mt-2 text-sm text-slate-300">{reviewedAt ? `Last reviewed ${new Date(reviewedAt).toISOString().slice(0, 10)}` : "Not reviewed yet"}</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <select
               value={status}
               onChange={(event) => setStatus(event.target.value as typeof status)}
@@ -101,7 +115,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
             </select>
             <button
               type="button"
-              onClick={handleSave}
+              onClick={() => saveControl()}
               disabled={saving}
               className="rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-slate-100 disabled:opacity-60"
             >
@@ -140,7 +154,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
           </div>
           <div className="grid gap-4 lg:grid-cols-[0.48fr_0.52fr]">
             <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Ownership</h3>
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Ownership and review</h3>
               <select
                 value={ownerMembershipId}
                 onChange={(event) => setOwnerMembershipId(event.target.value)}
@@ -153,12 +167,20 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
                   </option>
                 ))}
               </select>
-              <input
-                value={reviewCadence}
-                onChange={(event) => setReviewCadence(event.target.value)}
-                placeholder="Quarterly / Monthly / Annually"
-                className="mt-3 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 outline-none transition focus:border-cyan-400"
-              />
+              <div className="mt-4 grid gap-2">
+                <button type="button" onClick={() => saveControl("request-review")} disabled={saving} className="rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-medium text-sky-800 transition hover:bg-sky-100 disabled:opacity-60">
+                  Request review
+                </button>
+                <button type="button" onClick={() => saveControl("mark-reviewed")} disabled={saving} className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800 transition hover:bg-emerald-100 disabled:opacity-60">
+                  Mark reviewed
+                </button>
+                {reviewedAt ? (
+                  <button type="button" onClick={() => saveControl("clear-review")} disabled={saving} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60">
+                    Clear review date
+                  </button>
+                ) : null}
+              </div>
+              <p className="mt-3 text-xs leading-6 text-slate-500">Full cadence and next-review scheduling needs database fields; this workflow uses current status and reviewed date fields safely.</p>
               {activeMembers.length === 0 ? <p className="mt-3 text-xs leading-6 text-amber-700">No active members loaded. Add team members before assigning owners.</p> : null}
             </div>
             <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">

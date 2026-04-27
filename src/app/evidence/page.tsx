@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { SubscriptionGate } from "@/components/auth/subscription-gate";
 import { EvidenceCapture } from "@/components/evidence/evidence-capture";
+import { EvidenceRecordActions } from "@/components/evidence/evidence-record-actions";
 import { getCurrentAccess } from "@/lib/access";
 import { getDashboardData } from "@/lib/dashboard";
 
@@ -56,6 +57,7 @@ export default async function EvidencePage() {
                   <span>{item.artifactType}</span>
                   <span>{item.location}</span>
                 </div>
+                <EvidenceRecordActions evidence={item} controlId={item.controlRowId} controls={controlOptions} />
               </div>
             ))}
           </div>
@@ -87,6 +89,7 @@ export default async function EvidencePage() {
                   <div key={item.id} className="rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm">
                     <p className="font-medium text-slate-950">{item.title}</p>
                     <p className="mt-1 text-slate-500">{item.location}</p>
+                    <EvidenceRecordActions evidence={item} controlId={control.response?.id ?? ""} controls={controlOptions} />
                   </div>
                 ))}
               </div>
