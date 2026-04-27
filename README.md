@@ -127,6 +127,7 @@ npm start
 - `EXTERNAL_TESTER_SCRIPT.md` — private-launch test script
 - `docs/supabase-schema.md` — current schema assumptions and migration checklist
 - `supabase/migrations/20260427015000_production_foundation.sql` — executable baseline tables, RLS policies, invitation foundation, audit/support tables, and Stripe webhook idempotency table
+- `supabase/migrations/20260427025000_launch_schema_extensions.sql` — organization profile fields, invitation delivery audit columns, member lifecycle audit columns, and pending-invite uniqueness
 - `docs/security-boundaries.md` — authorization and service-role boundaries
 - `docs/db-rls-verification.md` — migration, RLS, invitation, and webhook verification runbook
 

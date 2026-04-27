@@ -94,6 +94,7 @@ Verified/general signals carried forward:
 - [x] Add `stripe_webhook_events` for idempotent webhook processing.
 - [x] Add activity/comment/support-note tables before building audit/support workflows.
 - [x] Add `organization_invitations` schema foundation for the team invite lifecycle.
+- [x] Add launch schema extension migration for org profile fields, invite email delivery audit, member lifecycle audit, and pending-invite uniqueness.
 - [x] Add owner/admin route-level permission helpers and protect organization settings, billing management, and invitation management.
 - [ ] Generate or document TypeScript DB types once schema stabilizes.
 - [x] Add DB/RLS verification commands to the README/runbook.

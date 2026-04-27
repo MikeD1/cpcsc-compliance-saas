@@ -18,7 +18,7 @@ Required columns used by app code:
 - `compliance_framework`
 - `created_at`
 
-Future organization settings columns needed before wiring more P1 settings:
+Launch-readiness organization settings columns added by `20260427025000_launch_schema_extensions.sql`:
 
 - `canada_buys_id`
 - `primary_contact_name`
@@ -57,6 +57,13 @@ Recommended constraints:
 - `organization_id` references `organizations.id`
 - `user_id` references auth users / profiles user id strategy
 - `status` constrained to known lifecycle values such as `active`, `invited`, `disabled`
+
+Launch-readiness lifecycle audit columns added by `20260427025000_launch_schema_extensions.sql`:
+
+- `disabled_at`
+- `disabled_by_membership_id`
+- `role_updated_at`
+- `role_updated_by_membership_id`
 
 ## subscriptions
 
@@ -151,7 +158,7 @@ Future evidence columns/tables needed before file upload:
 
 The production foundation migration includes these tables even though most are not fully surfaced in the UI yet:
 
-- `organization_invitations` for the upcoming team invite lifecycle
+- `organization_invitations` for the team invite lifecycle, with launch extension columns for `delivery_status`, `delivery_provider`, `provider_message_id`, `last_delivery_error`, and `last_sent_at`
 - `control_activity_events` for status/owner/evidence/review audit trail
 - `control_comments` for discussion and review notes
 - `admin_support_notes` for support console annotations

@@ -4,10 +4,11 @@ Use this before private beta after creating or refreshing the target Supabase pr
 
 ## 1. Apply the migration
 
-The baseline migration is:
+The required migrations are:
 
 ```text
 supabase/migrations/20260427015000_production_foundation.sql
+supabase/migrations/20260427025000_launch_schema_extensions.sql
 ```
 
 Apply it with the Supabase CLI or paste/run it in the Supabase SQL editor for the target project.
@@ -46,6 +47,22 @@ order by table_name;
 ```
 
 Expected: every listed table appears.
+
+Then confirm launch extension columns exist:
+
+```sql
+select table_name, column_name
+from information_schema.columns
+where table_schema = 'public'
+  and (
+    (table_name = 'organizations' and column_name in ('canada_buys_id', 'primary_contact_name', 'primary_contact_email', 'primary_contact_phone', 'readiness_scope', 'systems_in_scope'))
+    or (table_name = 'organization_invitations' and column_name in ('delivery_status', 'delivery_provider', 'provider_message_id', 'last_delivery_error', 'last_sent_at'))
+    or (table_name = 'organization_memberships' and column_name in ('disabled_at', 'disabled_by_membership_id', 'role_updated_at', 'role_updated_by_membership_id'))
+  )
+order by table_name, column_name;
+```
+
+Expected: all listed launch extension columns appear.
 
 ## 3. Confirm RLS is enabled
 
@@ -100,7 +117,7 @@ Minimum manual app test:
 
 1. As an owner/admin, create an invitation in `/settings`.
 2. Confirm one row appears in `organization_invitations` with `status = 'pending'`.
-3. If `RESEND_API_KEY` and `INVITE_FROM_EMAIL` are configured, confirm the invite email arrives.
+3. If `RESEND_API_KEY` and `INVITE_FROM_EMAIL` are configured, confirm the invite email arrives and `delivery_status = 'sent'`.
 4. Accept the invitation while signed in as the invited email.
 5. Confirm the invitation row changes to `accepted`.
 6. Confirm `organization_memberships` has an active membership for the invited user.

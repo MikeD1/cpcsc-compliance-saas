@@ -64,9 +64,29 @@ export async function PATCH(request: Request, context: { params: Promise<{ membe
     return NextResponse.json({ error: "You cannot disable your own active membership." }, { status: 400 });
   }
 
+  const membershipPatch: Record<string, string | null> = {
+    role: nextRole,
+    status: nextStatus,
+  };
+
+  if (nextRole !== membership.role) {
+    membershipPatch.role_updated_at = new Date().toISOString();
+    membershipPatch.role_updated_by_membership_id = user.organizationMembership.id;
+  }
+
+  if (nextStatus === "disabled" && membership.status !== "disabled") {
+    membershipPatch.disabled_at = new Date().toISOString();
+    membershipPatch.disabled_by_membership_id = user.organizationMembership.id;
+  }
+
+  if (nextStatus === "active" && membership.status === "disabled") {
+    membershipPatch.disabled_at = null;
+    membershipPatch.disabled_by_membership_id = null;
+  }
+
   const { data, error } = await supabase
     .from("organization_memberships")
-    .update({ role: nextRole, status: nextStatus })
+    .update(membershipPatch)
     .eq("id", membership.id)
     .eq("organization_id", user.organization.id)
     .select("id, role, status")

@@ -107,8 +107,23 @@ export async function POST(request: Request) {
     invitedByEmail: user.email,
   });
 
+  const deliveryPatch = {
+    delivery_status: delivery.status,
+    delivery_provider: delivery.provider ?? null,
+    provider_message_id: delivery.messageId ?? null,
+    last_delivery_error: delivery.error ?? null,
+    last_sent_at: delivery.status === "sent" ? new Date().toISOString() : null,
+  };
+
+  const { data: updatedInvitation } = await supabase
+    .from("organization_invitations")
+    .update(deliveryPatch)
+    .eq("id", data.id)
+    .select("id, email, role, status, expires_at, created_at")
+    .single();
+
   return NextResponse.json({
-    invitation: data,
+    invitation: updatedInvitation ?? data,
     inviteUrl,
     delivery,
   });
