@@ -115,7 +115,7 @@ export async function GET(request: Request) {
     metadata: {
       plan: plan.slug,
       organizationId: organization.id,
-      product_id: plan.stripeProductId,
+      product_id: plan.stripeProductId ?? "",
     },
     subscription_data: {
       metadata: {

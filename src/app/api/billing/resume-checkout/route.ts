@@ -8,7 +8,7 @@ function checkoutConfigError(planSlug: string) {
   return NextResponse.json(
     {
       error:
-        "Checkout is not configured for this plan yet. Confirm STRIPE_SECRET_KEY plus STRIPE_START_PRICE_ID/STRIPE_START_PRODUCT_ID or STRIPE_GROWTH_PRICE_ID/STRIPE_GROWTH_PRODUCT_ID are set in the deployed environment, then redeploy.",
+        "Checkout is not configured for this plan yet. Confirm STRIPE_SECRET_KEY and the selected plan price ID are set in the deployed environment. Required price IDs are STRIPE_START_PRICE_ID for Start and STRIPE_GROWTH_PRICE_ID for Growth. Product IDs are optional.",
       plan: planSlug,
     },
     { status: 503 },
@@ -112,7 +112,7 @@ export async function POST(request: Request) {
       metadata: {
         plan: selectedPlan.slug,
         organizationId: organization.id,
-        product_id: plan.stripeProductId,
+        product_id: plan.stripeProductId ?? "",
       },
       subscription_data: {
         metadata: {

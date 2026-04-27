@@ -12,7 +12,6 @@ export type BillingPlan = {
 };
 
 export type ConfiguredBillingPlan = BillingPlan & {
-  stripeProductId: string;
   stripePriceId: string;
 };
 
@@ -95,7 +94,7 @@ export function getPlanBySlug(slug: string): BillingPlan | null {
 export function getConfiguredPlanBySlug(slug: string): ConfiguredBillingPlan | null {
   const plan = getPlanBySlug(slug);
 
-  if (!plan?.stripeProductId || !plan.stripePriceId) {
+  if (!plan?.stripePriceId) {
     return null;
   }
 
