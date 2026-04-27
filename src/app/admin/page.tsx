@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { DeleteUserButton } from "@/components/admin/delete-user-button";
 import { getCurrentAdminAccess } from "@/lib/admin";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
@@ -24,14 +25,28 @@ export default async function AdminPage() {
   }
 
   const supabase = getSupabaseAdmin();
-  const [{ data: organizations }, { data: subscriptions }, { data: billingCustomers }] = await Promise.all([
+  const [{ data: organizations }, { data: subscriptions }, { data: billingCustomers }, authUsersResult, { data: profiles }, { data: memberships }] = await Promise.all([
     supabase.from("organizations").select("id, name, slug, plan_code, subscription_status, created_at").order("created_at", { ascending: false }).limit(25),
     supabase.from("subscriptions").select("organization_id, stripe_subscription_id, plan_code, status, current_period_end, cancel_at_period_end").order("created_at", { ascending: false }).limit(100),
     supabase.from("billing_customers").select("organization_id, stripe_customer_id, billing_email").limit(100),
+    supabase.auth.admin.listUsers({ page: 1, perPage: 100 }),
+    supabase.from("profiles").select("user_id, email, full_name, default_organization_id, created_at").limit(100),
+    supabase.from("organization_memberships").select("user_id, organization_id, role, status, created_at").limit(300),
   ]);
 
   const subscriptionsByOrg = new Map((subscriptions ?? []).map((subscription) => [subscription.organization_id, subscription]));
   const billingByOrg = new Map((billingCustomers ?? []).map((customer) => [customer.organization_id, customer]));
+  const organizationsById = new Map((organizations ?? []).map((organization) => [organization.id, organization]));
+  const profilesByUserId = new Map((profiles ?? []).map((profile) => [profile.user_id, profile]));
+  const membershipsByUserId = new Map<string, NonNullable<typeof memberships>[number][]>();
+
+  for (const membership of memberships ?? []) {
+    const existing = membershipsByUserId.get(membership.user_id) ?? [];
+    existing.push(membership);
+    membershipsByUserId.set(membership.user_id, existing);
+  }
+
+  const authUsers = authUsersResult.data.users;
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,#163257_0%,transparent_28%),linear-gradient(180deg,#050b16_0%,#0b1630_18%,#eef3ff_18%,#f5f7fb_100%)] px-4 py-8 text-slate-900">
@@ -42,6 +57,57 @@ export default async function AdminPage() {
           <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
             Read-only support view for private launch: inspect organization status, subscription state, and Stripe customer linkage. Manual overrides should happen in Stripe/Supabase until an audited admin workflow exists.
           </p>
+        </section>
+
+        <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.28em] text-rose-700">User cleanup</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Recent auth users</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
+                Admin-only deletion for beta cleanup. This removes the Supabase auth user plus linked profile and membership rows. It does not refund Stripe payments or delete organizations.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white">
+            <div className="grid grid-cols-[1.2fr_1fr_0.9fr_auto] gap-3 border-b border-slate-200 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+              <span>User</span>
+              <span>Workspace</span>
+              <span>Status</span>
+              <span>Action</span>
+            </div>
+            <div className="divide-y divide-slate-100">
+              {authUsers.map((authUser) => {
+                const profile = profilesByUserId.get(authUser.id);
+                const userMemberships = membershipsByUserId.get(authUser.id) ?? [];
+                const primaryMembership = userMemberships[0];
+                const organization = primaryMembership ? organizationsById.get(primaryMembership.organization_id) : null;
+                const email = authUser.email ?? profile?.email ?? "Unknown email";
+                const isSelf = authUser.id === user.id;
+
+                return (
+                  <div key={authUser.id} className="grid grid-cols-[1.2fr_1fr_0.9fr_auto] gap-3 px-4 py-4 text-sm">
+                    <div className="min-w-0">
+                      <p className="font-medium text-slate-950">{profile?.full_name ?? email}</p>
+                      <p className="mt-1 break-all text-xs text-slate-500">{email}</p>
+                      <p className="mt-1 break-all text-xs text-slate-400">{authUser.id}</p>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-slate-800">{organization?.name ?? "No workspace"}</p>
+                      <p className="mt-1 break-all text-xs text-slate-500">{primaryMembership?.organization_id ?? "No membership"}</p>
+                    </div>
+                    <div className="text-xs text-slate-600">
+                      <p>{primaryMembership ? `${primaryMembership.role} · ${primaryMembership.status}` : "No membership"}</p>
+                      <p className="mt-1">Created {authUser.created_at ? new Date(authUser.created_at).toLocaleString() : "unknown"}</p>
+                      {isSelf ? <p className="mt-1 font-semibold text-cyan-700">Current admin</p> : null}
+                    </div>
+                    <DeleteUserButton userId={authUser.id} email={email} disabled={isSelf} />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </section>
 
         <section className="grid gap-4">
