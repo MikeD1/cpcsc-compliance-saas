@@ -28,7 +28,7 @@ export function SubscriptionGate({
   const [checking, setChecking] = useState(false);
   const [startingCheckout, setStartingCheckout] = useState<string | null>(null);
   const normalizedPlan = plan === "growth" ? "growth" : "start";
-  const checkoutHref = organizationId ? `/api/billing/checkout-link?plan=${normalizedPlan}&organizationId=${organizationId}` : "/pricing";
+  const checkoutHref = organizationId ? `/api/billing/checkout-link?plan=${normalizedPlan}&organizationId=${organizationId}` : "/pricing?activation=1";
   const billingIssueMessage =
     billingIssue === "missing_config"
       ? "Checkout could not start because Stripe plan IDs or the Stripe secret key are not configured in this deployment. Add the Stripe environment variables, redeploy, then resume checkout here."

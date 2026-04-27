@@ -11,7 +11,9 @@ type CheckoutButtonProps = {
 export function CheckoutButton({ plan, children, className, organizationId, isActivationRecovery = false }: CheckoutButtonProps) {
   const href = organizationId
     ? `/api/billing/checkout-link?plan=${plan}&organizationId=${organizationId}`
-    : `/signup?plan=${plan}`;
+    : isActivationRecovery
+      ? `/api/billing/checkout-link?plan=${plan}&activation=1`
+      : `/signup?plan=${plan}`;
 
   return (
     <div className="grid gap-2">

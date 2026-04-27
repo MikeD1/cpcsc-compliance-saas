@@ -7,19 +7,25 @@ import { getCurrentUser } from "@/lib/auth";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const planSlug = searchParams.get("plan") || "";
-  const organizationId = searchParams.get("organizationId") || "";
+  const requestedOrganizationId = searchParams.get("organizationId") || "";
   const selectedPlan = getPlanBySlug(planSlug);
   const plan = getConfiguredPlanBySlug(planSlug);
 
-  if (!selectedPlan || !organizationId) {
+  if (!selectedPlan) {
     return NextResponse.redirect(new URL("/pricing", request.url));
+  }
+
+  const currentUser = await getCurrentUser();
+  const organizationId = requestedOrganizationId || currentUser?.organization?.id || currentUser?.organizationMembership?.organizationId || "";
+
+  if (!organizationId) {
+    return NextResponse.redirect(new URL(`/controls?billing=missing_org_context&plan=${selectedPlan.slug}`, request.url));
   }
 
   if (!process.env.STRIPE_SECRET_KEY || !plan) {
     return NextResponse.redirect(new URL(`/dashboard?billing=missing_config&plan=${selectedPlan.slug}`, request.url));
   }
 
-  const currentUser = await getCurrentUser();
   if (!currentUser?.organizationMembership || currentUser.organizationMembership.organizationId !== organizationId) {
     return NextResponse.redirect(new URL("/login?error=unauthorized_billing", request.url));
   }

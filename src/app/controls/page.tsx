@@ -5,8 +5,13 @@ import { ControlEditor } from "@/components/controls/control-editor";
 import { getCurrentAccess } from "@/lib/access";
 import { getDashboardData } from "@/lib/dashboard";
 
-export default async function ControlsPage() {
+export default async function ControlsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ billing?: string; plan?: string }>;
+}) {
   const access = await getCurrentAccess();
+  const params = await searchParams;
 
   if (!access.user) {
     redirect("/login");
@@ -15,7 +20,12 @@ export default async function ControlsPage() {
   if (!access.hasActiveSubscription) {
     return (
       <AppShell organizationName={access.user.organization?.name}>
-        <SubscriptionGate plan={access.latestSubscription?.planSlug} status={access.latestSubscription?.status} organizationId={access.user.organization?.id} />
+        <SubscriptionGate
+          plan={params.plan ?? access.latestSubscription?.planSlug}
+          status={access.latestSubscription?.status}
+          organizationId={access.user.organization?.id ?? access.user.organizationMembership?.organizationId}
+          billingIssue={params.billing}
+        />
       </AppShell>
     );
   }
