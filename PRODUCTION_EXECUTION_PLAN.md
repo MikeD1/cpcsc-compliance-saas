@@ -38,7 +38,7 @@ Known remaining depth areas:
 - Stripe webhook idempotency
 - comments/activity/support-note audit tables
 - Supabase Storage-backed file upload architecture
-- team invitation and role lifecycle
+- transactional email delivery and deeper role/member lifecycle management
 - live Stripe/Supabase test-mode QA
 - launch/customer acquisition workflow
 - formal accessibility pass and automated coverage
@@ -93,7 +93,8 @@ Verified/general signals carried forward:
 - [x] Add RLS policy SQL for tenant-scoped tables.
 - [x] Add `stripe_webhook_events` for idempotent webhook processing.
 - [x] Add activity/comment/support-note tables before building audit/support workflows.
-- [x] Add `organization_invitations` schema foundation for the upcoming team invite lifecycle.
+- [x] Add `organization_invitations` schema foundation for the team invite lifecycle.
+- [x] Add owner/admin route-level permission helpers and protect organization settings, billing management, and invitation management.
 - [ ] Generate or document TypeScript DB types once schema stabilizes.
 - [ ] Add DB/RLS verification commands to the README/runbook.
 
@@ -114,6 +115,7 @@ Verified/general signals carried forward:
 
 **Owner:** Theo/Iris with June
 
+- [x] Add manual team invite flow for owners/admins: create invite link, list invitations, revoke pending invitations, and accept invite after sign-in.
 - [ ] Add first-run onboarding around organization confirmation, scope, members, first controls, first evidence record, and report export.
 - [ ] Improve controls page into work management: filters, detail flow, gaps, review queue.
 - [ ] Add better error recovery actions: retry, contact support, setup guidance, copy diagnostic details where useful.

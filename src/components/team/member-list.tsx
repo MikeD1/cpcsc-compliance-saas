@@ -12,7 +12,7 @@ export function MemberList({ members }: { members: OrganizationMember[] }) {
           <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Team members</p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">People available for ownership</h2>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-            Active members can now be assigned as control owners. Invitation, role editing, and disabled-member management are tracked as the next team-management step.
+            Active members can be assigned as control owners. Owners and admins can create manual invite links below; role editing and disabled-member management are tracked as the next team-management step.
           </p>
         </div>
         <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">{members.length} member{members.length === 1 ? "" : "s"}</span>

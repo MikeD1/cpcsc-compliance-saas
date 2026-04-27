@@ -96,7 +96,9 @@ Reason: before we invite real users, the product must not break trust at signup,
 
 - [x] Add team/member management basics.
   - Completed: settings now lists organization members with role/status for ownership context.
-  - Still pending: invite members, role editing, and active/invited lifecycle actions.
+  - Completed: owners/admins can create manual invite links, view pending invitations, and revoke pending invitations.
+  - Completed: invited users can accept an invite after signing in with the invited email address.
+  - Still pending: transactional email delivery, role editing, disabled-member management, and richer lifecycle actions.
 
 - [x] Use actual organization members for control ownership.
   - Completed: control editor uses active organization members as owner options.
@@ -162,7 +164,8 @@ Reason: before we invite real users, the product must not break trust at signup,
 - [x] Tighten service-role usage boundaries.
   - Completed: `docs/security-boundaries.md` documents server-side service-role assumptions, route authorization checklist, and hardening backlog.
   - Completed: baseline RLS policy SQL exists in the production foundation migration.
-  - Still pending: route-level role enforcement before member invite/role edit UI.
+  - Completed: route-level helpers now gate organization settings, billing portal/reconcile, and team invitation management to owners/admins.
+  - Still pending: apply migration in Supabase and verify RLS with live/test users.
 
 - [x] Add procurement-grade FAQ and trust details.
   - Completed: `/faq` covers CPCSC Level 1 scope, no-certification guarantee, evidence storage boundary, CAD billing/Stripe portal, support expectations, and security documentation path.
@@ -176,6 +179,6 @@ The remaining work is now mostly schema/ops depth rather than product-surface po
 
 1. Apply the production foundation migration to Supabase and verify tenant isolation/RLS behavior.
 2. Run Stripe webhook idempotency through Stripe test-mode events.
-3. Build route-level role permissions, then add team invitation/role lifecycle UI.
+3. Add transactional email delivery and role/member lifecycle management for invitations.
 4. Decide and implement Supabase Storage evidence uploads, signed URLs, and retention policy.
 5. Run live Supabase + Stripe test-mode end-to-end QA using `EXTERNAL_TESTER_SCRIPT.md`.

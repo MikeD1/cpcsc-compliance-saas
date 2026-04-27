@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { canManageOrganization } from "@/lib/permissions";
 
 const organizationSettingsSchema = z.object({
   name: z.string().trim().min(2, "Organization name must be at least 2 characters.").max(160, "Organization name is too long."),
@@ -14,8 +15,8 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
-  if (user.organizationMembership?.status !== "active") {
-    return NextResponse.json({ error: "Organization membership is not active." }, { status: 403 });
+  if (!canManageOrganization(user)) {
+    return NextResponse.json({ error: "Only organization owners and admins can update organization settings." }, { status: 403 });
   }
 
   const parsed = organizationSettingsSchema.safeParse(await request.json().catch(() => null));

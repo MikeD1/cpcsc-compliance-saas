@@ -3,6 +3,7 @@ import { getStripeServer } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { getCurrentUser } from "@/lib/auth";
 import { getPlanSlugByPriceId } from "@/lib/plans";
+import { canManageBilling } from "@/lib/permissions";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -15,6 +16,10 @@ export async function POST(request: Request) {
   const currentUser = await getCurrentUser();
   if (!currentUser?.organizationMembership || currentUser.organizationMembership.organizationId !== organizationId) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 403 });
+  }
+
+  if (!canManageBilling(currentUser)) {
+    return NextResponse.json({ error: "Only organization owners and admins can reconcile billing." }, { status: 403 });
   }
 
   const supabase = getSupabaseAdmin();

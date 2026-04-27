@@ -4,8 +4,11 @@ import { SubscriptionGate } from "@/components/auth/subscription-gate";
 import { OrganizationSettingsForm } from "@/components/settings/organization-settings-form";
 import { BillingSettingsCard } from "@/components/settings/billing-settings-card";
 import { MemberList } from "@/components/team/member-list";
+import { TeamInvitations } from "@/components/team/team-invitations";
 import { getCurrentAccess } from "@/lib/access";
 import { getDashboardData } from "@/lib/dashboard";
+import { getOrganizationInvitations } from "@/lib/invitations";
+import { canInviteMembers } from "@/lib/permissions";
 
 export default async function SettingsPage() {
   const access = await getCurrentAccess();
@@ -23,6 +26,7 @@ export default async function SettingsPage() {
   }
 
   const { organization, members } = await getDashboardData();
+  const invitations = canInviteMembers(access.user) ? await getOrganizationInvitations(organization.id) : [];
 
   return (
     <AppShell organizationName={organization.name}>
@@ -43,6 +47,8 @@ export default async function SettingsPage() {
       <BillingSettingsCard plan={access.latestSubscription?.planSlug} status={access.latestSubscription?.status} />
 
       <MemberList members={members} />
+
+      <TeamInvitations canInvite={canInviteMembers(access.user)} initialInvitations={invitations} />
     </AppShell>
   );
 }
