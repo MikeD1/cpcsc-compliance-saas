@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { StatusBadge } from "@/components/status-badge";
@@ -96,31 +97,60 @@ export default async function DashboardPage({
         reviewedControls={actionSummary.reviewed}
       />
 
-      <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
-        <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Action queue</p>
-        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Work that moves readiness forward</h2>
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <NextStep title="Assign owners" description={`${actionSummary.unassigned} controls are unassigned.`} />
-          <NextStep title="Add evidence" description={`${actionSummary.missingEvidence} controls have no evidence records.`} />
-          <NextStep title="Review queue" description={`${actionSummary.readyForReview} controls are ready for review.`} />
-          <NextStep title="Reviewed" description={`${actionSummary.reviewed} controls have a review date recorded.`} />
+      <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Next best actions</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">What to do next</h2>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+              A prioritized queue based on ownership, evidence coverage, and review status. Clear these first to move the readiness score instead of hunting through every control.
+            </p>
+          </div>
+          <Link href="/reports" className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-cyan-200 hover:text-cyan-800">
+            View report
+          </Link>
         </div>
-        <div className="mt-6 grid gap-3">
+
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <NextStep title="Assign owners" description={`${actionSummary.unassigned} controls are unassigned.`} tone="amber" href="/controls#assign-owners" />
+          <NextStep title="Add evidence" description={`${actionSummary.missingEvidence} controls have no evidence records.`} tone="sky" href="/evidence#add-evidence" />
+          <NextStep title="Review queue" description={`${actionSummary.readyForReview} controls are ready for review.`} tone="emerald" href="/controls" />
+          <NextStep title="Reviewed" description={`${actionSummary.reviewed} controls have a review date recorded.`} tone="slate" href="/reports" />
+        </div>
+
+        <div className="mt-7 grid gap-4">
           {priorityActions.length === 0 ? (
-            <div className="rounded-[1.4rem] border border-emerald-200 bg-emerald-50 p-4 text-sm leading-7 text-emerald-800">
+            <div className="rounded-[1.6rem] border border-emerald-200 bg-emerald-50 p-5 text-sm leading-7 text-emerald-800">
               No priority actions right now. Export the readiness report or start a deeper review pass.
             </div>
           ) : null}
-          {priorityActions.map((action) => (
-            <div key={action.controlId} className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4">
-              <p className="text-sm font-semibold text-slate-950">Control {action.controlId}: {action.title}</p>
-              <p className="mt-2 text-sm text-slate-600">Owner: {action.owner}</p>
-              <div className="mt-3 flex flex-wrap gap-2 text-xs font-medium">
-                {action.needsOwner ? <span className="rounded-full bg-amber-100 px-3 py-1 text-amber-800">Needs owner</span> : null}
-                {action.needsEvidence ? <span className="rounded-full bg-sky-100 px-3 py-1 text-sky-800">Needs evidence</span> : null}
-                {action.readyForReview ? <span className="rounded-full bg-emerald-100 px-3 py-1 text-emerald-800">Ready for review</span> : null}
+          {priorityActions.map((action, index) => (
+            <article key={`${action.actionType}-${action.controlId}`} className="rounded-[1.6rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-slate-950 px-3 py-1 text-xs font-semibold text-white">#{index + 1}</span>
+                    <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-cyan-800">{action.actionType}</span>
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">{action.priority}</span>
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">{action.category}</span>
+                  </div>
+                  <h3 className="mt-3 text-lg font-semibold text-slate-950">
+                    {action.officialId}: {action.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{action.reason}</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-800"><span className="font-semibold">Next:</span> {action.nextStep}</p>
+                </div>
+                <div className="grid shrink-0 gap-3 text-sm lg:w-64">
+                  <div className="rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3">
+                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Owner</p>
+                    <p className="mt-1 font-medium text-slate-950">{action.owner}</p>
+                  </div>
+                  <Link href={action.href} className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800">
+                    Open task
+                  </Link>
+                </div>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </section>
@@ -173,12 +203,29 @@ function Kpi({ title, value, tone }: { title: string; value: string; tone: "emer
   );
 }
 
-function NextStep({ title, description }: { title: string; description: string }) {
+function NextStep({
+  title,
+  description,
+  tone,
+  href,
+}: {
+  title: string;
+  description: string;
+  tone: "emerald" | "sky" | "amber" | "slate";
+  href: string;
+}) {
+  const tones = {
+    emerald: "border-emerald-200 bg-emerald-50 text-emerald-800",
+    sky: "border-sky-200 bg-sky-50 text-sky-800",
+    amber: "border-amber-200 bg-amber-50 text-amber-800",
+    slate: "border-slate-200 bg-slate-50 text-slate-800",
+  };
+
   return (
-    <div className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4">
-      <h3 className="text-sm font-semibold text-slate-950">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
-    </div>
+    <Link href={href} className={`rounded-[1.4rem] border p-4 transition hover:-translate-y-0.5 hover:shadow-md ${tones[tone]}`}>
+      <h3 className="text-sm font-semibold">{title}</h3>
+      <p className="mt-2 text-sm leading-6">{description}</p>
+    </Link>
   );
 }
 

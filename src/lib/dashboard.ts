@@ -107,17 +107,101 @@ export async function getDashboardData() {
   };
 
   const priorityActions = controlCards
-    .filter((control) => !control.response?.ownerMembershipId || (control.response?.evidenceItems.length ?? 0) === 0 || control.response?.status === "READY_FOR_REVIEW")
-    .slice(0, 6)
-    .map((control) => ({
-      controlId: control.id,
-      title: control.title,
-      owner: control.response?.owner ?? "Unassigned",
-      status: control.response?.status ?? "NOT_STARTED",
-      needsOwner: !control.response?.ownerMembershipId,
-      needsEvidence: (control.response?.evidenceItems.length ?? 0) === 0,
-      readyForReview: control.response?.status === "READY_FOR_REVIEW",
-    }));
+    .flatMap((control) => {
+      const response = control.response;
+      const status = response?.status ?? "NOT_STARTED";
+      const owner = response?.owner ?? "Unassigned";
+      const evidenceCount = response?.evidenceItems.length ?? 0;
+      const needsOwner = !response?.ownerMembershipId;
+      const needsEvidence = evidenceCount === 0;
+      const readyForReview = status === "READY_FOR_REVIEW";
+      const priority = control.id <= 4 ? "Critical" : control.id <= 9 ? "High" : "Medium";
+      const actions = [];
+
+      if (needsOwner) {
+        actions.push({
+          controlId: control.id,
+          officialId: control.officialId,
+          title: control.title,
+          category: control.category,
+          owner,
+          status,
+          priority,
+          actionType: "Assign owner" as const,
+          reason: "No one is accountable for this control yet.",
+          nextStep: "Choose an active member as the owner so follow-up work has a clear home.",
+          href: "/controls#assign-owners",
+          sortScore: 100 - control.id,
+          needsOwner,
+          needsEvidence,
+          readyForReview,
+        });
+      }
+
+      if (needsEvidence) {
+        actions.push({
+          controlId: control.id,
+          officialId: control.officialId,
+          title: control.title,
+          category: control.category,
+          owner,
+          status,
+          priority,
+          actionType: "Add evidence" as const,
+          reason: "This control has no evidence records attached.",
+          nextStep: `Add one supporting record such as ${control.evidenceExamples[0]?.toLowerCase() ?? "a policy, screenshot, register, or review note"}.`,
+          href: "/evidence#add-evidence",
+          sortScore: 80 - control.id,
+          needsOwner,
+          needsEvidence,
+          readyForReview,
+        });
+      }
+
+      if (readyForReview) {
+        actions.push({
+          controlId: control.id,
+          officialId: control.officialId,
+          title: control.title,
+          category: control.category,
+          owner,
+          status,
+          priority,
+          actionType: "Review control" as const,
+          reason: "The work is marked ready for review but not completed.",
+          nextStep: "Review the implementation notes and evidence, then mark it reviewed or send it back for updates.",
+          href: "/controls#assign-owners",
+          sortScore: 90 - control.id,
+          needsOwner,
+          needsEvidence,
+          readyForReview,
+        });
+      }
+
+      if (status === "NOT_STARTED" && !needsOwner && !needsEvidence) {
+        actions.push({
+          controlId: control.id,
+          officialId: control.officialId,
+          title: control.title,
+          category: control.category,
+          owner,
+          status,
+          priority,
+          actionType: "Start implementation" as const,
+          reason: "This control has an owner and evidence, but no implementation progress is recorded.",
+          nextStep: "Update the implementation notes and move the status to in progress when work has started.",
+          href: "/controls",
+          sortScore: 60 - control.id,
+          needsOwner,
+          needsEvidence,
+          readyForReview,
+        });
+      }
+
+      return actions;
+    })
+    .sort((a, b) => b.sortScore - a.sortScore)
+    .slice(0, 5);
 
   const categorySummaries = Array.from(
     new Map(
