@@ -37,7 +37,7 @@ export async function GET(request: Request) {
   const organizationId = requestedOrganizationId || fallbackOrganizationId;
 
   if (!organizationId) {
-    return NextResponse.redirect(appUrl(`/controls?billing=missing_org_context&plan=${selectedPlan.slug}`));
+    return NextResponse.redirect(appUrl(`/signup?plan=${selectedPlan.slug}&workspace=missing`));
   }
 
   if (!process.env.STRIPE_SECRET_KEY || !plan) {

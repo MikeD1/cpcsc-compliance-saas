@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthCard } from "@/components/auth/auth-card";
 import { SignupForm } from "@/components/auth/signup-form";
+import { WorkspaceSetupForm } from "@/components/auth/workspace-setup-form";
 import { PublicShell } from "@/components/marketing/public-shell";
 import { getCurrentAccess } from "@/lib/access";
 
@@ -24,7 +25,21 @@ export default async function SignupPage({
       redirect(`/api/billing/checkout-link?plan=${initialPlan}&organizationId=${organizationId}`);
     }
 
-    redirect(`/controls?billing=missing_org_context&plan=${initialPlan}`);
+    return (
+      <PublicShell>
+        <AuthCard
+          title="Finish your ComplianceOne workspace"
+          description="Your account exists, but no workspace is attached yet. Create the workspace for this signed-in account, then continue to Stripe checkout."
+        >
+          <WorkspaceSetupForm
+            email={access.user.email ?? ""}
+            initialPlan={initialPlan}
+            firstName={access.user.firstName}
+            lastName={access.user.lastName}
+          />
+        </AuthCard>
+      </PublicShell>
+    );
   }
 
   return (
