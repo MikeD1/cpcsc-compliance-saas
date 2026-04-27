@@ -27,7 +27,7 @@ export async function GET(request: Request) {
   const supabase = getSupabaseAdmin();
   const { data: organization } = await supabase
     .from("organizations")
-    .select("id, name, primary_contact_user_id")
+    .select("id, name")
     .eq("id", organizationId)
     .single();
 
@@ -41,15 +41,7 @@ export async function GET(request: Request) {
     .eq("organization_id", organization.id)
     .single();
 
-  let billingEmail = billingCustomer?.billing_email ?? undefined;
-  if (!billingEmail && organization.primary_contact_user_id) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("email")
-      .eq("user_id", organization.primary_contact_user_id)
-      .single();
-    billingEmail = profile?.email ?? undefined;
-  }
+  const billingEmail = billingCustomer?.billing_email ?? currentUser.email ?? undefined;
 
   await Promise.all([
     supabase

@@ -43,7 +43,7 @@ export async function POST(request: Request) {
   const supabase = getSupabaseAdmin();
   const { data: organization, error: organizationError } = await supabase
     .from("organizations")
-    .select("id, name, primary_contact_user_id")
+    .select("id, name")
     .eq("id", organizationId)
     .single();
 
@@ -57,15 +57,7 @@ export async function POST(request: Request) {
     .eq("organization_id", organization.id)
     .maybeSingle();
 
-  let billingEmail = billingCustomer?.billing_email ?? currentUser.email ?? undefined;
-  if (!billingEmail && organization.primary_contact_user_id) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("email")
-      .eq("user_id", organization.primary_contact_user_id)
-      .maybeSingle();
-    billingEmail = profile?.email ?? undefined;
-  }
+  const billingEmail = billingCustomer?.billing_email ?? currentUser.email ?? undefined;
 
   const stripe = getStripeServer();
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin;

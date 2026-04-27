@@ -74,21 +74,49 @@ export async function getCurrentUser(): Promise<AppUser | null> {
 
   let organization: AppUser["organization"] = null;
   if (membership?.organization_id) {
-    const { data: organizations } = await supabase
+    const { data: organizations, error: organizationError } = await supabase
       .from("organizations")
       .select("id, name, slug, plan_code, subscription_status, primary_contact_user_id")
       .eq("id", membership.organization_id)
       .limit(1);
 
-    const org = organizations?.[0];
+    let org = organizations?.[0] ?? null;
+
+    if (organizationError || !org) {
+      const fallback = await supabase
+        .from("organizations")
+        .select("id, name, slug")
+        .eq("id", membership.organization_id)
+        .limit(1);
+      const fallbackOrg = fallback.data?.[0] ?? null;
+
+      if (fallbackOrg) {
+        org = {
+          ...fallbackOrg,
+          plan_code: "start",
+          subscription_status: "incomplete",
+          primary_contact_user_id: null,
+        };
+      }
+    }
+
     if (org) {
       organization = {
         id: org.id,
         name: org.name,
         slug: org.slug,
-        planCode: org.plan_code,
-        subscriptionStatus: org.subscription_status,
-        primaryContactUserId: org.primary_contact_user_id,
+        planCode: org.plan_code ?? "start",
+        subscriptionStatus: org.subscription_status ?? "incomplete",
+        primaryContactUserId: org.primary_contact_user_id ?? null,
+      };
+    } else {
+      organization = {
+        id: membership.organization_id,
+        name: "Your workspace",
+        slug: membership.organization_id,
+        planCode: "start",
+        subscriptionStatus: "incomplete",
+        primaryContactUserId: null,
       };
     }
   }
