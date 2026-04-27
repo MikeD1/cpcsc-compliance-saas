@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { SubscriptionGate } from "@/components/auth/subscription-gate";
 import { OrganizationSettingsForm } from "@/components/settings/organization-settings-form";
+import { BillingSettingsCard } from "@/components/settings/billing-settings-card";
 import { MemberList } from "@/components/team/member-list";
 import { getCurrentAccess } from "@/lib/access";
 import { getDashboardData } from "@/lib/dashboard";
@@ -38,6 +39,8 @@ export default async function SettingsPage() {
         primaryContactName={organization.primaryContact ?? ""}
         primaryContactEmail={organization.primaryEmail}
       />
+
+      <BillingSettingsCard plan={access.latestSubscription?.planSlug} status={access.latestSubscription?.status} />
 
       <MemberList members={members} />
     </AppShell>

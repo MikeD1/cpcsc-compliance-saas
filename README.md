@@ -12,13 +12,17 @@ Working now:
 - organization bootstrap on signup
 - Stripe checkout session creation
 - gated application shell
-- dashboard, controls, evidence, reports, and PDF export routes
+- dashboard, controls, evidence, reports, settings, and PDF export routes
+- member-backed control ownership and review actions
+- evidence register create/edit/relink/archive actions
+- Stripe checkout, reconciliation, webhook sync, and customer portal route
+- read-only admin/support console gated by `ADMIN_EMAILS`
 - production build passes
 
 Known cleanup items:
-- auth and billing flows still need production hardening
-- Stripe plan/config values are still code-defined
-- env/config setup must be completed before live billing tests
+- executable Supabase migrations/RLS policies are not yet represented in this repo
+- webhook idempotency still needs a dedicated event log table
+- deeper team invites, comments/activity history, and file uploads require schema work
 
 ## Stack
 
@@ -36,12 +40,18 @@ Known cleanup items:
 - `/pricing`
 - `/signup`
 - `/login`
+- `/security`
+- `/privacy`
+- `/terms`
+- `/faq`
+- `/contact`
 
 ### Protected app
 - `/dashboard`
 - `/controls`
 - `/evidence`
 - `/reports`
+- `/settings`
 - `/exports/assessment.pdf`
 
 ### API
@@ -51,9 +61,15 @@ Known cleanup items:
 - `/api/billing/checkout`
 - `/api/billing/checkout-link`
 - `/api/billing/reconcile`
+- `/api/billing/portal`
 - `/api/controls/[controlId]`
 - `/api/evidence`
+- `/api/evidence/[evidenceId]`
+- `/api/organization/settings`
 - `/api/stripe/webhook`
+
+### Admin
+- `/admin` — read-only support console, restricted by `ADMIN_EMAILS`
 
 ## Environment variables
 
@@ -69,6 +85,15 @@ Required for billing:
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
 - `STRIPE_WEBHOOK_SECRET`
 - `NEXT_PUBLIC_APP_URL`
+- `STRIPE_START_PRODUCT_ID`
+- `STRIPE_START_PRICE_ID`
+- `STRIPE_GROWTH_PRODUCT_ID`
+- `STRIPE_GROWTH_PRICE_ID`
+
+Recommended for launch:
+- `NEXT_PUBLIC_SUPPORT_EMAIL`
+- `NEXT_PUBLIC_SECURITY_EMAIL`
+- `ADMIN_EMAILS`
 
 ## Local development
 
@@ -85,6 +110,13 @@ Open `http://localhost:3000`
 npm run build
 npm start
 ```
+
+## Documentation
+
+- `PRODUCTION_READINESS.md` — product-readiness tracker
+- `EXTERNAL_TESTER_SCRIPT.md` — private-launch test script
+- `docs/supabase-schema.md` — current schema assumptions and migration checklist
+- `docs/security-boundaries.md` — authorization and service-role boundaries
 
 ## Launch-test checklist
 

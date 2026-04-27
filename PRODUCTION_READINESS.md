@@ -144,58 +144,37 @@ Reason: before we invite real users, the product must not break trust at signup,
 
 ## P2 — Operations, scale, and credibility
 
-- [ ] Add Stripe customer portal for self-serve billing.
-  - Change plan.
-  - Cancel.
-  - Payment method.
-  - Invoices.
+- [x] Add Stripe customer portal for self-serve billing.
+  - Completed: `/api/billing/portal` creates Stripe billing portal sessions for the current organization’s Stripe customer.
+  - Completed: settings page exposes an “Open billing portal” action for plan changes, cancellation, payment methods, and invoices.
+  - Requires Stripe customer portal configuration in the Stripe dashboard before live use.
 
-- [ ] Add admin/support console.
-  - Org lookup.
-  - Failed signup repair.
-  - Subscription state inspection/override.
-  - Support notes.
+- [x] Add admin/support console.
+  - Completed: `/admin` read-only support console gated by `ADMIN_EMAILS`.
+  - Completed: organization lookup, subscription state inspection, and Stripe customer linkage visibility.
+  - Still pending: failed signup repair workflow, audited overrides, and support notes table.
 
-- [ ] Add Supabase schema/migration documentation.
-  - Tables currently assumed by app code:
-    - organizations
-    - profiles
-    - organization_memberships
-    - subscriptions
-    - controls
-    - evidence_items
-    - billing_customers
+- [x] Add Supabase schema/migration documentation.
+  - Completed: `docs/supabase-schema.md` documents current table/column assumptions and future migration needs.
+  - Still pending: executable migrations and RLS policy SQL.
 
-- [ ] Tighten service-role usage boundaries.
-  - Document authorization assumptions.
-  - Add audit logging where practical.
-  - Consider RLS posture and server-only service role patterns.
+- [x] Tighten service-role usage boundaries.
+  - Completed: `docs/security-boundaries.md` documents server-side service-role assumptions, route authorization checklist, and hardening backlog.
+  - Still pending: audit logging table/events and formal RLS policies.
 
-- [ ] Add procurement-grade FAQ and trust details.
-  - CPCSC Level 1 scope.
-  - What the tool does / does not guarantee.
-  - CAD billing and tax handling.
-  - Data handling/residency/subprocessors.
-  - Support expectations.
+- [x] Add procurement-grade FAQ and trust details.
+  - Completed: `/faq` covers CPCSC Level 1 scope, no-certification guarantee, evidence storage boundary, CAD billing/Stripe portal, support expectations, and security documentation path.
+  - Still pending: customer-specific security questionnaires and subprocessors/data-residency deep dive.
 
 ---
 
-## Recommended next build slice
+## Remaining build/deployment blockers
 
-**External tester readiness pass**
+The remaining work is now mostly schema/ops depth rather than product-surface polish:
 
-Start with the P0 items in this order:
-
-1. Fix signup/session bootstrap.
-2. Remove hardcoded/internal app copy.
-3. Add email-confirmation messaging.
-4. Add resume-checkout/recheck-billing path.
-5. Add real support/contact details.
-6. Make trust pages launch-safe.
-7. Reposition evidence/report language honestly.
-8. Add onboarding checklist and empty states.
-9. Create the manual tester script.
-
-After that, move into:
-
-**Team-backed control work management + evidence files**
+1. Add executable Supabase migrations and RLS policy SQL.
+2. Add webhook idempotency via a `stripe_webhook_events` table.
+3. Add activity/comments/support-note tables before building audit trails and support overrides.
+4. Decide and implement Supabase Storage evidence uploads, signed URLs, and retention policy.
+5. Add team invitation/role lifecycle once permissions are formalized.
+6. Run live Supabase + Stripe test-mode end-to-end QA using `EXTERNAL_TESTER_SCRIPT.md`.

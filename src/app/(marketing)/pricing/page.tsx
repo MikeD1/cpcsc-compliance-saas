@@ -4,7 +4,7 @@ import { getBillingPlansForDisplay } from "@/lib/plans";
 
 const reassurance = [
   "Monthly billing through Stripe checkout",
-  "Cancel or change plans through support while self-serve billing is being expanded",
+  "Manage payment methods, invoices, plan changes, and cancellation through Stripe’s billing portal",
   "No hidden implementation fees in the listed monthly price",
 ];
 
