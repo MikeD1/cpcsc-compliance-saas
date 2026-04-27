@@ -6,7 +6,7 @@ function formatStatus(status?: string | null) {
 
 export function BillingSettingsCard({ plan, status }: { plan?: string | null; status?: string | null }) {
   return (
-    <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
+    <section id="billing" className="scroll-mt-28 rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Billing</p>

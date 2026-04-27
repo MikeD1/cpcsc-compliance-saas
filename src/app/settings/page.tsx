@@ -3,6 +3,7 @@ import { AppShell } from "@/components/app-shell";
 import { SubscriptionGate } from "@/components/auth/subscription-gate";
 import { OrganizationSettingsForm } from "@/components/settings/organization-settings-form";
 import { BillingSettingsCard } from "@/components/settings/billing-settings-card";
+import { SettingsSectionNav } from "@/components/settings/settings-section-nav";
 import { MemberList } from "@/components/team/member-list";
 import { TeamInvitations } from "@/components/team/team-invitations";
 import { getCurrentAccess } from "@/lib/access";
@@ -37,6 +38,8 @@ export default async function SettingsPage() {
           Manage the schema-backed organization profile and see which members can be assigned to CPCSC controls.
         </p>
       </section>
+
+      <SettingsSectionNav />
 
       <OrganizationSettingsForm
         organizationName={organization.name}

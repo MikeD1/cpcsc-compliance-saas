@@ -4,6 +4,7 @@ type OnboardingItem = {
   title: string;
   description: string;
   href: string;
+  actionLabel: string;
   complete: boolean;
 };
 
@@ -24,31 +25,36 @@ export function FirstRunChecklist({
     {
       title: "Confirm organization profile",
       description: `${organizationName} is your active workspace. Review the name, billing access, and team list before inviting testers.`,
-      href: "/settings",
+      href: "/settings#organization-profile",
+      actionLabel: "Review profile",
       complete: Boolean(organizationName),
     },
     {
       title: "Invite or confirm teammates",
       description: memberCount > 1 ? `${memberCount} members are in this workspace.` : "Invite at least one teammate or confirm this will stay a solo tester workspace.",
-      href: "/settings",
+      href: "/settings#team-invitations",
+      actionLabel: "Invite teammate",
       complete: memberCount > 1,
     },
     {
       title: "Assign control owners",
       description: unassignedControls === 0 ? "All controls have owners." : `${unassignedControls} controls still need an owner.`,
-      href: "/controls",
+      href: "/controls#assign-owners",
+      actionLabel: "Assign owners",
       complete: unassignedControls === 0,
     },
     {
       title: "Add first evidence records",
       description: missingEvidence === 0 ? "Every control has at least one evidence reference." : `${missingEvidence} controls still need evidence references.`,
-      href: "/evidence",
+      href: "/evidence#add-evidence",
+      actionLabel: "Add evidence",
       complete: missingEvidence === 0,
     },
     {
       title: "Generate readiness report",
       description: reviewedControls > 0 ? "At least one control has been reviewed; export a report when ready." : "Review at least one control, then export the readiness report.",
-      href: "/reports",
+      href: "/reports#download-report",
+      actionLabel: "Open report",
       complete: reviewedControls > 0,
     },
   ];
@@ -78,6 +84,7 @@ export function FirstRunChecklist({
             </div>
             <h3 className="mt-4 text-sm font-semibold text-slate-950">{item.title}</h3>
             <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
+            <span className="mt-4 inline-flex text-sm font-semibold text-cyan-700">{item.actionLabel} →</span>
           </Link>
         ))}
       </div>

@@ -81,13 +81,13 @@ export function TeamInvitations({ canInvite, initialInvitations }: TeamInvitatio
   }
 
   return (
-    <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
+    <section id="team-invitations" className="scroll-mt-28 rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Team invitations</p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Invite teammates into this workspace</h2>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-            Owners and admins can invite teammates by email when transactional delivery is configured. A manual invite link is always shown as a fallback.
+            Invite at least one teammate for beta testing, or keep this as a solo workspace if you are validating alone. Email delivery works when configured; a manual invite link is always shown as a fallback.
           </p>
         </div>
         <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">{pendingInvitations.length} pending</span>

@@ -36,7 +36,7 @@ export default async function ControlsPage() {
         </div>
       </section>
 
-      <section className="grid gap-6">
+      <section id="assign-owners" className="scroll-mt-28 grid gap-6">
         {controlCards.map((control) => (
           <ControlEditor
             key={control.response?.id ?? control.id}

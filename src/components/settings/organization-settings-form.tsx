@@ -43,13 +43,13 @@ export function OrganizationSettingsForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
+    <form id="organization-profile" onSubmit={handleSubmit} className="scroll-mt-28 rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Organization profile</p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Workspace identity</h2>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-            This first settings pass only edits schema-backed organization fields. Scope, CanadaBuys ID, phone, and system inventory fields are documented in the readiness tracker until database columns are added.
+            Start here when you land from the first-run checklist. Confirm the workspace identity, then move down to billing, members, and invitations.
           </p>
         </div>
         {saved ? <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700">{saved}</span> : null}

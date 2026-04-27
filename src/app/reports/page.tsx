@@ -25,7 +25,7 @@ export default async function ReportsPage() {
   return (
     <AppShell organizationName={access.user.organization?.name}>
       <section className="grid gap-6 2xl:grid-cols-[1.02fr_0.98fr]">
-        <div className="rounded-[2rem] border border-white/50 bg-white/92 p-8 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
+        <div id="download-report" className="scroll-mt-28 rounded-[2rem] border border-white/50 bg-white/92 p-8 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
           <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Readiness reporting</p>
           <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950 lg:text-5xl">Generate a CPCSC Level 1 readiness report.</h1>
           <p className="mt-4 text-base leading-8 text-slate-600">
