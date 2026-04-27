@@ -104,7 +104,7 @@ export async function GET(request: Request) {
     mode: "subscription",
     customer: customerId,
     client_reference_id: organization.id,
-    success_url: `${baseUrl}/dashboard?checkout=success`,
+    success_url: `${baseUrl}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${baseUrl}/pricing?plan=${plan.slug}&checkout=cancelled`,
     line_items: [
       {

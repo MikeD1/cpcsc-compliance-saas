@@ -4,12 +4,13 @@ import { StatusBadge } from "@/components/status-badge";
 import { SubscriptionGate } from "@/components/auth/subscription-gate";
 import { FirstRunChecklist } from "@/components/onboarding/first-run-checklist";
 import { getCurrentAccess } from "@/lib/access";
+import { syncCheckoutSessionForOrganization } from "@/lib/billing-sync";
 import { getDashboardData } from "@/lib/dashboard";
 
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ billing?: string; plan?: string }>;
+  searchParams: Promise<{ billing?: string; checkout?: string; plan?: string; session_id?: string }>;
 }) {
   const access = await getCurrentAccess();
   const params = await searchParams;
@@ -18,13 +19,29 @@ export default async function DashboardPage({
     redirect("/login");
   }
 
+  if (!access.hasActiveSubscription && params.checkout === "success" && params.session_id) {
+    const organizationId = access.user.organization?.id ?? access.user.organizationMembership?.organizationId;
+
+    if (organizationId) {
+      try {
+        const syncResult = await syncCheckoutSessionForOrganization({ checkoutSessionId: params.session_id, organizationId });
+
+        if (syncResult.status === "active" || syncResult.status === "trialing") {
+          redirect("/dashboard?checkout=activated");
+        }
+      } catch (error) {
+        console.error("Checkout success sync failed", error);
+      }
+    }
+  }
+
   if (!access.hasActiveSubscription) {
     return (
       <AppShell organizationName={access.user.organization?.name}>
         <SubscriptionGate
           plan={params.plan ?? access.latestSubscription?.planSlug}
           status={access.latestSubscription?.status}
-          organizationId={access.user.organization?.id}
+          organizationId={access.user.organization?.id ?? access.user.organizationMembership?.organizationId}
           billingIssue={params.billing}
         />
       </AppShell>

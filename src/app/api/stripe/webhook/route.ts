@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
+import { syncOrganizationSubscription } from "@/lib/billing-sync";
 import { getStripeServer } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { getPlanSlugByPriceId } from "@/lib/plans";
@@ -78,42 +79,6 @@ async function markWebhookEventFailed(supabase: SupabaseAdmin, eventLogId: strin
       last_error: error instanceof Error ? error.message : "Unknown webhook processing error.",
     })
     .eq("id", eventLogId);
-}
-
-async function syncOrganizationSubscription(
-  supabase: SupabaseAdmin,
-  payload: {
-    organizationId: string;
-    stripeSubscriptionId: string;
-    stripePriceId: string | null;
-    status: string;
-    planCode: string;
-    currentPeriodStart?: string | null;
-    currentPeriodEnd?: string | null;
-    cancelAtPeriodEnd: boolean;
-  },
-) {
-  await supabase.from("subscriptions").upsert(
-    {
-      organization_id: payload.organizationId,
-      stripe_subscription_id: payload.stripeSubscriptionId,
-      stripe_price_id: payload.stripePriceId,
-      plan_code: payload.planCode,
-      status: payload.status,
-      current_period_start: payload.currentPeriodStart ?? null,
-      current_period_end: payload.currentPeriodEnd ?? null,
-      cancel_at_period_end: payload.cancelAtPeriodEnd,
-    },
-    { onConflict: "stripe_subscription_id" },
-  );
-
-  await supabase
-    .from("organizations")
-    .update({
-      plan_code: payload.planCode,
-      subscription_status: payload.status,
-    })
-    .eq("id", payload.organizationId);
 }
 
 export async function POST(request: Request) {
