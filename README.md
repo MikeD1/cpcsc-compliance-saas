@@ -128,20 +128,22 @@ npm start
 - `docs/supabase-schema.md` — current schema assumptions and migration checklist
 - `supabase/migrations/20260427015000_production_foundation.sql` — executable baseline tables, RLS policies, invitation foundation, audit/support tables, and Stripe webhook idempotency table
 - `supabase/migrations/20260427025000_launch_schema_extensions.sql` — organization profile fields, invitation delivery audit columns, member lifecycle audit columns, and pending-invite uniqueness
+- `supabase/migrations/20260427030000_controlplane_to_complianceone_upgrade.sql` — compatibility upgrade for Supabase projects that already applied the original ControlPlane schema
 - `docs/security-boundaries.md` — authorization and service-role boundaries
 - `docs/db-rls-verification.md` — migration, RLS, invitation, and webhook verification runbook
 
 ## Launch-test checklist
 
 Before external testing:
-1. apply the production foundation Supabase migration
-2. configure Supabase env vars
-3. configure Stripe env vars
-4. confirm Stripe price/product IDs match the intended test products
-5. verify signup creates org, membership, subscription row, and controls
-6. verify checkout success updates organization subscription status and records webhook events once
-7. verify gated routes unlock after billing
-8. run `docs/db-rls-verification.md` against the target Supabase project
+1. apply the production foundation Supabase migration for a fresh project, or the ControlPlane compatibility upgrade if the old schema already exists
+2. apply the launch schema extension migration
+3. configure Supabase env vars
+4. configure Stripe env vars
+5. confirm Stripe price/product IDs match the intended test products
+6. verify signup creates org, membership, subscription row, and controls
+7. verify checkout success updates organization subscription status and records webhook events once
+8. verify gated routes unlock after billing
+9. run `docs/db-rls-verification.md` against the target Supabase project
 
 ## Architecture note
 

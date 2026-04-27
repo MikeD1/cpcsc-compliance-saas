@@ -95,6 +95,7 @@ Verified/general signals carried forward:
 - [x] Add activity/comment/support-note tables before building audit/support workflows.
 - [x] Add `organization_invitations` schema foundation for the team invite lifecycle.
 - [x] Add launch schema extension migration for org profile fields, invite email delivery audit, member lifecycle audit, and pending-invite uniqueness.
+- [x] Add compatibility migration path for Supabase projects that already applied the original ControlPlane schema.
 - [x] Add owner/admin route-level permission helpers and protect organization settings, billing management, and invitation management.
 - [ ] Generate or document TypeScript DB types once schema stabilizes.
 - [x] Add DB/RLS verification commands to the README/runbook.

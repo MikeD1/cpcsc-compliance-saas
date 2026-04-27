@@ -4,10 +4,17 @@ Use this before private beta after creating or refreshing the target Supabase pr
 
 ## 1. Apply the migration
 
-The required migrations are:
+For a fresh Supabase project, the required migrations are:
 
 ```text
 supabase/migrations/20260427015000_production_foundation.sql
+supabase/migrations/20260427025000_launch_schema_extensions.sql
+```
+
+For a Supabase project that already has the original ControlPlane schema applied, do **not** run the baseline foundation migration directly. Run this compatibility path instead:
+
+```text
+supabase/migrations/20260427030000_controlplane_to_complianceone_upgrade.sql
 supabase/migrations/20260427025000_launch_schema_extensions.sql
 ```
 
