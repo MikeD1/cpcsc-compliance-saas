@@ -14,8 +14,8 @@ export default async function ControlsPage() {
 
   if (!access.hasActiveSubscription) {
     return (
-      <AppShell>
-        <SubscriptionGate plan={access.latestSubscription?.planSlug} status={access.latestSubscription?.status} />
+      <AppShell organizationName={access.user.organization?.name}>
+        <SubscriptionGate plan={access.latestSubscription?.planSlug} status={access.latestSubscription?.status} organizationId={access.user.organization?.id} />
       </AppShell>
     );
   }
@@ -23,14 +23,14 @@ export default async function ControlsPage() {
   const { controlCards } = await getDashboardData();
 
   return (
-    <AppShell>
+    <AppShell organizationName={access.user.organization?.name}>
       <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Control library</p>
-            <h1 className="mt-2 text-4xl font-semibold tracking-tight text-slate-950 lg:text-5xl">A real operating workspace for the 13 controls</h1>
+            <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Control workspace</p>
+            <h1 className="mt-2 text-4xl font-semibold tracking-tight text-slate-950 lg:text-5xl">Manage the 13 CPCSC Level 1 controls</h1>
             <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600">
-              The visual surface stays polished, but now each control can actually be updated, assigned, and progressed instead of just being admired.
+              Update implementation notes, assign an owner, set review expectations, and track progress control by control as your readiness work matures.
             </p>
           </div>
         </div>

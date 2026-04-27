@@ -73,11 +73,25 @@ export function SignupForm({ initialPlan = "start" }: { initialPlan?: "start" | 
         return;
       }
 
-      const response = await fetch("/api/auth/signup", {
+      const sessionResponse = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({}),
+      });
+
+      if (!sessionResponse.ok) {
+        const sessionText = await sessionResponse.text();
+        const sessionResult = sessionText ? JSON.parse(sessionText) : null;
+        throw new Error(sessionResult?.error || "Unable to establish your workspace session.");
+      }
+
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           firstName,
@@ -150,7 +164,7 @@ export function SignupForm({ initialPlan = "start" }: { initialPlan?: "start" | 
 
       <label className="grid gap-2">
         <span className="text-sm font-medium text-slate-700">Organization name</span>
-        <input name="organizationName" type="text" placeholder="Northstar Defence Systems" className="rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-cyan-400" />
+        <input name="organizationName" type="text" placeholder="Your Defence Systems Ltd." className="rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-cyan-400" />
       </label>
 
       <PasswordInput id="password" name="password" label="Password" placeholder="Create a strong password" />

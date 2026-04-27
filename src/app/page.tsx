@@ -4,7 +4,7 @@ import { PublicShell } from "@/components/marketing/public-shell";
 const features = [
   "CPCSC Level 1 readiness workspace",
   "Control ownership, status, and implementation notes",
-  "Evidence vault organized by control",
+  "Evidence register organized by control",
   "Executive reporting and PDF exports",
 ];
 

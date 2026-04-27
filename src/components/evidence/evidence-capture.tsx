@@ -56,8 +56,9 @@ export function EvidenceCapture({ controls }: EvidenceCaptureProps) {
     <form onSubmit={handleSubmit} className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Add evidence</p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Capture a new artifact without leaving the workflow</h2>
+          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Add evidence record</p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Record where supporting evidence lives</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-600">This register stores evidence metadata and references. Keep the source file in your approved system of record until file upload support is added.</p>
         </div>
         {saved ? <span className="text-sm font-medium text-emerald-700">{saved}</span> : null}
       </div>
@@ -119,7 +120,7 @@ export function EvidenceCapture({ controls }: EvidenceCaptureProps) {
           disabled={saving}
           className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-60"
         >
-          {saving ? "Saving evidence…" : "Add evidence"}
+          {saving ? "Saving evidence…" : "Add evidence record"}
         </button>
         {error ? <p className="text-sm text-rose-500">{error}</p> : null}
       </div>

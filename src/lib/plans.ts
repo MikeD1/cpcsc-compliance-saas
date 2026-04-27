@@ -21,7 +21,7 @@ const billingPlanCatalog: Record<BillingPlanSlug, Omit<BillingPlan, "stripeProdu
     features: [
       "1 organization workspace",
       "13 CPCSC Level 1 controls",
-      "Evidence vault and exportable reports",
+      "Evidence register and exportable reports",
       "Secure login and subscription-gated access",
     ],
   },
@@ -34,7 +34,7 @@ const billingPlanCatalog: Record<BillingPlanSlug, Omit<BillingPlan, "stripeProdu
     features: [
       "Multi-user readiness workspace",
       "Expanded reporting and plan management",
-      "Evidence organization across teams",
+      "Evidence register organization across teams",
       "Priority onboarding and support response",
     ],
   },

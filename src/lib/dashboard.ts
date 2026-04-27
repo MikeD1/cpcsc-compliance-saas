@@ -120,9 +120,11 @@ export async function getDashboardData() {
   return {
     organization,
     assessment: {
-      title: "CPCSC Level 1 Workspace",
-      scopeSummary: "Operational workspace backed by Supabase organizations, controls, subscriptions, and evidence items.",
-      riskStatement: latestSubscription?.status ?? organizations.subscription_status,
+      title: "CPCSC Level 1 Readiness",
+      scopeSummary: "Track the 13 Level 1 controls, ownership, implementation notes, and evidence references your team needs for readiness reviews.",
+      riskStatement: latestSubscription?.status
+        ? `Subscription status: ${latestSubscription.status}`
+        : `Workspace status: ${organizations.subscription_status}`,
     },
     controlCards,
     statusCounts,

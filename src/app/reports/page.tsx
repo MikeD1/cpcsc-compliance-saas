@@ -14,8 +14,8 @@ export default async function ReportsPage() {
 
   if (!access.hasActiveSubscription) {
     return (
-      <AppShell>
-        <SubscriptionGate plan={access.latestSubscription?.planSlug} status={access.latestSubscription?.status} />
+      <AppShell organizationName={access.user.organization?.name}>
+        <SubscriptionGate plan={access.latestSubscription?.planSlug} status={access.latestSubscription?.status} organizationId={access.user.organization?.id} />
       </AppShell>
     );
   }
@@ -23,20 +23,20 @@ export default async function ReportsPage() {
   const { assessment, statusCounts, categorySummaries } = await getDashboardData();
 
   return (
-    <AppShell>
+    <AppShell organizationName={access.user.organization?.name}>
       <section className="grid gap-6 2xl:grid-cols-[1.02fr_0.98fr]">
         <div className="rounded-[2rem] border border-white/50 bg-white/92 p-8 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
-          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Executive reporting</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950 lg:text-5xl">Attestation outputs that feel boardroom-ready.</h1>
+          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Readiness reporting</p>
+          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950 lg:text-5xl">Generate a CPCSC Level 1 readiness report.</h1>
           <p className="mt-4 text-base leading-8 text-slate-600">
-            Reporting is framed as a buyer-quality surface: cleaner, more intentional, and easier to imagine in an executive review or procurement prep flow.
+            Export a point-in-time report of control status, owners, implementation notes, and evidence references for internal leadership reviews. The report supports readiness conversations but does not guarantee certification or acceptance.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/exports/assessment.pdf"
               className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
             >
-              Download sample PDF
+              Download readiness PDF
             </Link>
           </div>
         </div>
@@ -54,7 +54,7 @@ export default async function ReportsPage() {
       </section>
 
       <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
-        <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Category report</p>
+        <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Readiness by category</p>
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {categorySummaries.map((summary) => (
             <div key={summary.category} className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">

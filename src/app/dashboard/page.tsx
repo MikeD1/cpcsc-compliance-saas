@@ -14,8 +14,8 @@ export default async function DashboardPage() {
 
   if (!access.hasActiveSubscription) {
     return (
-      <AppShell>
-        <SubscriptionGate plan={access.latestSubscription?.planSlug} status={access.latestSubscription?.status} />
+      <AppShell organizationName={access.user.organization?.name}>
+        <SubscriptionGate plan={access.latestSubscription?.planSlug} status={access.latestSubscription?.status} organizationId={access.user.organization?.id} />
       </AppShell>
     );
   }
@@ -23,7 +23,7 @@ export default async function DashboardPage() {
   const { organization, assessment, controlCards, statusCounts } = await getDashboardData();
 
   return (
-    <AppShell>
+    <AppShell organizationName={access.user.organization?.name}>
       <section className="grid gap-6 2xl:grid-cols-[1.12fr_0.88fr]">
         <div className="rounded-[2rem] border border-white/50 bg-white/92 p-8 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
           <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Command center</p>
@@ -51,11 +51,22 @@ export default async function DashboardPage() {
           <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-300">Account metadata</p>
           <dl className="mt-6 grid gap-5 text-sm">
             <MetaRow label="Assessment title" value={assessment.title} />
-            <MetaRow label="Risk statement" value={assessment.riskStatement ?? "Not provided"} />
+            <MetaRow label="Workspace status" value={assessment.riskStatement ?? "Not provided"} />
             <MetaRow label="CanadaBuys" value={organization.canadaBuysId ?? "Pending"} />
             <MetaRow label="Primary contact" value={organization.primaryContact ?? "Unassigned"} />
             <MetaRow label="Contact email" value={organization.primaryEmail ?? "Not set"} />
           </dl>
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
+        <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">First steps</p>
+        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Start with a practical readiness loop</h2>
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <NextStep title="Confirm scope" description="Use the organization metadata as your starting point, then document systems and teams in scope." />
+          <NextStep title="Assign owners" description="Pick the first controls that need attention and assign an accountable owner." />
+          <NextStep title="Add evidence records" description="Register where supporting documents live for each control." />
+          <NextStep title="Export report" description="Generate a readiness PDF after the first round of updates." />
         </div>
       </section>
 
@@ -103,6 +114,15 @@ function Kpi({ title, value, tone }: { title: string; value: string; tone: "emer
     <div className={`rounded-[1.5rem] border p-4 ${tones[tone]}`}>
       <p className="text-[11px] uppercase tracking-[0.2em]">{title}</p>
       <p className="mt-3 text-3xl font-semibold">{value}</p>
+    </div>
+  );
+}
+
+function NextStep({ title, description }: { title: string; description: string }) {
+  return (
+    <div className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4">
+      <h3 className="text-sm font-semibold text-slate-950">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
     </div>
   );
 }
