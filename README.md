@@ -14,7 +14,7 @@ Working now:
 - gated application shell
 - dashboard, controls, evidence, reports, settings, and PDF export routes
 - member-backed control ownership and review actions
-- owner/admin team invitations with manual invite links and accept/revoke flows
+- owner/admin team invitations with manual invite links, accept/revoke flows, role editing, and disable/reactivate lifecycle controls
 - evidence register create/edit/relink/archive actions
 - Stripe checkout, reconciliation, webhook sync, and customer portal route
 - read-only admin/support console gated by `ADMIN_EMAILS`
@@ -23,7 +23,7 @@ Working now:
 Known cleanup items:
 - apply `supabase/migrations/20260427015000_production_foundation.sql` to the target Supabase project and verify RLS behavior
 - run Stripe webhook idempotency through test-mode events
-- add transactional email delivery and richer role/member lifecycle management
+- add transactional email delivery and richer member lifecycle polish
 - file uploads still require Supabase Storage policy, signed URL, retention, and audit design
 
 ## Stack

@@ -38,7 +38,7 @@ Known remaining depth areas:
 - Stripe webhook idempotency
 - comments/activity/support-note audit tables
 - Supabase Storage-backed file upload architecture
-- transactional email delivery and deeper role/member lifecycle management
+- transactional email delivery and deeper member lifecycle polish
 - live Stripe/Supabase test-mode QA
 - launch/customer acquisition workflow
 - formal accessibility pass and automated coverage
@@ -116,6 +116,7 @@ Verified/general signals carried forward:
 **Owner:** Theo/Iris with June
 
 - [x] Add manual team invite flow for owners/admins: create invite link, list invitations, revoke pending invitations, and accept invite after sign-in.
+- [x] Add owner/admin member lifecycle controls: edit role, disable/reactivate membership, and protect the last active owner.
 - [ ] Add first-run onboarding around organization confirmation, scope, members, first controls, first evidence record, and report export.
 - [ ] Improve controls page into work management: filters, detail flow, gaps, review queue.
 - [ ] Add better error recovery actions: retry, contact support, setup guidance, copy diagnostic details where useful.

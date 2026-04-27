@@ -8,7 +8,7 @@ import { TeamInvitations } from "@/components/team/team-invitations";
 import { getCurrentAccess } from "@/lib/access";
 import { getDashboardData } from "@/lib/dashboard";
 import { getOrganizationInvitations } from "@/lib/invitations";
-import { canInviteMembers } from "@/lib/permissions";
+import { canInviteMembers, canManageMemberLifecycle } from "@/lib/permissions";
 
 export default async function SettingsPage() {
   const access = await getCurrentAccess();
@@ -46,7 +46,7 @@ export default async function SettingsPage() {
 
       <BillingSettingsCard plan={access.latestSubscription?.planSlug} status={access.latestSubscription?.status} />
 
-      <MemberList members={members} />
+      <MemberList members={members} canManageMembers={canManageMemberLifecycle(access.user)} />
 
       <TeamInvitations canInvite={canInviteMembers(access.user)} initialInvitations={invitations} />
     </AppShell>

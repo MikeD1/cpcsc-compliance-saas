@@ -98,7 +98,8 @@ Reason: before we invite real users, the product must not break trust at signup,
   - Completed: settings now lists organization members with role/status for ownership context.
   - Completed: owners/admins can create manual invite links, view pending invitations, and revoke pending invitations.
   - Completed: invited users can accept an invite after signing in with the invited email address.
-  - Still pending: transactional email delivery, role editing, disabled-member management, and richer lifecycle actions.
+  - Completed: owners/admins can edit member roles and disable/reactivate memberships with a last-active-owner guardrail.
+  - Still pending: transactional email delivery and richer lifecycle actions.
 
 - [x] Use actual organization members for control ownership.
   - Completed: control editor uses active organization members as owner options.
@@ -179,6 +180,6 @@ The remaining work is now mostly schema/ops depth rather than product-surface po
 
 1. Apply the production foundation migration to Supabase and verify tenant isolation/RLS behavior.
 2. Run Stripe webhook idempotency through Stripe test-mode events.
-3. Add transactional email delivery and role/member lifecycle management for invitations.
+3. Add transactional email delivery and deeper member lifecycle polish for invitations.
 4. Decide and implement Supabase Storage evidence uploads, signed URLs, and retention policy.
 5. Run live Supabase + Stripe test-mode end-to-end QA using `EXTERNAL_TESTER_SCRIPT.md`.
