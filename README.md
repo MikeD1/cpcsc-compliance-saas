@@ -20,9 +20,10 @@ Working now:
 - production build passes
 
 Known cleanup items:
-- executable Supabase migrations/RLS policies are not yet represented in this repo
-- webhook idempotency still needs a dedicated event log table
-- deeper team invites, comments/activity history, and file uploads require schema work
+- apply `supabase/migrations/20260427015000_production_foundation.sql` to the target Supabase project and verify RLS behavior
+- run Stripe webhook idempotency through test-mode events
+- build route-level role permissions before enabling team invite/role editing UI
+- file uploads still require Supabase Storage policy, signed URL, retention, and audit design
 
 ## Stack
 
@@ -116,17 +117,19 @@ npm start
 - `PRODUCTION_READINESS.md` — product-readiness tracker
 - `EXTERNAL_TESTER_SCRIPT.md` — private-launch test script
 - `docs/supabase-schema.md` — current schema assumptions and migration checklist
+- `supabase/migrations/20260427015000_production_foundation.sql` — executable baseline tables, RLS policies, invitation foundation, audit/support tables, and Stripe webhook idempotency table
 - `docs/security-boundaries.md` — authorization and service-role boundaries
 
 ## Launch-test checklist
 
 Before external testing:
-1. configure Supabase env vars
-2. configure Stripe env vars
-3. confirm Stripe price/product IDs match the intended test products
-4. verify signup creates org, membership, subscription row, and controls
-5. verify checkout success updates organization subscription status
-6. verify gated routes unlock after billing
+1. apply the production foundation Supabase migration
+2. configure Supabase env vars
+3. configure Stripe env vars
+4. confirm Stripe price/product IDs match the intended test products
+5. verify signup creates org, membership, subscription row, and controls
+6. verify checkout success updates organization subscription status and records webhook events once
+7. verify gated routes unlock after billing
 
 ## Architecture note
 

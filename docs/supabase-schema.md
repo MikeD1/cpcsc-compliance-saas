@@ -1,6 +1,6 @@
 # Supabase Schema Notes
 
-This document captures the tables and columns the app currently assumes. It is not a generated migration; use it as the source checklist when creating Supabase migrations or reviewing an existing project.
+This document captures the tables and columns the app currently assumes. The executable baseline migration now lives at `supabase/migrations/20260427015000_production_foundation.sql`; use this document as the human-readable checklist when reviewing or extending that migration.
 
 ## organizations
 
@@ -147,8 +147,11 @@ Future evidence columns/tables needed before file upload:
 - retention/delete policy fields
 - audit/activity events
 
-## Missing tables for future P1/P2
+## Foundation tables added for P1/P2
 
+The production foundation migration includes these tables even though most are not fully surfaced in the UI yet:
+
+- `organization_invitations` for the upcoming team invite lifecycle
 - `control_activity_events` for status/owner/evidence/review audit trail
 - `control_comments` for discussion and review notes
 - `admin_support_notes` for support console annotations

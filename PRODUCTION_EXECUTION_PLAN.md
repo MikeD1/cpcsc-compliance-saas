@@ -89,10 +89,11 @@ Verified/general signals carried forward:
 
 **Owner:** Theo with Selene/Rowan
 
-- [ ] Add executable Supabase migrations for current assumed tables.
-- [ ] Add RLS policy SQL for tenant-scoped tables.
-- [ ] Add `stripe_webhook_events` for idempotent webhook processing.
-- [ ] Add activity/comment/support-note tables before building audit/support workflows.
+- [x] Add executable Supabase migrations for current assumed tables.
+- [x] Add RLS policy SQL for tenant-scoped tables.
+- [x] Add `stripe_webhook_events` for idempotent webhook processing.
+- [x] Add activity/comment/support-note tables before building audit/support workflows.
+- [x] Add `organization_invitations` schema foundation for the upcoming team invite lifecycle.
 - [ ] Generate or document TypeScript DB types once schema stabilizes.
 - [ ] Add DB/RLS verification commands to the README/runbook.
 
@@ -102,7 +103,7 @@ Verified/general signals carried forward:
 
 **Owner:** Theo with Rowan/Elias
 
-- [ ] Persist and check processed Stripe webhook event IDs.
+- [x] Persist and check processed Stripe webhook event IDs.
 - [ ] Verify checkout, webhook, reconcile, portal, and subscription gate in Stripe test mode.
 - [ ] Document required Stripe dashboard setup: products, prices, webhook endpoint, customer portal.
 - [ ] Add recovery notes for incomplete checkout and failed payment states.

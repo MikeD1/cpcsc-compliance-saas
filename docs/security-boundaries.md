@@ -38,5 +38,6 @@ For every new API route:
 - Add Supabase migrations and RLS policy documentation.
 - Add `stripe_webhook_events` and process webhooks idempotently.
 - Add activity/audit events for control changes, evidence changes, billing support actions, and admin reads.
-- Add role permissions (`owner`, `admin`, `member`) before enabling member invites and role edits.
+- Apply `supabase/migrations/20260427015000_production_foundation.sql` before private beta to create the baseline tables and tenant RLS policies.
+- Build role permissions (`owner`, `admin`, `member`) into the app routes before enabling member invites and role edits.
 - Replace raw app-session token storage with a more purpose-built session strategy.

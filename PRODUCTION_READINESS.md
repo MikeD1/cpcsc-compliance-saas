@@ -155,12 +155,14 @@ Reason: before we invite real users, the product must not break trust at signup,
   - Still pending: failed signup repair workflow, audited overrides, and support notes table.
 
 - [x] Add Supabase schema/migration documentation.
-  - Completed: `docs/supabase-schema.md` documents current table/column assumptions and future migration needs.
-  - Still pending: executable migrations and RLS policy SQL.
+  - Completed: `docs/supabase-schema.md` documents current table/column assumptions.
+  - Completed: `supabase/migrations/20260427015000_production_foundation.sql` adds executable baseline tables, invitation foundation, audit/support tables, webhook event tracking, and RLS policies.
+  - Still pending: applying the migration to a real Supabase project and running RLS verification checks.
 
 - [x] Tighten service-role usage boundaries.
   - Completed: `docs/security-boundaries.md` documents server-side service-role assumptions, route authorization checklist, and hardening backlog.
-  - Still pending: audit logging table/events and formal RLS policies.
+  - Completed: baseline RLS policy SQL exists in the production foundation migration.
+  - Still pending: route-level role enforcement before member invite/role edit UI.
 
 - [x] Add procurement-grade FAQ and trust details.
   - Completed: `/faq` covers CPCSC Level 1 scope, no-certification guarantee, evidence storage boundary, CAD billing/Stripe portal, support expectations, and security documentation path.
@@ -172,9 +174,8 @@ Reason: before we invite real users, the product must not break trust at signup,
 
 The remaining work is now mostly schema/ops depth rather than product-surface polish:
 
-1. Add executable Supabase migrations and RLS policy SQL.
-2. Add webhook idempotency via a `stripe_webhook_events` table.
-3. Add activity/comments/support-note tables before building audit trails and support overrides.
+1. Apply the production foundation migration to Supabase and verify tenant isolation/RLS behavior.
+2. Run Stripe webhook idempotency through Stripe test-mode events.
+3. Build route-level role permissions, then add team invitation/role lifecycle UI.
 4. Decide and implement Supabase Storage evidence uploads, signed URLs, and retention policy.
-5. Add team invitation/role lifecycle once permissions are formalized.
-6. Run live Supabase + Stripe test-mode end-to-end QA using `EXTERNAL_TESTER_SCRIPT.md`.
+5. Run live Supabase + Stripe test-mode end-to-end QA using `EXTERNAL_TESTER_SCRIPT.md`.
