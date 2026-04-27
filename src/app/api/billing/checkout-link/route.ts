@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getPlanBySlug } from "@/lib/plans";
+import { getConfiguredPlanBySlug, getPlanBySlug } from "@/lib/plans";
 import { getStripeServer } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { getCurrentUser } from "@/lib/auth";
@@ -8,14 +8,15 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const planSlug = searchParams.get("plan") || "";
   const organizationId = searchParams.get("organizationId") || "";
-  const plan = getPlanBySlug(planSlug);
+  const selectedPlan = getPlanBySlug(planSlug);
+  const plan = getConfiguredPlanBySlug(planSlug);
 
-  if (!plan || !organizationId) {
+  if (!selectedPlan || !organizationId) {
     return NextResponse.redirect(new URL("/pricing", request.url));
   }
 
-  if (!process.env.STRIPE_SECRET_KEY) {
-    return NextResponse.redirect(new URL(`/signup?plan=${plan.slug}&billing=missing`, request.url));
+  if (!process.env.STRIPE_SECRET_KEY || !plan) {
+    return NextResponse.redirect(new URL(`/signup?plan=${selectedPlan.slug}&billing=missing`, request.url));
   }
 
   const currentUser = await getCurrentUser();

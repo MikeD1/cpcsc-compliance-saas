@@ -5,10 +5,15 @@ export type BillingPlan = {
   name: string;
   cadence: string;
   priceCad: number;
-  stripeProductId: string;
-  stripePriceId: string;
+  stripeProductId: string | null;
+  stripePriceId: string | null;
   description: string;
   features: string[];
+};
+
+export type ConfiguredBillingPlan = BillingPlan & {
+  stripeProductId: string;
+  stripePriceId: string;
 };
 
 const billingPlanCatalog: Record<BillingPlanSlug, Omit<BillingPlan, "stripeProductId" | "stripePriceId">> = {
@@ -40,40 +45,47 @@ const billingPlanCatalog: Record<BillingPlanSlug, Omit<BillingPlan, "stripeProdu
   },
 };
 
-function getRequiredPlanEnv(slug: BillingPlanSlug, field: "product" | "price") {
-  const envKey = `STRIPE_${slug.toUpperCase()}_${field.toUpperCase()}_ID` as const;
-  const value = process.env[envKey];
-
-  if (!value) {
-    throw new Error(`Missing ${envKey} for billing plan ${slug}.`);
-  }
-
-  return value;
-}
-
 function getPlanEnv(slug: BillingPlanSlug, field: "product" | "price") {
   const envKey = `STRIPE_${slug.toUpperCase()}_${field.toUpperCase()}_ID` as const;
-  return process.env[envKey] ?? null;
+  return process.env[envKey] || null;
+}
+
+function hydratePlan(slug: BillingPlanSlug): BillingPlan {
+  return {
+    ...billingPlanCatalog[slug],
+    stripeProductId: getPlanEnv(slug, "product"),
+    stripePriceId: getPlanEnv(slug, "price"),
+  };
 }
 
 export function getBillingPlans(): BillingPlan[] {
-  return (Object.keys(billingPlanCatalog) as BillingPlanSlug[]).map((slug) => ({
-    ...billingPlanCatalog[slug],
-    stripeProductId: getRequiredPlanEnv(slug, "product"),
-    stripePriceId: getRequiredPlanEnv(slug, "price"),
-  }));
+  return (Object.keys(billingPlanCatalog) as BillingPlanSlug[]).map((slug) => hydratePlan(slug));
 }
 
 export function getBillingPlansForDisplay(): BillingPlan[] {
-  return (Object.keys(billingPlanCatalog) as BillingPlanSlug[]).map((slug) => ({
-    ...billingPlanCatalog[slug],
-    stripeProductId: getPlanEnv(slug, "product") ?? "Configured at deploy time",
-    stripePriceId: getPlanEnv(slug, "price") ?? "Configured at deploy time",
+  return getBillingPlans().map((plan) => ({
+    ...plan,
+    stripeProductId: plan.stripeProductId ?? "Configured at deploy time",
+    stripePriceId: plan.stripePriceId ?? "Configured at deploy time",
   }));
 }
 
-export function getPlanBySlug(slug: string) {
-  return getBillingPlans().find((plan) => plan.slug === slug);
+export function getPlanBySlug(slug: string): BillingPlan | null {
+  if (slug !== "start" && slug !== "growth") {
+    return null;
+  }
+
+  return hydratePlan(slug);
+}
+
+export function getConfiguredPlanBySlug(slug: string): ConfiguredBillingPlan | null {
+  const plan = getPlanBySlug(slug);
+
+  if (!plan?.stripeProductId || !plan.stripePriceId) {
+    return null;
+  }
+
+  return plan as ConfiguredBillingPlan;
 }
 
 export function getPlanSlugByPriceId(priceId: string | null | undefined): BillingPlanSlug | null {
