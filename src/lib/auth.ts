@@ -10,6 +10,7 @@ type AppUser = {
   firstName: string | null;
   lastName: string | null;
   organizationMembership: {
+    id: string;
     organizationId: string;
     role: string;
     status: string;
@@ -64,7 +65,7 @@ export async function getCurrentUser(): Promise<AppUser | null> {
 
   const { data: memberships } = await supabase
     .from("organization_memberships")
-    .select("organization_id, role, status")
+    .select("id, organization_id, role, status")
     .eq("user_id", authUser.id)
     .order("created_at", { ascending: true })
     .limit(1);
@@ -99,6 +100,7 @@ export async function getCurrentUser(): Promise<AppUser | null> {
     lastName: (authUser.user_metadata.last_name as string | undefined) ?? null,
     organizationMembership: membership
       ? {
+          id: membership.id,
           organizationId: membership.organization_id,
           role: membership.role,
           status: membership.status,

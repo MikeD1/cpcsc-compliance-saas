@@ -20,7 +20,7 @@ export default async function ControlsPage() {
     );
   }
 
-  const { controlCards } = await getDashboardData();
+  const { controlCards, members } = await getDashboardData();
 
   return (
     <AppShell organizationName={access.user.organization?.name}>
@@ -40,6 +40,7 @@ export default async function ControlsPage() {
         {controlCards.map((control) => (
           <ControlEditor
             key={control.response?.id ?? control.id}
+            members={members}
             control={{
               id: control.response?.id ?? String(control.id),
               displayId: control.id,
@@ -52,6 +53,7 @@ export default async function ControlsPage() {
                     status: control.response.status as "NOT_STARTED" | "IN_PROGRESS" | "READY_FOR_REVIEW" | "COMPLETE",
                     implementationDetails: control.response.implementationDetails,
                     owner: control.response.owner,
+                    ownerMembershipId: control.response.ownerMembershipId,
                     reviewCadence: control.response.reviewCadence,
                     evidenceItems: control.response.evidenceItems,
                   }

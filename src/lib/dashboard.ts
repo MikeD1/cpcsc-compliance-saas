@@ -1,5 +1,6 @@
 import { controls as controlCatalog } from "@/lib/cpcsc";
 import { getCurrentUser } from "@/lib/auth";
+import { getMemberDisplayName, getOrganizationMembers } from "@/lib/members";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
 export async function getDashboardData() {
@@ -12,7 +13,7 @@ export async function getDashboardData() {
 
   const supabase = getSupabaseAdmin();
 
-  const [{ data: organizations }, { data: subscriptions }, { data: controls }, { data: evidenceItems }] = await Promise.all([
+  const [{ data: organizations }, { data: subscriptions }, { data: controls }, { data: evidenceItems }, members] = await Promise.all([
     supabase
       .from("organizations")
       .select("id, name, slug, plan_code, subscription_status")
@@ -34,6 +35,7 @@ export async function getDashboardData() {
       .select("id, control_id, file_name, storage_path, evidence_type, status, created_at")
       .eq("organization_id", organizationId)
       .order("created_at", { ascending: false }),
+    getOrganizationMembers(organizationId),
   ]);
 
   if (!organizations) {
@@ -50,6 +52,7 @@ export async function getDashboardData() {
   };
 
   const latestSubscription = subscriptions?.[0] ?? null;
+  const membersById = new Map(members.map((member) => [member.membershipId, member]));
 
   const controlCards = controlCatalog.map((control) => {
     const row = controls?.find((item) => item.official_number === control.id);
@@ -71,7 +74,8 @@ export async function getDashboardData() {
             id: row.id,
             status: mappedStatus,
             implementationDetails: row.implementation_prompt ?? control.exampleImplementation,
-            owner: row.owner_membership_id ?? "Unassigned",
+            owner: getMemberDisplayName(membersById.get(row.owner_membership_id ?? "")) ?? "Unassigned",
+            ownerMembershipId: row.owner_membership_id ?? null,
             reviewCadence: row.reviewed_at ? "Reviewed" : "Set cadence",
             evidenceItems: relatedEvidence.map((item) => ({
               id: item.id,
@@ -130,5 +134,6 @@ export async function getDashboardData() {
     statusCounts,
     categorySummaries,
     recentEvidence,
+    members,
   };
 }

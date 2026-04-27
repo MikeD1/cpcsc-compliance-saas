@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import type { OrganizationMember } from "@/lib/members";
 
 type ControlEditorProps = {
+  members: OrganizationMember[];
   control: {
     id: string;
     displayId: number;
@@ -14,6 +16,7 @@ type ControlEditorProps = {
       status: "NOT_STARTED" | "IN_PROGRESS" | "READY_FOR_REVIEW" | "COMPLETE";
       implementationDetails: string;
       owner?: string | null;
+      ownerMembershipId?: string | null;
       reviewCadence?: string | null;
       evidenceItems: Array<{ id: string; title: string; location?: string | null }>;
     } | null;
@@ -27,10 +30,16 @@ const statuses = [
   { value: "COMPLETE", label: "Complete" },
 ] as const;
 
-export function ControlEditor({ control }: ControlEditorProps) {
+function memberLabel(member: OrganizationMember) {
+  const name = member.fullName || member.email || "Unnamed member";
+  return `${name}${member.role ? ` · ${member.role}` : ""}`;
+}
+
+export function ControlEditor({ control, members }: ControlEditorProps) {
+  const activeMembers = members.filter((member) => member.status === "active");
   const [status, setStatus] = useState(control.response?.status ?? "NOT_STARTED");
   const [implementationDetails, setImplementationDetails] = useState(control.response?.implementationDetails ?? "");
-  const [owner, setOwner] = useState(control.response?.owner ?? "");
+  const [ownerMembershipId, setOwnerMembershipId] = useState(control.response?.ownerMembershipId ?? "");
   const [reviewCadence, setReviewCadence] = useState(control.response?.reviewCadence ?? "");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState<string | null>(null);
@@ -50,7 +59,7 @@ export function ControlEditor({ control }: ControlEditorProps) {
         body: JSON.stringify({
           status,
           implementationDetails,
-          owner,
+          ownerMembershipId: ownerMembershipId || null,
           reviewCadence,
         }),
       });
@@ -132,18 +141,25 @@ export function ControlEditor({ control }: ControlEditorProps) {
           <div className="grid gap-4 lg:grid-cols-[0.48fr_0.52fr]">
             <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Ownership</h3>
-              <input
-                value={owner}
-                onChange={(event) => setOwner(event.target.value)}
-                placeholder="Assign owner"
+              <select
+                value={ownerMembershipId}
+                onChange={(event) => setOwnerMembershipId(event.target.value)}
                 className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-cyan-400"
-              />
+              >
+                <option value="">Unassigned</option>
+                {activeMembers.map((member) => (
+                  <option key={member.membershipId} value={member.membershipId}>
+                    {memberLabel(member)}
+                  </option>
+                ))}
+              </select>
               <input
                 value={reviewCadence}
                 onChange={(event) => setReviewCadence(event.target.value)}
                 placeholder="Quarterly / Monthly / Annually"
                 className="mt-3 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 outline-none transition focus:border-cyan-400"
               />
+              {activeMembers.length === 0 ? <p className="mt-3 text-xs leading-6 text-amber-700">No active members loaded. Add team members before assigning owners.</p> : null}
             </div>
             <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Evidence attached</h3>

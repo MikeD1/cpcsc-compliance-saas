@@ -24,22 +24,48 @@ export async function PATCH(request: Request, context: { params: Promise<{ contr
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
+  if (!body || typeof body !== "object") {
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+  }
+
   const supabase = getSupabaseAdmin();
   const payload: Record<string, unknown> = {};
 
-  if (typeof body?.status === "string") {
+  if (typeof body.status === "string") {
     payload.status = mapUiStatusToDb(body.status);
   }
 
-  if (typeof body?.implementationDetails === "string") {
+  if (typeof body.implementationDetails === "string") {
     payload.implementation_prompt = body.implementationDetails;
   }
 
-  if (typeof body?.owner === "string") {
-    payload.owner_membership_id = body.owner || null;
+  if (body.ownerMembershipId !== undefined) {
+    if (body.ownerMembershipId === null || body.ownerMembershipId === "") {
+      payload.owner_membership_id = null;
+    } else if (typeof body.ownerMembershipId === "string") {
+      const { data: ownerMembership, error: ownerError } = await supabase
+        .from("organization_memberships")
+        .select("id, status")
+        .eq("id", body.ownerMembershipId)
+        .eq("organization_id", user.organization.id)
+        .limit(1)
+        .maybeSingle();
+
+      if (ownerError || !ownerMembership) {
+        return NextResponse.json({ error: "Owner must be a member of this organization." }, { status: 400 });
+      }
+
+      if (ownerMembership.status !== "active") {
+        return NextResponse.json({ error: "Owner must be an active organization member." }, { status: 400 });
+      }
+
+      payload.owner_membership_id = ownerMembership.id;
+    } else {
+      return NextResponse.json({ error: "Invalid owner value." }, { status: 400 });
+    }
   }
 
-  if (body?.reviewCadence !== undefined) {
+  if (body.reviewCadence !== undefined) {
     payload.reviewed_at = body.reviewCadence ? new Date().toISOString() : null;
   }
 

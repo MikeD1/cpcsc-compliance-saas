@@ -90,22 +90,18 @@ Reason: before we invite real users, the product must not break trust at signup,
 
 ### Team and organization management
 
-- [ ] Add organization profile/settings.
-  - Legal name.
-  - CanadaBuys ID.
-  - Primary contact.
-  - Readiness scope.
-  - Systems/assets in scope.
+- [x] Add organization profile/settings.
+  - Completed: `/settings` now exposes schema-backed organization name editing and primary contact display.
+  - Still schema-blocked: CanadaBuys ID, editable primary contact details, readiness scope, and systems/assets in scope need explicit Supabase columns/migration docs before wiring writes.
 
-- [ ] Add team/member management basics.
-  - Invite members.
-  - Roles.
-  - Active/invited status.
+- [x] Add team/member management basics.
+  - Completed: settings now lists organization members with role/status for ownership context.
+  - Still pending: invite members, role editing, and active/invited lifecycle actions.
 
-- [ ] Use actual organization members for control ownership.
-  - Replace free-text/raw membership IDs with a member picker.
-  - Display owner names/emails.
-  - Validate assignments.
+- [x] Use actual organization members for control ownership.
+  - Completed: control editor uses active organization members as owner options.
+  - Completed: dashboard/reports/PDF display member names/emails instead of raw IDs.
+  - Completed: control update API validates owner membership belongs to the current organization and is active.
 
 ### Control workflow
 

@@ -8,6 +8,7 @@ const nav = [
   { href: "/controls", label: "Controls" },
   { href: "/evidence", label: "Evidence" },
   { href: "/reports", label: "Reports" },
+  { href: "/settings", label: "Settings" },
 ];
 
 export function AppNav() {
