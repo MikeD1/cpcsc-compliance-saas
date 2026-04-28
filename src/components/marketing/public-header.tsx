@@ -22,6 +22,9 @@ export function PublicHeader() {
             <Link href="/buyer-packet" className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
               Buyer packet
             </Link>
+            <Link href="/sample-report" className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
+              Sample report
+            </Link>
             <Link href="/security" className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
               Security
             </Link>
@@ -45,10 +48,10 @@ export function PublicHeader() {
             Pricing
           </Link>
           <Link
-            href="/buyer-packet"
+            href="/sample-report"
             className="rounded-full border border-slate-200 bg-white px-4 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
           >
-            Buyer packet
+            Sample report
           </Link>
           <Link
             href="/demo"

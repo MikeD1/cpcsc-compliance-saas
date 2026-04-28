@@ -105,6 +105,12 @@ export default function BuyerPacketPage() {
             View pricing
           </Link>
           <Link
+            href="/sample-report"
+            className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-800 transition hover:border-cyan-200 hover:text-cyan-800"
+          >
+            See sample report
+          </Link>
+          <Link
             href="/demo"
             className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-800 transition hover:border-cyan-200 hover:text-cyan-800"
           >

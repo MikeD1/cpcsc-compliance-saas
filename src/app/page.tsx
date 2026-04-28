@@ -47,8 +47,14 @@ export default function HomePage() {
               View pricing
             </Link>
             <Link
-              href="/demo"
+              href="/sample-report"
               className="inline-flex items-center justify-center rounded-full border border-cyan-300/20 bg-cyan-300/10 px-6 py-3.5 text-sm font-medium text-cyan-100 transition hover:bg-cyan-300/15"
+            >
+              See sample report
+            </Link>
+            <Link
+              href="/demo"
+              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-medium text-white transition hover:bg-white/10"
             >
               Book walkthrough
             </Link>
