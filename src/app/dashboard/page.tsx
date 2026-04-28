@@ -49,7 +49,7 @@ export default async function DashboardPage({
     );
   }
 
-  const { organization, assessment, controlCards, statusCounts, actionSummary, priorityActions, members } = await getDashboardData();
+  const { organization, assessment, controlCards, statusCounts, actionSummary, priorityActions, readinessDiagnosis, members } = await getDashboardData();
 
   return (
     <AppShell organizationName={access.user.organization?.name}>
@@ -96,6 +96,53 @@ export default async function DashboardPage({
         missingEvidence={actionSummary.missingEvidence}
         reviewedControls={actionSummary.reviewed}
       />
+
+      <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Readiness diagnosis</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{readinessDiagnosis.confidenceLevel} confidence</h2>
+            <p className="mt-3 max-w-3xl text-base leading-8 text-slate-700">{readinessDiagnosis.headline}</p>
+          </div>
+          <Link href="/reports" className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800">
+            Export buyer report
+          </Link>
+        </div>
+
+        <div className="mt-6 grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+          <div className="rounded-[1.6rem] border border-slate-200 bg-slate-50 p-5">
+            <h3 className="text-sm font-semibold text-slate-950">Why this diagnosis</h3>
+            <ul className="mt-4 grid gap-3 text-sm leading-6 text-slate-700 sm:grid-cols-2">
+              {readinessDiagnosis.why.map((reason) => (
+                <li key={reason} className="rounded-[1rem] border border-slate-200 bg-white px-4 py-3">{reason}</li>
+              ))}
+            </ul>
+            <p className="mt-4 rounded-[1rem] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900">
+              <span className="font-semibold">Strongest area:</span> {readinessDiagnosis.strongestArea}
+            </p>
+          </div>
+
+          <div className="rounded-[1.6rem] border border-amber-200 bg-amber-50 p-5">
+            <h3 className="text-sm font-semibold text-amber-950">Riskiest buyer-conversation gaps</h3>
+            <div className="mt-4 grid gap-3">
+              {readinessDiagnosis.riskiestGaps.length === 0 ? (
+                <p className="rounded-[1rem] border border-emerald-200 bg-white px-4 py-3 text-sm leading-6 text-emerald-800">No obvious high-risk gaps from the current workspace data.</p>
+              ) : null}
+              {readinessDiagnosis.riskiestGaps.map((gap) => (
+                <div key={`${gap.officialId}-${gap.title}`} className="rounded-[1rem] border border-amber-200 bg-white px-4 py-3">
+                  <p className="text-sm font-semibold text-slate-950">{gap.officialId}: {gap.title}</p>
+                  <p className="mt-1 text-sm leading-6 text-amber-900">{gap.reason}</p>
+                </div>
+              ))}
+            </div>
+            {readinessDiagnosis.evidenceQualityWarnings.length > 0 ? (
+              <p className="mt-4 text-sm leading-6 text-amber-950">
+                Evidence quality check: completed controls still worth reviewing — {readinessDiagnosis.evidenceQualityWarnings.join(", ")}.
+              </p>
+            ) : null}
+          </div>
+        </div>
+      </section>
 
       <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">

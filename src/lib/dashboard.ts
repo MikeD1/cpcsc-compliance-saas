@@ -219,6 +219,60 @@ export async function getDashboardData() {
     ).values(),
   );
 
+  const strongestCategory = [...categorySummaries]
+    .sort((a, b) => b.completed / Math.max(b.total, 1) - a.completed / Math.max(a.total, 1))[0];
+  const riskiestControls = controlCards
+    .filter((control) => control.response?.status !== "COMPLETE")
+    .sort((a, b) => {
+      const aScore = (a.response?.ownerMembershipId ? 0 : 3) + ((a.response?.evidenceItems.length ?? 0) > 0 ? 0 : 3) + (a.id <= 4 ? 2 : a.id <= 9 ? 1 : 0);
+      const bScore = (b.response?.ownerMembershipId ? 0 : 3) + ((b.response?.evidenceItems.length ?? 0) > 0 ? 0 : 3) + (b.id <= 4 ? 2 : b.id <= 9 ? 1 : 0);
+      return bScore - aScore;
+    })
+    .slice(0, 3);
+  const evidenceQualityWarnings = controlCards
+    .filter((control) => {
+      const details = control.response?.implementationDetails?.trim() ?? "";
+      return control.response?.status === "COMPLETE" && ((control.response?.evidenceItems.length ?? 0) === 0 || details.length < 80);
+    })
+    .slice(0, 3)
+    .map((control) => `${control.officialId}: ${control.title}`);
+  const readinessDiagnosis = {
+    confidenceLevel:
+      actionSummary.readinessPercent >= 85 && actionSummary.missingEvidence === 0
+        ? "High"
+        : actionSummary.readinessPercent >= 55 && actionSummary.missingEvidence <= 4
+          ? "Moderate"
+          : "Early",
+    headline:
+      actionSummary.readinessPercent >= 85 && actionSummary.missingEvidence === 0
+        ? "This workspace is close to a buyer-ready CPCSC Level 1 snapshot."
+        : actionSummary.readinessPercent >= 55
+          ? "This workspace has a credible start, but the buyer-ready story still has gaps."
+          : "This workspace is not buyer-ready yet because ownership, evidence, or review coverage is still thin.",
+    why: [
+      `${statusCounts.complete} of ${controlCards.length} controls are marked complete.`,
+      `${actionSummary.missingEvidence} controls still have no evidence records.`,
+      `${actionSummary.unassigned} controls still need an accountable owner.`,
+      `${actionSummary.readyForReview} controls are waiting for review.`
+    ],
+    strongestArea: strongestCategory
+      ? `${strongestCategory.category}: ${strongestCategory.completed}/${strongestCategory.total} controls complete.`
+      : "No strongest area yet.",
+    riskiestGaps: riskiestControls.map((control) => ({
+      officialId: control.officialId,
+      title: control.title,
+      reason:
+        !control.response?.ownerMembershipId && (control.response?.evidenceItems.length ?? 0) === 0
+          ? "No owner and no evidence record yet."
+          : !control.response?.ownerMembershipId
+            ? "No owner assigned yet."
+            : (control.response?.evidenceItems.length ?? 0) === 0
+              ? "No evidence record attached yet."
+              : "Implementation or review is not complete yet.",
+    })),
+    evidenceQualityWarnings,
+  };
+
   const recentEvidence = controlCards
     .flatMap((item) =>
       (item.response?.evidenceItems ?? []).map((evidence) => ({
@@ -245,6 +299,7 @@ export async function getDashboardData() {
     statusCounts,
     actionSummary,
     priorityActions,
+    readinessDiagnosis,
     categorySummaries,
     recentEvidence,
     members,
