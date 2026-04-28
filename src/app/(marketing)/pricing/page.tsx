@@ -74,6 +74,16 @@ export default async function PricingPage({
             >
               Start with {tier.name}
             </CheckoutButton>
+            <a
+              href="/demo"
+              className={`mt-3 inline-flex w-full items-center justify-center rounded-full border px-4 py-3 text-sm font-medium transition ${
+                tier.slug === "growth"
+                  ? "border-white/15 bg-white/5 text-white hover:bg-white/10"
+                  : "border-slate-200 bg-white text-slate-800 hover:border-cyan-200 hover:text-cyan-800"
+              }`}
+            >
+              Book readiness walkthrough
+            </a>
           </article>
         ))}
       </section>

@@ -19,11 +19,17 @@ export function PublicHeader() {
             <Link href="/pricing" className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
               Pricing
             </Link>
+            <Link href="/buyer-packet" className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
+              Buyer packet
+            </Link>
             <Link href="/security" className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
               Security
             </Link>
             <Link href="/login" className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
               Log in
+            </Link>
+            <Link href="/demo" className="rounded-full border border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-medium text-cyan-800 transition hover:bg-cyan-100">
+              Book walkthrough
             </Link>
             <Link href="/signup" className="rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800">
               Get started
@@ -31,22 +37,28 @@ export function PublicHeader() {
           </nav>
         </div>
 
-        <nav className="mt-4 flex gap-2 md:hidden">
+        <nav className="mt-4 grid grid-cols-2 gap-2 md:hidden">
           <Link
             href="/pricing"
-            className="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+            className="rounded-full border border-slate-200 bg-white px-4 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
           >
             Pricing
           </Link>
           <Link
-            href="/login"
-            className="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+            href="/buyer-packet"
+            className="rounded-full border border-slate-200 bg-white px-4 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
           >
-            Log in
+            Buyer packet
+          </Link>
+          <Link
+            href="/demo"
+            className="rounded-full border border-cyan-200 bg-cyan-50 px-4 py-2.5 text-center text-sm font-medium text-cyan-800 transition hover:bg-cyan-100"
+          >
+            Walkthrough
           </Link>
           <Link
             href="/signup"
-            className="flex-1 rounded-full bg-slate-950 px-4 py-2.5 text-center text-sm font-medium text-white transition hover:bg-slate-800"
+            className="rounded-full bg-slate-950 px-4 py-2.5 text-center text-sm font-medium text-white transition hover:bg-slate-800"
           >
             Sign up
           </Link>

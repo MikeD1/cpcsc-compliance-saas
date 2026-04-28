@@ -3,6 +3,8 @@ import Link from "next/link";
 import { PublicHeader } from "@/components/marketing/public-header";
 
 const footerLinks = [
+  { href: "/buyer-packet", label: "Buyer packet" },
+  { href: "/demo", label: "Walkthrough" },
   { href: "/security", label: "Security" },
   { href: "/privacy", label: "Privacy" },
   { href: "/terms", label: "Terms" },
