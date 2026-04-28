@@ -1,3 +1,4 @@
+import { ArtifactPreview } from "@/components/marketing/artifact-preview";
 import { CheckoutButton } from "@/components/marketing/checkout-button";
 import { PublicShell } from "@/components/marketing/public-shell";
 import { getCurrentAccess } from "@/lib/access";
@@ -76,6 +77,8 @@ export default async function PricingPage({
           </article>
         ))}
       </section>
+
+      <ArtifactPreview />
 
       <section className="grid gap-4 rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] md:grid-cols-3">
         {reassurance.map((item) => (

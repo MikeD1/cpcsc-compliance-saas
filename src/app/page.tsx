@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArtifactPreview } from "@/components/marketing/artifact-preview";
 import { PublicShell } from "@/components/marketing/public-shell";
 
 const features = [
@@ -82,6 +83,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <ArtifactPreview />
     </PublicShell>
   );
 }
