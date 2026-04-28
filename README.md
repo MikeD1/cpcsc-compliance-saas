@@ -91,10 +91,12 @@ Required for billing:
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
 - `STRIPE_WEBHOOK_SECRET`
 - `NEXT_PUBLIC_APP_URL`
-- `STRIPE_START_PRODUCT_ID`
 - `STRIPE_START_PRICE_ID`
-- `STRIPE_GROWTH_PRODUCT_ID`
 - `STRIPE_GROWTH_PRICE_ID`
+
+Optional Stripe metadata:
+- `STRIPE_START_PRODUCT_ID`
+- `STRIPE_GROWTH_PRODUCT_ID`
 
 Recommended for launch:
 - `NEXT_PUBLIC_SUPPORT_EMAIL`
@@ -123,8 +125,6 @@ npm start
 
 ## Documentation
 
-- `PRODUCTION_READINESS.md` — product-readiness tracker
-- `PRODUCTION_FUNCTIONALITY_GAPS.md` — production-level missing functionality inventory
 - `EXTERNAL_TESTER_SCRIPT.md` — private-launch test script
 - `docs/supabase-schema.md` — current schema assumptions and migration checklist
 - `supabase/migrations/20260427015000_production_foundation.sql` — executable baseline tables, RLS policies, invitation foundation, audit/support tables, and Stripe webhook idempotency table
@@ -132,6 +132,9 @@ npm start
 - `supabase/migrations/20260427030000_controlplane_to_complianceone_upgrade.sql` — compatibility upgrade for Supabase projects that already applied the original ControlPlane schema
 - `docs/security-boundaries.md` — authorization and service-role boundaries
 - `docs/db-rls-verification.md` — migration, RLS, invitation, and webhook verification runbook
+- `docs/trust-gate-verification.md` — dated results from Supabase/RLS and Stripe trust-gate checks
+- `scripts/trust-gate-supabase-check.mjs` — practical Supabase table reachability and tenant-isolation smoke test
+- `scripts/trust-gate-stripe-check.mjs` — Stripe checkout, portal, reconcile, webhook, and duplicate-webhook smoke test
 
 ## Launch-test checklist
 
