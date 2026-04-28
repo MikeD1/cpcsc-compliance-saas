@@ -33,6 +33,14 @@ type ExportPayload = {
   riskStatement: string | null;
   generatedAt: string;
   readinessPercent: number;
+  readinessDiagnosis: {
+    confidenceLevel: string;
+    headline: string;
+    why: string[];
+    strongestArea: string;
+    riskiestGaps: Array<{ officialId: string; title: string; reason: string }>;
+    evidenceQualityWarnings: string[];
+  };
   actionPlan: ExportAction[];
   controls: ExportControl[];
 };
@@ -103,12 +111,7 @@ export function buildAssessmentPdf(payload: ExportPayload) {
   const ownerGaps = payload.controls.filter((control) => !control.owner).length;
   const evidenceGaps = payload.controls.filter((control) => control.evidenceItems.length === 0).length;
   const evidenceCoverage = Math.round(((totalControls - evidenceGaps) / Math.max(totalControls, 1)) * 100);
-  const executiveSummary =
-    payload.readinessPercent >= 80
-      ? "The workspace shows strong CPCSC Level 1 readiness progress, with remaining work concentrated in review, evidence, and exception closure."
-      : payload.readinessPercent >= 40
-        ? "The workspace shows meaningful readiness progress, but buyers will still expect clearer closure of owner, evidence, and review gaps."
-        : "The workspace is early in the readiness process. The best next step is to establish ownership, attach evidence, and turn open controls into a credible action plan.";
+  const executiveSummary = payload.readinessDiagnosis.headline;
 
   doc.setFillColor(15, 23, 42);
   doc.roundedRect(margin, y, usableWidth, 112, 18, 18, "F");
@@ -139,10 +142,24 @@ export function buildAssessmentPdf(payload: ExportPayload) {
 
   heading("Readiness score explanation", 15);
   writeParagraph(
-    `The readiness score is the percentage of CPCSC Level 1 controls marked complete in this workspace. ${complete} of ${totalControls} controls are complete. Controls that are ready for review, in progress, or not started are not counted as complete.`,
+    `Confidence level: ${payload.readinessDiagnosis.confidenceLevel}. The readiness score is the percentage of CPCSC Level 1 controls marked complete in this workspace. ${complete} of ${totalControls} controls are complete. Controls that are ready for review, in progress, or not started are not counted as complete.`,
     10,
-    18,
+    10,
   );
+  payload.readinessDiagnosis.why.forEach((reason) => writeParagraph(`• ${reason}`, 9, 4));
+  writeParagraph(`Strongest area: ${payload.readinessDiagnosis.strongestArea}`, 9, 14);
+
+  heading("Riskiest buyer-conversation gaps", 15);
+  if (payload.readinessDiagnosis.riskiestGaps.length === 0) {
+    writeParagraph("No obvious high-risk gaps from the current workspace data.", 10, 12);
+  } else {
+    payload.readinessDiagnosis.riskiestGaps.forEach((gap) => {
+      writeParagraph(`• ${gap.officialId}: ${gap.title} — ${gap.reason}`, 10, 6);
+    });
+  }
+  if (payload.readinessDiagnosis.evidenceQualityWarnings.length > 0) {
+    writeParagraph(`Evidence quality watchlist: ${payload.readinessDiagnosis.evidenceQualityWarnings.join(", ")}.`, 9, 14);
+  }
 
   heading("Action plan", 15);
   if (payload.actionPlan.length === 0) {

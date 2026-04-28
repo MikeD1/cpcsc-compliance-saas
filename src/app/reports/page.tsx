@@ -29,7 +29,7 @@ export default async function ReportsPage() {
     );
   }
 
-  const { statusCounts, categorySummaries, actionSummary, recentEvidence, controlCards, priorityActions, organization } = await getDashboardData();
+  const { statusCounts, categorySummaries, actionSummary, recentEvidence, controlCards, priorityActions, readinessDiagnosis, organization } = await getDashboardData();
   const totalControls = controlCards.length;
   const controlsWithEvidence = totalControls - actionSummary.missingEvidence;
   const evidenceCoveragePercent = Math.round((controlsWithEvidence / Math.max(totalControls, 1)) * 100);
@@ -49,12 +49,7 @@ export default async function ReportsPage() {
     };
   });
 
-  const executiveSummary =
-    actionSummary.readinessPercent >= 80
-      ? "The workspace shows strong CPCSC Level 1 readiness progress, with remaining work concentrated in review, evidence, and exception closure."
-      : actionSummary.readinessPercent >= 40
-        ? "The workspace shows meaningful readiness progress, but buyers will still expect clearer closure of owner, evidence, and review gaps."
-        : "The workspace is early in the readiness process. The best next step is to establish ownership, attach evidence, and turn open controls into a credible action plan.";
+  const executiveSummary = readinessDiagnosis.headline;
 
   return (
     <AppShell organizationName={access.user.organization?.name}>
@@ -86,10 +81,10 @@ export default async function ReportsPage() {
           <h2 className="mt-3 text-2xl font-semibold">{organization.name}</h2>
           <p className="mt-4 text-sm leading-7 text-slate-300">{executiveSummary}</p>
           <div className="mt-6 grid grid-cols-2 gap-4">
+            <Snapshot label="Confidence" value={readinessDiagnosis.confidenceLevel} />
             <Snapshot label="Readiness" value={`${actionSummary.readinessPercent}%`} />
             <Snapshot label="Evidence coverage" value={`${evidenceCoveragePercent}%`} />
             <Snapshot label="Open gaps" value={String(totalControls - statusCounts.complete)} />
-            <Snapshot label="Ready for review" value={String(statusCounts.review)} />
           </div>
         </div>
       </section>
@@ -106,6 +101,27 @@ export default async function ReportsPage() {
         </div>
         <div className="mt-5 rounded-[1.4rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-7 text-amber-900">
           <span className="font-semibold">Readiness score explanation:</span> The score is the percentage of CPCSC Level 1 controls marked complete in this workspace. It is a management readiness metric, not a certification, audit opinion, or Government of Canada approval.
+        </div>
+        <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+          <div className="rounded-[1.4rem] border border-slate-200 bg-slate-50 px-5 py-4">
+            <h3 className="text-sm font-semibold text-slate-950">Assessment basis</h3>
+            <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-700">
+              {readinessDiagnosis.why.map((reason) => (
+                <li key={reason}>• {reason}</li>
+              ))}
+            </ul>
+            <p className="mt-3 text-sm leading-6 text-emerald-800"><span className="font-semibold">Strongest area:</span> {readinessDiagnosis.strongestArea}</p>
+          </div>
+          <div className="rounded-[1.4rem] border border-amber-200 bg-amber-50 px-5 py-4">
+            <h3 className="text-sm font-semibold text-amber-950">Riskiest gaps to explain</h3>
+            <div className="mt-3 grid gap-2">
+              {readinessDiagnosis.riskiestGaps.map((gap) => (
+                <p key={`${gap.officialId}-${gap.title}`} className="text-sm leading-6 text-amber-900">
+                  <span className="font-semibold">{gap.officialId}: {gap.title}</span> — {gap.reason}
+                </p>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
