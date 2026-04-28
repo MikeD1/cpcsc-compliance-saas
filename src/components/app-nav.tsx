@@ -37,7 +37,7 @@ export function AppNav() {
         })}
         <Link
           href="/exports/assessment.pdf"
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-[0.85rem] bg-slate-950 px-3 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-[0.85rem] border border-slate-200 bg-white/70 px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-white hover:text-slate-950 hover:shadow-sm"
         >
           Export PDF
         </Link>
