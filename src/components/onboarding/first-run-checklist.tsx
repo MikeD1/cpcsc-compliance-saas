@@ -24,63 +24,67 @@ export function FirstRunChecklist({
   const items: OnboardingItem[] = [
     {
       title: "Confirm organization profile",
-      description: `${organizationName} is your active workspace. Review the name, billing access, and team list before inviting testers.`,
+      description: `${organizationName} is your active workspace. Add the company profile and readiness scope before inviting testers.`,
       href: "/settings#organization-profile",
       actionLabel: "Review profile",
       complete: Boolean(organizationName),
     },
     {
       title: "Invite or confirm teammates",
-      description: memberCount > 1 ? `${memberCount} members are in this workspace.` : "Invite at least one teammate or confirm this will stay a solo tester workspace.",
+      description: memberCount > 1 ? `${memberCount} members are in this workspace.` : "Invite a teammate or confirm this will stay a solo workspace for now.",
       href: "/settings#team-invitations",
       actionLabel: "Invite teammate",
       complete: memberCount > 1,
     },
     {
-      title: "Assign control owners",
-      description: unassignedControls === 0 ? "All controls have owners." : `${unassignedControls} controls still need an owner.`,
+      title: "Assign the first owner",
+      description: unassignedControls < 13 ? "At least one control has an accountable owner." : "Assign one control owner so work has a clear home.",
       href: "/controls#assign-owners",
-      actionLabel: "Assign owners",
-      complete: unassignedControls === 0,
+      actionLabel: "Assign owner",
+      complete: unassignedControls < 13,
     },
     {
-      title: "Add first evidence records",
-      description: missingEvidence === 0 ? "Every control has at least one evidence reference." : `${missingEvidence} controls still need evidence references.`,
+      title: "Add the first evidence record",
+      description: missingEvidence < 13 ? "At least one evidence reference has been added." : "Add one evidence record to prove the evidence workflow.",
       href: "/evidence#add-evidence",
       actionLabel: "Add evidence",
-      complete: missingEvidence === 0,
+      complete: missingEvidence < 13,
     },
     {
-      title: "Generate readiness report",
-      description: reviewedControls > 0 ? "At least one control has been reviewed; export a report when ready." : "Review at least one control, then export the readiness report.",
+      title: "Open the first report",
+      description: reviewedControls > 0 ? "At least one control has been reviewed; the report has useful content to inspect." : "Open the report once there is some owner/evidence activity to review.",
       href: "/reports#download-report",
       actionLabel: "Open report",
       complete: reviewedControls > 0,
     },
   ];
+
   const completeCount = items.filter((item) => item.complete).length;
+  const incompleteItems = items.filter((item) => !item.complete);
+
+  if (completeCount === items.length) {
+    return null;
+  }
 
   return (
-    <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
+    <section className="rounded-[2rem] border border-cyan-100 bg-cyan-50/80 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.08)] lg:p-6">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">First-run checklist</p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Set up the workspace for a useful CPCSC readiness pass</h2>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-            This keeps private-beta testers focused on the smallest path that proves the product: organization, people, owners, evidence, and report.
+          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Workspace setup</p>
+          <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">Finish the short setup path</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
+            This is only for first-run setup. Once these are done, the ongoing work moves to Next Best Actions.
           </p>
         </div>
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">{completeCount}/{items.length} complete</span>
+        <span className="rounded-full bg-white px-3 py-1 text-sm font-medium text-slate-700 shadow-sm">{completeCount}/{items.length} complete</span>
       </div>
 
-      <div className="mt-6 grid gap-3 lg:grid-cols-5">
-        {items.map((item, index) => (
-          <Link key={item.title} href={item.href} className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4 transition hover:-translate-y-0.5 hover:border-cyan-200 hover:bg-white hover:shadow-sm">
+      <div className="mt-5 grid gap-3 lg:grid-cols-3">
+        {incompleteItems.map((item, index) => (
+          <Link key={item.title} href={item.href} className="rounded-[1.25rem] border border-cyan-100 bg-white p-4 transition hover:-translate-y-0.5 hover:border-cyan-200 hover:shadow-sm">
             <div className="flex items-center justify-between gap-3">
-              <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600">Step {index + 1}</span>
-              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${item.complete ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
-                {item.complete ? "Done" : "Open"}
-              </span>
+              <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-cyan-800">Setup {index + 1}</span>
+              <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">Open</span>
             </div>
             <h3 className="mt-4 text-sm font-semibold text-slate-950">{item.title}</h3>
             <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
