@@ -16,6 +16,14 @@ type WorkspaceControl = {
   whatToDo: string[];
   exampleImplementation: string;
   evidenceExamples: string[];
+  readinessGuidance: {
+    plainEnglishGoal: string;
+    weakImplementationExample: string;
+    strongImplementationExample: string;
+    commonMistakes: string[];
+    buyerQuestions: string[];
+    suggestedNextAction: string;
+  };
   response: {
     status: ControlStatus;
     implementationDetails: string;

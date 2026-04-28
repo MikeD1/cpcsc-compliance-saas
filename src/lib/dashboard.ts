@@ -1,4 +1,4 @@
-import { controls as controlCatalog } from "@/lib/cpcsc";
+import { controls as controlCatalog, getControlReadinessGuidance } from "@/lib/cpcsc";
 import { getCurrentUser } from "@/lib/auth";
 import { getMemberDisplayName, getOrganizationMembers } from "@/lib/members";
 import { getSupabaseAdmin } from "@/lib/supabase";
@@ -69,6 +69,7 @@ export async function getDashboardData() {
 
     return {
       ...control,
+      readinessGuidance: getControlReadinessGuidance(control),
       response: row
         ? {
             id: row.id,

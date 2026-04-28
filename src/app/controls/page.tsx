@@ -57,6 +57,7 @@ export default async function ControlsPage({
           whatToDo: control.whatToDo,
           exampleImplementation: control.exampleImplementation,
           evidenceExamples: control.evidenceExamples,
+          readinessGuidance: control.readinessGuidance,
           response: control.response
             ? {
                 status: control.response.status as "NOT_STARTED" | "IN_PROGRESS" | "READY_FOR_REVIEW" | "COMPLETE",

@@ -10,6 +10,15 @@ export type ControlDefinition = {
   evidenceExamples: string[];
 };
 
+export type ControlReadinessGuidance = {
+  plainEnglishGoal: string;
+  weakImplementationExample: string;
+  strongImplementationExample: string;
+  commonMistakes: string[];
+  buyerQuestions: string[];
+  suggestedNextAction: string;
+};
+
 export const evidenceRetentionGuidance = [
   "Account lists",
   "Device lists",
@@ -308,3 +317,52 @@ export const controls: ControlDefinition[] = [
     ],
   },
 ];
+
+const categoryMistakes: Record<string, string[]> = {
+  "Access control": [
+    "Saying access is handled informally without showing who approves, reviews, or removes it.",
+    "Relying on shared accounts, personal tools, or one-off permissions that are hard to review later.",
+  ],
+  "Identification and authentication": [
+    "Listing password or MFA intentions without showing the actual identity-provider settings.",
+    "Treating privileged accounts the same as standard user accounts.",
+  ],
+  "Media protection": [
+    "Disposing of devices without a repeatable wipe, destruction, or vendor-certificate record.",
+    "Keeping no link between asset inventory, retirement, and sanitization outcomes.",
+  ],
+  "Physical protection": [
+    "Assuming office locks are enough without documenting who has access and how visitors are controlled.",
+    "Forgetting printed records, cabinets, badges, keys, and temporary access in the evidence trail.",
+  ],
+  "Systems and communications protection": [
+    "Using a firewall but not documenting inbound exposure, network boundaries, or change history.",
+    "Mixing public-facing systems with internal systems without a clear separation story.",
+  ],
+  "System and information integrity": [
+    "Relying on automatic tools without keeping a simple review or exception trail.",
+    "Recording that protection exists but not showing update status, detection history, or remediation follow-up.",
+  ],
+};
+
+export function getControlReadinessGuidance(control: ControlDefinition): ControlReadinessGuidance {
+  const evidenceLead = control.evidenceExamples[0]?.toLowerCase() ?? "a current policy, register, screenshot, or review note";
+  const evidenceSecond = control.evidenceExamples[1]?.toLowerCase() ?? "a supporting record";
+  const mistakes = categoryMistakes[control.category] ?? [
+    "Writing a general intention without showing the process, owner, cadence, and evidence trail.",
+    "Marking the control complete before evidence is current enough to support a buyer conversation.",
+  ];
+
+  return {
+    plainEnglishGoal: `Be able to explain how your organization can ${control.objective.charAt(0).toLowerCase()}${control.objective.slice(1)}`,
+    weakImplementationExample: `We have a process for ${control.title.toLowerCase()} and handle it when needed.`,
+    strongImplementationExample: control.exampleImplementation,
+    commonMistakes: mistakes,
+    buyerQuestions: [
+      `Who owns ${control.title.toLowerCase()} and how often is it reviewed?`,
+      "What record would you show to prove this control is operating today?",
+      "If something changes, how would the evidence and owner be updated?",
+    ],
+    suggestedNextAction: `Add a short implementation note and attach at least one evidence record, such as ${evidenceLead} or ${evidenceSecond}.`,
+  };
+}

@@ -14,6 +14,14 @@ type ControlEditorProps = {
     whatToDo: string[];
     exampleImplementation: string;
     evidenceExamples: string[];
+    readinessGuidance: {
+      plainEnglishGoal: string;
+      weakImplementationExample: string;
+      strongImplementationExample: string;
+      commonMistakes: string[];
+      buyerQuestions: string[];
+      suggestedNextAction: string;
+    };
     response: {
       status: "NOT_STARTED" | "IN_PROGRESS" | "READY_FOR_REVIEW" | "COMPLETE";
       implementationDetails: string;
@@ -137,17 +145,59 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
       </div>
 
       <div className="grid gap-6 p-6 xl:grid-cols-[0.88fr_1.12fr] xl:p-8">
-        <section className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-          <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">What this control expects</h3>
-          <p className="mt-4 text-sm leading-7 text-slate-600">{control.objective}</p>
-          <ul className="mt-5 space-y-3 text-sm leading-7 text-slate-700">
-            {control.whatToDo.map((item) => (
-              <li key={item} className="flex gap-3">
-                <span className="mt-2 h-2 w-2 rounded-full bg-cyan-500" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
+        <section className="grid gap-4">
+          <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">What this control expects</h3>
+            <p className="mt-4 text-sm leading-7 text-slate-600">{control.objective}</p>
+            <ul className="mt-5 space-y-3 text-sm leading-7 text-slate-700">
+              {control.whatToDo.map((item) => (
+                <li key={item} className="flex gap-3">
+                  <span className="mt-2 h-2 w-2 rounded-full bg-cyan-500" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="rounded-[1.7rem] border border-cyan-100 bg-cyan-50 p-5 shadow-sm">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-900">What good looks like</h3>
+            <p className="mt-4 text-sm leading-7 text-cyan-950">{control.readinessGuidance.plainEnglishGoal}</p>
+            <div className="mt-4 grid gap-3">
+              <div className="rounded-[1.2rem] border border-amber-200 bg-amber-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-800">Weak answer</p>
+                <p className="mt-2 text-sm leading-6 text-amber-950">“{control.readinessGuidance.weakImplementationExample}”</p>
+              </div>
+              <div className="rounded-[1.2rem] border border-emerald-200 bg-emerald-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-800">Stronger answer</p>
+                <p className="mt-2 text-sm leading-6 text-emerald-950">“{control.readinessGuidance.strongImplementationExample}”</p>
+              </div>
+            </div>
+            <p className="mt-4 rounded-[1.2rem] border border-cyan-200 bg-white/70 px-4 py-3 text-sm leading-6 text-cyan-950">
+              <span className="font-semibold">Suggested next action:</span> {control.readinessGuidance.suggestedNextAction}
+            </p>
+          </div>
+
+          <div className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Buyer conversation prep</h3>
+            <p className="mt-3 text-sm leading-6 text-slate-600">Use these prompts to test whether the control is ready for a customer, partner, or procurement-readiness conversation.</p>
+            <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-700">
+              {control.readinessGuidance.buyerQuestions.map((question) => (
+                <li key={question} className="rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3">{question}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="rounded-[1.7rem] border border-rose-100 bg-rose-50 p-5 shadow-sm">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-rose-900">Common mistakes</h3>
+            <ul className="mt-4 space-y-3 text-sm leading-6 text-rose-950">
+              {control.readinessGuidance.commonMistakes.map((mistake) => (
+                <li key={mistake} className="flex gap-3">
+                  <span className="mt-2 h-2 w-2 rounded-full bg-rose-500" />
+                  <span>{mistake}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </section>
 
         <section className="grid gap-4">
