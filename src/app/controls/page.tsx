@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { SubscriptionGate } from "@/components/auth/subscription-gate";
-import { ControlEditor } from "@/components/controls/control-editor";
+import { ControlsWorkspace } from "@/components/controls/controls-workspace";
 import { getCurrentAccess } from "@/lib/access";
 import { getDashboardData } from "@/lib/dashboard";
 
@@ -46,33 +46,30 @@ export default async function ControlsPage({
         </div>
       </section>
 
-      <section id="assign-owners" className="scroll-mt-28 grid gap-6">
-        {controlCards.map((control) => (
-          <ControlEditor
-            key={control.response?.id ?? control.id}
-            members={members}
-            control={{
-              id: control.response?.id ?? String(control.id),
-              displayId: control.officialId,
-              title: control.title,
-              category: control.category,
-              objective: control.objective,
-              whatToDo: control.whatToDo,
-              response: control.response
-                ? {
-                    status: control.response.status as "NOT_STARTED" | "IN_PROGRESS" | "READY_FOR_REVIEW" | "COMPLETE",
-                    implementationDetails: control.response.implementationDetails,
-                    owner: control.response.owner,
-                    ownerMembershipId: control.response.ownerMembershipId,
-                    reviewCadence: control.response.reviewCadence,
-                    reviewedAt: control.response.reviewedAt,
-                    evidenceItems: control.response.evidenceItems,
-                  }
-                : null,
-            }}
-          />
-        ))}
-      </section>
+      <ControlsWorkspace
+        members={members}
+        controls={controlCards.map((control) => ({
+          id: control.response?.id ?? String(control.id),
+          displayId: control.officialId,
+          title: control.title,
+          category: control.category,
+          objective: control.objective,
+          whatToDo: control.whatToDo,
+          exampleImplementation: control.exampleImplementation,
+          evidenceExamples: control.evidenceExamples,
+          response: control.response
+            ? {
+                status: control.response.status as "NOT_STARTED" | "IN_PROGRESS" | "READY_FOR_REVIEW" | "COMPLETE",
+                implementationDetails: control.response.implementationDetails,
+                owner: control.response.owner,
+                ownerMembershipId: control.response.ownerMembershipId,
+                reviewCadence: control.response.reviewCadence,
+                reviewedAt: control.response.reviewedAt,
+                evidenceItems: control.response.evidenceItems,
+              }
+            : null,
+        }))}
+      />
     </AppShell>
   );
 }

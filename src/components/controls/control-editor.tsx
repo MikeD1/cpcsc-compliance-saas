@@ -12,6 +12,8 @@ type ControlEditorProps = {
     category: string;
     objective: string;
     whatToDo: string[];
+    exampleImplementation: string;
+    evidenceExamples: string[];
     response: {
       status: "NOT_STARTED" | "IN_PROGRESS" | "READY_FOR_REVIEW" | "COMPLETE";
       implementationDetails: string;
@@ -44,6 +46,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
   const [ownerMembershipId, setOwnerMembershipId] = useState(control.response?.ownerMembershipId ?? "");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState<string | null>(null);
+  const [dirty, setDirty] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function saveControl(reviewAction?: "request-review" | "mark-reviewed" | "clear-review") {
@@ -72,16 +75,20 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
 
       if (reviewAction === "request-review") {
         setStatus("READY_FOR_REVIEW");
-        setSaved("Review requested");
+        setSaved("Marked ready for review");
+        setDirty(false);
       } else if (reviewAction === "mark-reviewed") {
         setStatus("COMPLETE");
         setReviewedAt(new Date().toISOString());
         setSaved("Marked reviewed");
+        setDirty(false);
       } else if (reviewAction === "clear-review") {
         setReviewedAt(null);
         setSaved("Review date cleared");
+        setDirty(false);
       } else {
-        setSaved("Saved");
+        setSaved("Saved just now");
+        setDirty(false);
       }
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "Unable to save control.");
@@ -100,11 +107,15 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               {control.displayId}: {control.title}
             </h2>
             <p className="mt-2 text-sm text-slate-300">{reviewedAt ? `Last reviewed ${new Date(reviewedAt).toISOString().slice(0, 10)}` : "Not reviewed yet"}</p>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-cyan-100">Work this like an assistant queue: confirm what is expected, adapt the example notes, attach evidence, then mark it ready for review.</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <select
               value={status}
-              onChange={(event) => setStatus(event.target.value as typeof status)}
+              onChange={(event) => {
+                setStatus(event.target.value as typeof status);
+                setDirty(true);
+              }}
               className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-white outline-none"
             >
               {statuses.map((option) => (
@@ -119,7 +130,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               disabled={saving}
               className="rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-slate-100 disabled:opacity-60"
             >
-              {saving ? "Saving…" : "Save control"}
+              {saving ? "Saving…" : dirty ? "Save changes" : saved ?? "Save control"}
             </button>
           </div>
         </div>
@@ -143,12 +154,20 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
           <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
             <div className="flex items-center justify-between gap-4">
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Implementation narrative</h3>
-              {saved ? <span className="text-xs font-medium text-emerald-700">{saved}</span> : null}
+              <span className={`text-xs font-medium ${error ? "text-rose-600" : dirty ? "text-amber-700" : "text-emerald-700"}`}>{error ? "Save failed" : saving ? "Saving…" : dirty ? "Unsaved changes" : saved ?? "Saved"}</span>
+            </div>
+            <div className="mt-4 rounded-[1.2rem] border border-cyan-100 bg-cyan-50 px-4 py-3 text-sm leading-7 text-cyan-950">
+              <p className="font-semibold">Example notes</p>
+              <p className="mt-1">{control.exampleImplementation}</p>
             </div>
             <textarea
               value={implementationDetails}
-              onChange={(event) => setImplementationDetails(event.target.value)}
+              onChange={(event) => {
+                setImplementationDetails(event.target.value);
+                setDirty(true);
+              }}
               rows={7}
+              placeholder="Describe how your organization implements this control. You can adapt the example notes above."
               className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-700 outline-none transition focus:border-cyan-400"
             />
           </div>
@@ -157,7 +176,10 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Ownership and review</h3>
               <select
                 value={ownerMembershipId}
-                onChange={(event) => setOwnerMembershipId(event.target.value)}
+                onChange={(event) => {
+                  setOwnerMembershipId(event.target.value);
+                  setDirty(true);
+                }}
                 className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-cyan-400"
               >
                 <option value="">Unassigned</option>
@@ -169,7 +191,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               </select>
               <div className="mt-4 grid gap-2">
                 <button type="button" onClick={() => saveControl("request-review")} disabled={saving} className="rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-medium text-sky-800 transition hover:bg-sky-100 disabled:opacity-60">
-                  Request review
+                  Mark ready for review
                 </button>
                 <button type="button" onClick={() => saveControl("mark-reviewed")} disabled={saving} className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800 transition hover:bg-emerald-100 disabled:opacity-60">
                   Mark reviewed
@@ -180,11 +202,22 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
                   </button>
                 ) : null}
               </div>
-              <p className="mt-3 text-xs leading-6 text-slate-500">Full cadence and next-review scheduling needs database fields; this workflow uses current status and reviewed date fields safely.</p>
+              <p className="mt-3 text-xs leading-6 text-slate-500">Use ready for review when notes and evidence are good enough for an owner or reviewer to inspect. Mark reviewed when that review is complete.</p>
               {activeMembers.length === 0 ? <p className="mt-3 text-xs leading-6 text-amber-700">No active members loaded. Add team members before assigning owners.</p> : null}
             </div>
             <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Evidence attached</h3>
+              <div className="mt-4 rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Good evidence examples</p>
+                <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-700">
+                  {control.evidenceExamples.map((example) => (
+                    <li key={example} className="flex gap-2">
+                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-500" />
+                      <span>{example}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
               <div className="mt-4 grid gap-3">
                 {(control.response?.evidenceItems ?? []).length === 0 ? (
                   <div className="rounded-[1.2rem] border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500">
