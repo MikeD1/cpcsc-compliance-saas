@@ -174,8 +174,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
           <div className="rounded-[1.7rem] border border-cyan-200 bg-[linear-gradient(180deg,#ecfeff_0%,#ffffff_100%)] p-5 shadow-sm ring-1 ring-cyan-100">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-800">Primary workflow</p>
-                <h3 className="mt-1 text-xl font-semibold text-slate-950">Ownership and review</h3>
+                <h3 className="text-xl font-semibold text-slate-950">Ownership and review</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">Assign who owns this control, set its working status, and move it through review.</p>
               </div>
               <span className={`rounded-full px-3 py-1 text-xs font-semibold ${error ? "bg-rose-50 text-rose-700" : dirty ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}`}>{error ? "Save failed" : saving ? "Saving…" : dirty ? "Unsaved" : saved ?? "Saved"}</span>
@@ -245,7 +244,6 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
             </div>
           <div className="rounded-[1.7rem] border border-cyan-200 bg-[linear-gradient(180deg,#ecfeff_0%,#ffffff_100%)] p-5 shadow-sm ring-1 ring-cyan-100">
             <div className="flex flex-col gap-1">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-800">Primary workflow</p>
               <h3 className="text-xl font-semibold text-slate-950">Evidence and quality check</h3>
               <p className="text-sm leading-6 text-slate-600">Attach the proof that supports the owner’s review decision.</p>
             </div>
