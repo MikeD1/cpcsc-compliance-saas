@@ -362,7 +362,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
             </ul>
           </div>
 
-          <details className="rounded-[1.5rem] border border-cyan-100 bg-cyan-50/80 p-4 shadow-sm" open>
+          <details className="rounded-[1.5rem] border border-cyan-100 bg-cyan-50/80 p-4 shadow-sm">
             <summary className="cursor-pointer text-sm font-semibold text-cyan-950">What good looks like</summary>
             <p className="mt-3 text-sm leading-6 text-cyan-950">{control.readinessGuidance.plainEnglishGoal}</p>
             <p className="mt-3 rounded-[1rem] border border-cyan-200 bg-white/80 px-3 py-2 text-sm leading-6 text-cyan-950">
