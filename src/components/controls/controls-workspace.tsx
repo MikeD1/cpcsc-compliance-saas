@@ -17,6 +17,15 @@ type WorkspaceControl = {
   whatToDo: string[];
   exampleImplementation: string;
   evidenceExamples: string[];
+  criteriaAlignment: {
+    assessmentObjectives: string[];
+    assessmentObjects: {
+      examine: string[];
+      interview: string[];
+      test: string[];
+    };
+    organizationDefinedParameters: string[];
+  };
   readinessGuidance: {
     plainEnglishGoal: string;
     weakImplementationExample: string;
@@ -91,7 +100,7 @@ export function ControlsWorkspace({ controls, members }: { controls: WorkspaceCo
             <p className="text-[11px] uppercase tracking-[0.24em] text-cyan-700">Assistant queue</p>
             <h2 className="mt-2 text-xl font-semibold text-slate-950">Controls to work</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              Filter the 13 Level 1 controls by family, pick one, then add implementation details and evidence in the same workspace.
+              Filter the 13 Level 1 controls by family, pick one, then add implementation details and Examine / Interview / Test evidence in the same workspace.
             </p>
           </div>
 

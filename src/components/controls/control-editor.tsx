@@ -16,6 +16,15 @@ type ControlEditorProps = {
     whatToDo: string[];
     exampleImplementation: string;
     evidenceExamples: string[];
+    criteriaAlignment: {
+      assessmentObjectives: string[];
+      assessmentObjects: {
+        examine: string[];
+        interview: string[];
+        test: string[];
+      };
+      organizationDefinedParameters: string[];
+    };
     readinessGuidance: {
       plainEnglishGoal: string;
       weakImplementationExample: string;
@@ -62,7 +71,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
   const [evidenceItems, setEvidenceItems] = useState(control.response?.evidenceItems ?? []);
   const [evidenceTitle, setEvidenceTitle] = useState("");
   const [evidenceLocation, setEvidenceLocation] = useState("");
-  const [evidenceType, setEvidenceType] = useState("Document");
+  const [evidenceType, setEvidenceType] = useState("Examine · Document or record");
   const [savingEvidence, setSavingEvidence] = useState(false);
   const [evidenceMessage, setEvidenceMessage] = useState<string | null>(null);
 
@@ -144,7 +153,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
 
       setEvidenceTitle("");
       setEvidenceLocation("");
-      setEvidenceType("Document");
+      setEvidenceType("Examine · Document or record");
       setEvidenceMessage("Evidence added to this control");
       router.refresh();
     } catch (caughtError) {
@@ -164,7 +173,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               {control.displayId}: {control.title}
             </h2>
             <p className="mt-2 text-sm text-slate-300">{reviewedAt ? `Last reviewed ${new Date(reviewedAt).toISOString().slice(0, 10)}` : "Not reviewed yet"}</p>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-cyan-100">Work this like a readiness coach: understand what good looks like, write implementation details, attach evidence references, then decide whether it is strong enough for a buyer conversation.</p>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-cyan-100">Work this like a CPCSC Level 1 criteria record: write implementation details, attach Examine / Interview / Test evidence references, then decide whether the finding is satisfied or still other than satisfied.</p>
           </div>
         </div>
       </div>
@@ -190,12 +199,12 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
           <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
             <div className="flex flex-col gap-1">
               <h3 className="text-xl font-semibold text-slate-950">Evidence and quality check</h3>
-              <p className="text-sm leading-6 text-slate-600">Attach a document reference or enter the location of the evidence, then describe what the evidence is.</p>
+              <p className="text-sm leading-6 text-slate-600">Attach evidence by assessment method. Level 1 criteria use Examine, Interview, and Test to determine whether the control is satisfied.</p>
             </div>
               <form id={`add-evidence-${control.id}`} onSubmit={addEvidence} className="mt-4 grid gap-3 rounded-[1.2rem] border border-cyan-200 bg-white p-4 shadow-sm">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-800">Add evidence to this control</p>
-                  <p className="mt-1 text-xs leading-5 text-cyan-950">Add the evidence name/description and where the source evidence lives.</p>
+                  <p className="mt-1 text-xs leading-5 text-cyan-950">Add the evidence name/description, where the source evidence lives, and the assessment method it supports.</p>
                 </div>
                 <input
                   value={evidenceTitle}
@@ -215,13 +224,13 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
                     onChange={(event) => setEvidenceType(event.target.value)}
                     className="rounded-[0.9rem] border border-cyan-100 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-cyan-400"
                   >
-                    <option>Document</option>
-                    <option>Screenshot</option>
-                    <option>Spreadsheet</option>
-                    <option>Policy</option>
-                    <option>Procedure</option>
-                    <option>Ticket</option>
-                    <option>Other</option>
+                    <option>Examine · Document or record</option>
+                    <option>Examine · Policy or procedure</option>
+                    <option>Examine · Screenshot or configuration export</option>
+                    <option>Interview · Owner or administrator explanation</option>
+                    <option>Test · Configuration or workflow check</option>
+                    <option>Test · Sample transaction or access check</option>
+                    <option>Other assessment support</option>
                   </select>
                   <button type="submit" disabled={savingEvidence} className="rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-60">
                     {savingEvidence ? "Adding…" : "Add evidence"}
@@ -319,7 +328,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
                   {saving ? "Saving…" : dirty ? "Save changes" : saved ?? "Save control"}
                 </button>
               </div>
-              <p className="mt-3 text-xs leading-6 text-slate-600">Use ready for review when the note and evidence could survive a buyer/security reviewer asking “show me.” Mark reviewed when that internal review is complete.</p>
+              <p className="mt-3 text-xs leading-6 text-slate-600">Use ready for review when the note and evidence can support the official assessment objectives. Mark reviewed when the internal finding is satisfied; keep it in progress or other-than-satisfied when gaps remain.</p>
               {activeMembers.length === 0 ? <p className="mt-3 text-xs leading-6 text-amber-700">No active members loaded. Add team members before assigning owners.</p> : null}
             </div>
           {error ? <p className="text-sm text-rose-500">{error}</p> : null}

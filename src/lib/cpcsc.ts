@@ -10,6 +10,16 @@ export type ControlDefinition = {
   evidenceExamples: string[];
 };
 
+export type CriteriaAlignment = {
+  assessmentObjectives: string[];
+  assessmentObjects: {
+    examine: string[];
+    interview: string[];
+    test: string[];
+  };
+  organizationDefinedParameters: string[];
+};
+
 export type ControlReadinessGuidance = {
   plainEnglishGoal: string;
   weakImplementationExample: string;
@@ -337,6 +347,184 @@ export const controls: ControlDefinition[] = [
     ],
   },
 ];
+
+const commonPolicyObjects = ["policy", "procedures", "system security plan", "relevant records"];
+
+export const criteriaAlignmentByOfficialId: Record<string, CriteriaAlignment> = {
+  "03.01.01": {
+    assessmentObjectives: [
+      "A.03.01.01.a: System account types allowed and prohibited are defined.",
+      "A.03.01.01.b: System accounts are created, enabled, modified, disabled, and removed according to organizational policy, procedures, prerequisites, and criteria.",
+      "A.03.01.01.c: Authorized users, group/role memberships, and access authorizations are specified.",
+      "A.03.01.01.d: Access is authorized based on valid authorization and intended system usage.",
+      "A.03.01.01.e-f: Account use is monitored and accounts are disabled when expired, inactive, no longer associated with a user, policy-violating, or risky.",
+      "A.03.01.01.g-h: Account managers are notified within defined time periods and users log out after expected inactivity or defined circumstances.",
+    ],
+    assessmentObjects: {
+      examine: [...commonPolicyObjects, "account management procedures", "account lists", "access authorization records", "system audit records"],
+      interview: ["account managers", "system administrators", "personnel with information security responsibilities"],
+      test: ["mechanisms implementing account management", "account disabling and inactivity controls", "session logout controls"],
+    },
+    organizationDefinedParameters: ["Inactive account time period", "notification periods for account changes", "expected inactivity/logout time period", "logout circumstances"],
+  },
+  "03.01.02": {
+    assessmentObjectives: [
+      "A.03.01.02: Access to systems and specified information is enforced according to assigned authorizations, privileges, and least-privilege rules.",
+      "A.03.01.02: Access authorizations are reflected in system permissions, groups, roles, and privileged access settings.",
+    ],
+    assessmentObjects: {
+      examine: [...commonPolicyObjects, "access control lists", "group membership records", "privilege assignments", "system audit records"],
+      interview: ["personnel with access enforcement responsibilities", "system administrators", "information security personnel"],
+      test: ["mechanisms enforcing access control", "role/group permission settings", "privileged access restrictions"],
+    },
+    organizationDefinedParameters: [],
+  },
+  "03.01.20": {
+    assessmentObjectives: [
+      "A.03.01.20.a: Use of external systems is prohibited unless specifically authorized.",
+      "A.03.01.20.b: Security requirements for external systems are established before access or use is allowed.",
+      "A.03.01.20.c: External systems are used for organizational access or specified information only after requirements are verified and agreements are retained.",
+    ],
+    assessmentObjects: {
+      examine: [...commonPolicyObjects, "approved external systems list", "connection or processing agreements", "external system security requirements"],
+      interview: ["system owners", "system administrators", "personnel approving external system use"],
+      test: ["mechanisms restricting external system access", "configuration preventing unapproved tools or devices"],
+    },
+    organizationDefinedParameters: ["Security requirements that external systems must satisfy"],
+  },
+  "03.01.22": {
+    assessmentObjectives: [
+      "A.03.01.22: Publicly accessible content is reviewed before posting and monitored so specified information is not inadvertently disclosed.",
+      "A.03.01.22: The organization removes or corrects public content that exposes specified information.",
+    ],
+    assessmentObjects: {
+      examine: [...commonPolicyObjects, "public content review procedures", "publication approval records", "public website or communication review logs"],
+      interview: ["public communications personnel", "information security personnel", "content reviewers"],
+      test: ["mechanisms or procedures for reviewing public content", "sampling public content for specified information"],
+    },
+    organizationDefinedParameters: [],
+  },
+  "03.05.01": {
+    assessmentObjectives: [
+      "A.03.05.01: Users, processes acting on behalf of users, and devices are uniquely identified.",
+      "A.03.05.01: Identities are authenticated before access is allowed and re-authenticated when required.",
+    ],
+    assessmentObjects: {
+      examine: [...commonPolicyObjects, "identity provider settings", "password or authenticator policies", "session lock settings"],
+      interview: ["system administrators", "identity administrators", "users with authentication responsibilities"],
+      test: ["login and re-authentication mechanisms", "screen/session lock controls", "unique account enforcement"],
+    },
+    organizationDefinedParameters: ["Re-authentication events or conditions where applicable"],
+  },
+  "03.05.02": {
+    assessmentObjectives: [
+      "A.03.05.02: Devices are identified and authenticated before connecting to organizational systems or networks.",
+      "A.03.05.02: Only approved or authorized devices are permitted to connect where specified information is handled.",
+    ],
+    assessmentObjects: {
+      examine: [...commonPolicyObjects, "device inventory", "MDM or endpoint management records", "network admission settings"],
+      interview: ["endpoint administrators", "network administrators", "information security personnel"],
+      test: ["device authentication mechanisms", "network access restrictions", "MDM enrolment controls"],
+    },
+    organizationDefinedParameters: [],
+  },
+  "03.05.03": {
+    assessmentObjectives: [
+      "A.03.05.03: Multifactor authentication is implemented for privileged accounts.",
+      "A.03.05.03: Multifactor authentication is implemented for systems that access, process, store, or transmit specified information where required.",
+    ],
+    assessmentObjects: {
+      examine: [...commonPolicyObjects, "MFA configuration records", "privileged account lists", "identity provider reports"],
+      interview: ["identity administrators", "system administrators", "privileged users"],
+      test: ["MFA challenge and enforcement mechanisms", "privileged access login flow", "recovery process controls"],
+    },
+    organizationDefinedParameters: [],
+  },
+  "03.08.03": {
+    assessmentObjectives: [
+      "A.03.08.03: Media containing specified information is sanitized or destroyed before disposal, release, or reuse.",
+      "A.03.08.03: Sanitization methods and outcomes are recorded and retained.",
+    ],
+    assessmentObjects: {
+      examine: [...commonPolicyObjects, "media sanitization procedures", "disposal logs", "destruction certificates", "asset retirement records"],
+      interview: ["asset owners", "IT personnel", "facilities or disposal personnel"],
+      test: ["media sanitization process", "asset disposal workflow", "record retention for retired media"],
+    },
+    organizationDefinedParameters: [],
+  },
+  "03.10.01": {
+    assessmentObjectives: [
+      "A.03.10.01: Physical access authorizations are developed, approved, maintained, and reviewed.",
+      "A.03.10.01: Physical access is removed when access is no longer required.",
+    ],
+    assessmentObjects: {
+      examine: [...commonPolicyObjects, "physical access authorization lists", "badge/key records", "access review records"],
+      interview: ["facilities personnel", "physical security personnel", "managers approving access"],
+      test: ["badge/key authorization workflow", "physical access removal process", "access list review process"],
+    },
+    organizationDefinedParameters: ["Physical access review frequency where defined by the organization"],
+  },
+  "03.10.07": {
+    assessmentObjectives: [
+      "A.03.10.07: Physical access to locations where specified information is handled is controlled.",
+      "A.03.10.07: Visitors and temporary access are managed, logged, and escorted where required.",
+    ],
+    assessmentObjects: {
+      examine: [...commonPolicyObjects, "visitor logs", "facility access procedures", "photos or records of physical controls"],
+      interview: ["reception or facilities personnel", "physical security personnel", "system or information owners"],
+      test: ["door, lock, badge, visitor, or escort procedures", "secure storage practices"],
+    },
+    organizationDefinedParameters: [],
+  },
+  "03.13.01": {
+    assessmentObjectives: [
+      "A.03.13.01: System boundaries are monitored and controlled.",
+      "A.03.13.01: Communications at external boundaries and key internal boundaries are protected using boundary protection mechanisms.",
+    ],
+    assessmentObjects: {
+      examine: [...commonPolicyObjects, "network diagrams", "firewall or router rules", "boundary protection configurations", "change records"],
+      interview: ["network administrators", "system administrators", "information security personnel"],
+      test: ["firewall or router rules", "network segmentation", "public exposure checks"],
+    },
+    organizationDefinedParameters: ["System boundaries and interfaces that require monitoring or control"],
+  },
+  "03.14.01": {
+    assessmentObjectives: [
+      "A.03.14.01: Flaws are identified, reported, and corrected in a timely manner.",
+      "A.03.14.01: Security-relevant updates are installed and remediation is tracked.",
+    ],
+    assessmentObjects: {
+      examine: [...commonPolicyObjects, "patch management records", "vulnerability or update reports", "maintenance logs"],
+      interview: ["IT administrators", "system owners", "information security personnel"],
+      test: ["patch deployment mechanisms", "update status reporting", "exception/remediation process"],
+    },
+    organizationDefinedParameters: ["Time period for installing updates or correcting flaws where defined"],
+  },
+  "03.14.02": {
+    assessmentObjectives: [
+      "A.03.14.02: Malicious code protection is implemented at system entry and exit points and on endpoints where required.",
+      "A.03.14.02: Malicious code protection is updated, scans are performed, and detections are addressed.",
+    ],
+    assessmentObjects: {
+      examine: [...commonPolicyObjects, "endpoint protection configuration", "malware scan records", "detection and response logs"],
+      interview: ["endpoint administrators", "security operations personnel", "system users where relevant"],
+      test: ["anti-malware update status", "real-time protection settings", "detection alert workflow"],
+    },
+    organizationDefinedParameters: ["Frequency of scans or updates where defined"],
+  },
+};
+
+export function getCriteriaAlignment(control: ControlDefinition): CriteriaAlignment {
+  return criteriaAlignmentByOfficialId[control.officialId] ?? {
+    assessmentObjectives: [`${control.officialId}: Confirm the control is implemented and operating for systems handling specified information.`],
+    assessmentObjects: {
+      examine: [...commonPolicyObjects, ...control.evidenceExamples],
+      interview: ["control owner", "system administrator", "information security personnel"],
+      test: ["mechanisms or procedures implementing the control"],
+    },
+    organizationDefinedParameters: [],
+  };
+}
 
 const categoryMistakes: Record<string, string[]> = {
   "Access control": [
