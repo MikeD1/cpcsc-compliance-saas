@@ -169,63 +169,8 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
         </div>
       </div>
 
-      <div className="grid gap-6 p-6 xl:grid-cols-[0.88fr_1.12fr] xl:p-8">
-        <section className="grid gap-4">
-          <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">What this control expects</h3>
-            <p className="mt-4 text-sm leading-7 text-slate-600">{control.objective}</p>
-            <ul className="mt-5 space-y-3 text-sm leading-7 text-slate-700">
-              {control.whatToDo.map((item) => (
-                <li key={item} className="flex gap-3">
-                  <span className="mt-2 h-2 w-2 rounded-full bg-cyan-500" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="rounded-[1.7rem] border border-cyan-100 bg-cyan-50 p-5 shadow-sm">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-900">What good looks like</h3>
-            <p className="mt-4 text-sm leading-7 text-cyan-950">{control.readinessGuidance.plainEnglishGoal}</p>
-            <div className="mt-4 grid gap-3">
-              <div className="rounded-[1.2rem] border border-amber-200 bg-amber-50 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-800">Weak answer</p>
-                <p className="mt-2 text-sm leading-6 text-amber-950">“{control.readinessGuidance.weakImplementationExample}”</p>
-              </div>
-              <div className="rounded-[1.2rem] border border-emerald-200 bg-emerald-50 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-800">Stronger answer</p>
-                <p className="mt-2 text-sm leading-6 text-emerald-950">“{control.readinessGuidance.strongImplementationExample}”</p>
-              </div>
-            </div>
-            <p className="mt-4 rounded-[1.2rem] border border-cyan-200 bg-white/70 px-4 py-3 text-sm leading-6 text-cyan-950">
-              <span className="font-semibold">Suggested next action:</span> {control.readinessGuidance.suggestedNextAction}
-            </p>
-          </div>
-
-          <div className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Buyer conversation prep</h3>
-            <p className="mt-3 text-sm leading-6 text-slate-600">Use these prompts to test whether the control is ready for a customer, partner, or procurement-readiness conversation.</p>
-            <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-700">
-              {control.readinessGuidance.buyerQuestions.map((question) => (
-                <li key={question} className="rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3">{question}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="rounded-[1.7rem] border border-rose-100 bg-rose-50 p-5 shadow-sm">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-rose-900">Common mistakes</h3>
-            <ul className="mt-4 space-y-3 text-sm leading-6 text-rose-950">
-              {control.readinessGuidance.commonMistakes.map((mistake) => (
-                <li key={mistake} className="flex gap-3">
-                  <span className="mt-2 h-2 w-2 rounded-full bg-rose-500" />
-                  <span>{mistake}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section className="grid gap-4">
+      <div className="grid gap-6 p-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(22rem,0.55fr)] xl:p-8">
+        <section className="grid gap-4" aria-label="Control work area">
           <div className="rounded-[1.7rem] border border-cyan-200 bg-[linear-gradient(180deg,#ecfeff_0%,#ffffff_100%)] p-5 shadow-sm ring-1 ring-cyan-100">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
@@ -394,13 +339,69 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
                 setImplementationDetails(event.target.value);
                 setDirty(true);
               }}
-              rows={7}
+              rows={4}
               placeholder="Describe how this control is implemented today, who owns it, how often it is reviewed, and what evidence supports it. Avoid vague claims like ‘we have a process.’"
               className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-700 outline-none transition focus:border-cyan-400"
             />
           </div>
           {error ? <p className="text-sm text-rose-500">{error}</p> : null}
         </section>
+
+        <aside className="grid content-start gap-3 xl:sticky xl:top-6">
+          <div className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Guidance</p>
+            <h3 className="mt-2 text-lg font-semibold text-slate-950">What this control expects</h3>
+            <p className="mt-3 text-sm leading-6 text-slate-600">{control.objective}</p>
+            <ul className="mt-4 space-y-2 text-sm leading-6 text-slate-700">
+              {control.whatToDo.map((item) => (
+                <li key={item} className="flex gap-2">
+                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-500" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <details className="rounded-[1.5rem] border border-cyan-100 bg-cyan-50/80 p-4 shadow-sm" open>
+            <summary className="cursor-pointer text-sm font-semibold text-cyan-950">What good looks like</summary>
+            <p className="mt-3 text-sm leading-6 text-cyan-950">{control.readinessGuidance.plainEnglishGoal}</p>
+            <p className="mt-3 rounded-[1rem] border border-cyan-200 bg-white/80 px-3 py-2 text-sm leading-6 text-cyan-950">
+              <span className="font-semibold">Suggested next action:</span> {control.readinessGuidance.suggestedNextAction}
+            </p>
+          </details>
+
+          <details className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm">
+            <summary className="cursor-pointer text-sm font-semibold text-slate-800">Examples and buyer prompts</summary>
+            <div className="mt-3 grid gap-3">
+              <div className="rounded-[1rem] border border-amber-200 bg-amber-50 px-3 py-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-800">Weak answer</p>
+                <p className="mt-1 text-sm leading-6 text-amber-950">“{control.readinessGuidance.weakImplementationExample}”</p>
+              </div>
+              <div className="rounded-[1rem] border border-emerald-200 bg-emerald-50 px-3 py-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-800">Stronger answer</p>
+                <p className="mt-1 text-sm leading-6 text-emerald-950">“{control.readinessGuidance.strongImplementationExample}”</p>
+              </div>
+              <ul className="space-y-2 text-sm leading-6 text-slate-700">
+                {control.readinessGuidance.buyerQuestions.map((question) => (
+                  <li key={question} className="rounded-[0.9rem] border border-slate-200 bg-slate-50 px-3 py-2">{question}</li>
+                ))}
+              </ul>
+            </div>
+          </details>
+
+          <details className="rounded-[1.5rem] border border-rose-100 bg-rose-50 p-4 shadow-sm">
+            <summary className="cursor-pointer text-sm font-semibold text-rose-950">Common mistakes</summary>
+            <ul className="mt-3 space-y-2 text-sm leading-6 text-rose-950">
+              {control.readinessGuidance.commonMistakes.map((mistake) => (
+                <li key={mistake} className="flex gap-2">
+                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-rose-500" />
+                  <span>{mistake}</span>
+                </li>
+              ))}
+            </ul>
+          </details>
+        </aside>
+
       </div>
     </article>
   );
