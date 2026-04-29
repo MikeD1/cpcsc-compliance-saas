@@ -242,6 +242,19 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               <p className="mt-3 text-xs leading-6 text-slate-600">Use ready for review when the note and evidence could survive a buyer/security reviewer asking “show me.” Mark reviewed when that internal review is complete.</p>
               {activeMembers.length === 0 ? <p className="mt-3 text-xs leading-6 text-amber-700">No active members loaded. Add team members before assigning owners.</p> : null}
             </div>
+          <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Implementation details</h3>
+            <textarea
+              value={implementationDetails}
+              onChange={(event) => {
+                setImplementationDetails(event.target.value);
+                setDirty(true);
+              }}
+              rows={4}
+              placeholder="Describe how this control is implemented today, who owns it, how often it is reviewed, and what evidence supports it. Avoid vague claims like ‘we have a process.’"
+              className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-700 outline-none transition focus:border-cyan-400"
+            />
+          </div>
           <div className="rounded-[1.7rem] border border-cyan-200 bg-[linear-gradient(180deg,#ecfeff_0%,#ffffff_100%)] p-5 shadow-sm ring-1 ring-cyan-100">
             <div className="flex flex-col gap-1">
               <h3 className="text-xl font-semibold text-slate-950">Evidence and quality check</h3>
@@ -306,23 +319,6 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
                 )}
               </div>
             </div>
-          <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Implementation details</h3>
-            <div className="mt-4 rounded-[1.2rem] border border-cyan-100 bg-cyan-50 px-4 py-3 text-sm leading-7 text-cyan-950">
-              <p className="font-semibold">Example implementation</p>
-              <p className="mt-1">{control.exampleImplementation}</p>
-            </div>
-            <textarea
-              value={implementationDetails}
-              onChange={(event) => {
-                setImplementationDetails(event.target.value);
-                setDirty(true);
-              }}
-              rows={4}
-              placeholder="Describe how this control is implemented today, who owns it, how often it is reviewed, and what evidence supports it. Avoid vague claims like ‘we have a process.’"
-              className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-700 outline-none transition focus:border-cyan-400"
-            />
-          </div>
           {error ? <p className="text-sm text-rose-500">{error}</p> : null}
         </section>
 
@@ -384,6 +380,10 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               <div className="rounded-[1rem] border border-emerald-200 bg-emerald-50 px-3 py-2">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-800">Stronger answer</p>
                 <p className="mt-1 text-sm leading-6 text-emerald-950">“{control.readinessGuidance.strongImplementationExample}”</p>
+              </div>
+              <div className="rounded-[1rem] border border-cyan-100 bg-cyan-50 px-3 py-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-800">Example implementation details</p>
+                <p className="mt-1 text-sm leading-6 text-cyan-950">{control.exampleImplementation}</p>
               </div>
               <ul className="space-y-2 text-sm leading-6 text-slate-700">
                 {control.readinessGuidance.buyerQuestions.map((question) => (
