@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { EvidenceRecordActions } from "@/components/evidence/evidence-record-actions";
 import type { OrganizationMember } from "@/lib/members";
 
 type ControlEditorProps = {
@@ -29,7 +31,7 @@ type ControlEditorProps = {
       ownerMembershipId?: string | null;
       reviewCadence?: string | null;
       reviewedAt?: string | null;
-      evidenceItems: Array<{ id: string; title: string; location?: string | null }>;
+      evidenceItems: Array<{ id: string; title: string; location?: string | null; artifactType?: string | null; status?: string | null }>;
     } | null;
   };
 };
@@ -47,6 +49,7 @@ function memberLabel(member: OrganizationMember) {
 }
 
 export function ControlEditor({ control, members }: ControlEditorProps) {
+  const router = useRouter();
   const activeMembers = members.filter((member) => member.status === "active");
   const [status, setStatus] = useState(control.response?.status ?? "NOT_STARTED");
   const [reviewedAt, setReviewedAt] = useState(control.response?.reviewedAt ?? null);
@@ -56,6 +59,12 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
   const [saved, setSaved] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [evidenceItems, setEvidenceItems] = useState(control.response?.evidenceItems ?? []);
+  const [evidenceTitle, setEvidenceTitle] = useState("");
+  const [evidenceLocation, setEvidenceLocation] = useState("");
+  const [evidenceType, setEvidenceType] = useState("Document");
+  const [savingEvidence, setSavingEvidence] = useState(false);
+  const [evidenceMessage, setEvidenceMessage] = useState<string | null>(null);
 
   async function saveControl(reviewAction?: "request-review" | "mark-reviewed" | "clear-review") {
     setSaving(true);
@@ -105,6 +114,46 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
     }
   }
 
+
+  async function addEvidence(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSavingEvidence(true);
+    setEvidenceMessage(null);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/evidence", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          controlId: control.id,
+          title: evidenceTitle,
+          location: evidenceLocation,
+          artifactType: evidenceType,
+        }),
+      });
+      const payload = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(payload?.error || "Unable to add evidence.");
+      }
+
+      if (payload?.evidence) {
+        setEvidenceItems((items) => [payload.evidence, ...items]);
+      }
+
+      setEvidenceTitle("");
+      setEvidenceLocation("");
+      setEvidenceType("Document");
+      setEvidenceMessage("Evidence added to this control");
+      router.refresh();
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "Unable to add evidence.");
+    } finally {
+      setSavingEvidence(false);
+    }
+  }
+
   return (
     <article className="overflow-hidden rounded-[2rem] border border-white/50 bg-white/92 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
       <div className="border-b border-white/10 bg-[linear-gradient(135deg,#09111f_0%,#0d1d34_100%)] px-6 py-6 text-white">
@@ -115,7 +164,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               {control.displayId}: {control.title}
             </h2>
             <p className="mt-2 text-sm text-slate-300">{reviewedAt ? `Last reviewed ${new Date(reviewedAt).toISOString().slice(0, 10)}` : "Not reviewed yet"}</p>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-cyan-100">Work this like a readiness coach: understand what good looks like, write a defensible implementation note, attach evidence references, then decide whether it is strong enough for a buyer conversation.</p>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-cyan-100">Work this like a readiness coach: understand what good looks like, write implementation details, attach evidence references, then decide whether it is strong enough for a buyer conversation.</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <select
@@ -203,11 +252,11 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
         <section className="grid gap-4">
           <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
             <div className="flex items-center justify-between gap-4">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Defensible implementation narrative</h3>
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Implementation details</h3>
               <span className={`text-xs font-medium ${error ? "text-rose-600" : dirty ? "text-amber-700" : "text-emerald-700"}`}>{error ? "Save failed" : saving ? "Saving…" : dirty ? "Unsaved changes" : saved ?? "Saved"}</span>
             </div>
             <div className="mt-4 rounded-[1.2rem] border border-cyan-100 bg-cyan-50 px-4 py-3 text-sm leading-7 text-cyan-950">
-              <p className="font-semibold">Consultant-style example</p>
+              <p className="font-semibold">Example implementation</p>
               <p className="mt-1">{control.exampleImplementation}</p>
             </div>
             <textarea
@@ -217,7 +266,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
                 setDirty(true);
               }}
               rows={7}
-              placeholder="Describe who owns this, how it works today, how often it is reviewed, and what evidence proves it. Avoid vague claims like ‘we have a process.’"
+              placeholder="Describe how this control is implemented today, who owns it, how often it is reviewed, and what evidence supports it. Avoid vague claims like ‘we have a process.’"
               className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-700 outline-none transition focus:border-cyan-400"
             />
           </div>
@@ -276,16 +325,60 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
                   <li>Is it current enough for a buyer conversation?</li>
                 </ul>
               </div>
+              <form id={`add-evidence-${control.id}`} onSubmit={addEvidence} className="mt-4 grid gap-3 rounded-[1.2rem] border border-cyan-100 bg-cyan-50/70 p-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-800">Add evidence to this control</p>
+                  <p className="mt-1 text-xs leading-5 text-cyan-950">Record the document, screenshot, spreadsheet, or policy location that supports these implementation details.</p>
+                </div>
+                <input
+                  value={evidenceTitle}
+                  onChange={(event) => setEvidenceTitle(event.target.value)}
+                  placeholder="Evidence title, e.g. Quarterly access review export"
+                  className="rounded-[0.9rem] border border-cyan-100 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-cyan-400"
+                />
+                <input
+                  value={evidenceLocation}
+                  onChange={(event) => setEvidenceLocation(event.target.value)}
+                  placeholder="Storage path / reference, e.g. SharePoint > CPCSC > Access Reviews"
+                  className="rounded-[0.9rem] border border-cyan-100 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-cyan-400"
+                />
+                <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+                  <select
+                    value={evidenceType}
+                    onChange={(event) => setEvidenceType(event.target.value)}
+                    className="rounded-[0.9rem] border border-cyan-100 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-cyan-400"
+                  >
+                    <option>Document</option>
+                    <option>Screenshot</option>
+                    <option>Spreadsheet</option>
+                    <option>Policy</option>
+                    <option>Procedure</option>
+                    <option>Ticket</option>
+                    <option>Other</option>
+                  </select>
+                  <button type="submit" disabled={savingEvidence} className="rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-60">
+                    {savingEvidence ? "Adding…" : "Add evidence"}
+                  </button>
+                </div>
+                {evidenceMessage ? <p className="text-xs font-medium text-emerald-700">{evidenceMessage}</p> : null}
+              </form>
+
               <div className="mt-4 grid gap-3">
-                {(control.response?.evidenceItems ?? []).length === 0 ? (
+                {evidenceItems.length === 0 ? (
                   <div className="rounded-[1.2rem] border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500">
                     No evidence attached yet. Add a register entry that points to where the proof lives, not just a note saying the control exists.
                   </div>
                 ) : (
-                  (control.response?.evidenceItems ?? []).map((item) => (
+                  evidenceItems.map((item) => (
                     <div key={item.id} className="rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm">
-                      <p className="font-medium text-slate-900">{item.title}</p>
-                      <p className="mt-1 text-slate-500">{item.location}</p>
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-medium text-slate-900">{item.title}</p>
+                          <p className="mt-1 text-slate-500">{item.location}</p>
+                          <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-400">{item.artifactType ?? "Document"}</p>
+                        </div>
+                      </div>
+                      <EvidenceRecordActions evidence={item} controlId={control.id} controls={[{ id: control.id, displayId: control.displayId, title: control.title }]} />
                     </div>
                   ))
                 )}

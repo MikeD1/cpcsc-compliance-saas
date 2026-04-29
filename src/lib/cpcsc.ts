@@ -19,6 +19,26 @@ export type ControlReadinessGuidance = {
   suggestedNextAction: string;
 };
 
+export const securityControlFamilies = [
+  "Access control",
+  "Awareness and training",
+  "Audit and accountability",
+  "Configuration management",
+  "Identification and authentication",
+  "Incident response",
+  "Maintenance",
+  "Media protection",
+  "Personnel security",
+  "Physical protection",
+  "Risk assessment",
+  "Security assessment and monitoring",
+  "System and communications protection",
+  "System and information integrity",
+  "Planning",
+  "System and services acquisition",
+  "Supply chain risk management",
+] as const;
+
 export const evidenceRetentionGuidance = [
   "Account lists",
   "Device lists",

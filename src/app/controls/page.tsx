@@ -4,6 +4,7 @@ import { SubscriptionGate } from "@/components/auth/subscription-gate";
 import { ControlsWorkspace } from "@/components/controls/controls-workspace";
 import { getCurrentAccess } from "@/lib/access";
 import { getDashboardData } from "@/lib/dashboard";
+import { securityControlFamilies } from "@/lib/cpcsc";
 
 export default async function ControlsPage({
   searchParams,
@@ -38,11 +39,14 @@ export default async function ControlsPage({
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Control workspace</p>
-            <h1 className="mt-2 text-4xl font-semibold tracking-tight text-slate-950 lg:text-5xl">Manage the 13 CPCSC Level 1 controls</h1>
+            <h1 className="mt-2 text-4xl font-semibold tracking-tight text-slate-950 lg:text-5xl">Manage CPCSC controls by family</h1>
             <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600">
-              Update implementation notes, assign an owner, set review expectations, and track progress control by control as your readiness work matures.
+              Update implementation details, add evidence directly on each control, assign an owner, and track progress by security control family as your readiness work matures.
             </p>
           </div>
+        </div>
+        <div className="mt-6 rounded-[1.3rem] border border-cyan-100 bg-cyan-50 px-4 py-3 text-sm leading-7 text-cyan-950">
+          <span className="font-semibold">Family structure:</span> CPCSC Level 1 is currently tracked as 13 controls across the relevant security control families. ComplianceOne keeps the full {securityControlFamilies.length}-family structure visible so future official CPCSC requirements can expand without changing how customers work.
         </div>
       </section>
 

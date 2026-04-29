@@ -163,7 +163,7 @@ export default async function DashboardPage({
 
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <NextStep title="Assign owners" description={`${actionSummary.unassigned} controls are unassigned.`} tone="amber" href="/controls#assign-owners" />
-          <NextStep title="Add evidence" description={`${actionSummary.missingEvidence} controls have no evidence records.`} tone="sky" href="/evidence#add-evidence" />
+          <NextStep title="Add evidence" description={`${actionSummary.missingEvidence} controls have no evidence records.`} tone="sky" href="/controls#assign-owners" />
           <NextStep title="Review queue" description={`${actionSummary.readyForReview} controls are ready for review.`} tone="emerald" href="/controls" />
           <NextStep title="Reviewed" description={`${actionSummary.reviewed} controls have a review date recorded.`} tone="slate" href="/reports" />
         </div>

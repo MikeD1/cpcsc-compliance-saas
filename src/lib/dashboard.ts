@@ -151,7 +151,7 @@ export async function getDashboardData() {
           actionType: "Add evidence" as const,
           reason: "This control has no evidence records attached.",
           nextStep: `Add one supporting record such as ${control.evidenceExamples[0]?.toLowerCase() ?? "a policy, screenshot, register, or review note"}.`,
-          href: "/evidence#add-evidence",
+          href: "/controls#assign-owners",
           sortScore: 80 - control.id,
           needsOwner,
           needsEvidence,

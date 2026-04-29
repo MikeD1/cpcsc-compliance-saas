@@ -41,12 +41,21 @@ export async function POST(request: Request) {
       status: "active",
       uploaded_by: user.id,
     })
-    .select("id")
+    .select("id, file_name, storage_path, evidence_type, status")
     .single();
 
   if (error || !data) {
     return NextResponse.json({ error: "Unable to add evidence." }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({
+    ok: true,
+    evidence: {
+      id: data.id,
+      title: data.file_name,
+      location: data.storage_path,
+      artifactType: data.evidence_type ?? "Document",
+      status: data.status ?? "active",
+    },
+  });
 }

@@ -46,7 +46,7 @@ export function FirstRunChecklist({
     {
       title: "Add the first evidence record",
       description: missingEvidence < 13 ? "At least one evidence reference has been added." : "Add one evidence record to prove the evidence workflow.",
-      href: "/evidence#add-evidence",
+      href: "/controls#assign-owners",
       actionLabel: "Add evidence",
       complete: missingEvidence < 13,
     },
