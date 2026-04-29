@@ -100,7 +100,7 @@ export default async function ReportsPage() {
           <SummaryCard label="Review queue" value={String(actionSummary.readyForReview)} detail="Controls ready for a review decision before completion." />
         </div>
         <div className="mt-5 rounded-[1.4rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-7 text-amber-900">
-          <span className="font-semibold">Readiness score explanation:</span> The score is the percentage of CPCSC Level 1 controls marked complete in this workspace. The confidence narrative also considers owners, evidence references, and review state. It is a management readiness metric, not a certification, audit opinion, or Government of Canada approval.
+          <span className="font-semibold">Readiness score explanation:</span> The score is the percentage of CPCSC Level 1 controls marked complete in this workspace. The confidence narrative also considers owners, evidence references, review state, and the records needed to support Level 1 self-assessment and future assessment conversations.
         </div>
         <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_0.9fr]">
           <div className="rounded-[1.4rem] border border-slate-200 bg-slate-50 px-5 py-4">

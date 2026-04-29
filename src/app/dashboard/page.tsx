@@ -8,12 +8,31 @@ import { getCurrentAccess } from "@/lib/access";
 import { syncCheckoutSessionForOrganization } from "@/lib/billing-sync";
 import { getDashboardData } from "@/lib/dashboard";
 
+const scopeInventoryItems = [
+  {
+    title: "Specified Information content",
+    description: "Identify federal SI records, files, data sets, contract artifacts, controlled goods information, and protected information that must be safeguarded.",
+  },
+  {
+    title: "Storage locations",
+    description: "List where GC information is stored, including SharePoint, file shares, email, endpoints, SaaS tools, cloud storage, and backups.",
+  },
+  {
+    title: "Systems, devices, and people",
+    description: "Document which systems, devices, roles, employees, contractors, and administrators can access or process SI.",
+  },
+  {
+    title: "Cloud services and tools",
+    description: "Identify cloud services, collaboration platforms, ticketing systems, security tools, and external providers that handle SI.",
+  },
+];
+
 const roadmapPhases = [
   {
     phase: "Phase 1",
     title: "Implementation planning and self-assessment",
-    description: "Build the working picture of what is in scope and where CPCSC readiness gaps exist.",
-    actions: ["Scope your system", "Catalog your system", "Create plans for controls", "Test and self-assess"],
+    description: "Build the working picture of where federal Specified Information exists and where CPCSC readiness gaps remain.",
+    actions: ["Scope your system", "Catalog SI content and assets", "Create plans for controls", "Test and self-assess"],
   },
   {
     phase: "Phase 2",
@@ -50,6 +69,7 @@ const resourceItems = [
   { title: "Evidence folder structure guide", href: "/resources/evidence-folder-structure-guide.md", description: "Create a practical source-evidence folder structure and naming convention." },
   { title: "Quarterly access review template", href: "/resources/quarterly-access-review-template.md", description: "Document user access reviews, exceptions, remediation, and sign-off." },
   { title: "System inventory worksheet", href: "/resources/system-inventory-worksheet.md", description: "Define systems, owners, data handled, criticality, and readiness scope." },
+  { title: "Specified Information scope worksheet", href: "/resources/specified-information-scope-worksheet.md", description: "Map where federal SI content exists, who accesses it, and which tools handle it." },
   { title: "Policy template starter pack", href: "/resources/policy-template-starter-pack.md", description: "Starter outlines for access control, acceptable use, incident response, and asset management policies." },
 ];
 
@@ -119,7 +139,7 @@ export default async function DashboardPage({
                 {organization.legalName ?? organization.name}
               </h1>
               <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600">
-                Track CPCSC control status, policies, roadmap progress, and practical resources in one readiness workspace. This is preparation and management evidence, not a certification or government approval.
+                Track CPCSC Level 1 control status, Specified Information scope, policies, roadmap progress, and the evidence needed to support self-assessment and future assessment conversations.
               </p>
             </div>
             <div className="rounded-[1.75rem] border border-slate-200 bg-slate-50 px-5 py-4 shadow-sm">
@@ -159,8 +179,9 @@ export default async function DashboardPage({
       />
 
       <nav aria-label="Dashboard sections" className="rounded-[1.6rem] border border-white/50 bg-white/92 p-2 shadow-[0_18px_45px_rgba(15,23,42,0.08)]">
-        <div className="grid gap-2 md:grid-cols-4">
+        <div className="grid gap-2 md:grid-cols-5">
           <TabLink href="#control-status" label="CPCSC Control Status" />
+          <TabLink href="#scope" label="Scope and SI Inventory" />
           <TabLink href="#policies" label="Policies" />
           <TabLink href="#roadmap" label="Roadmap" />
           <TabLink href="#resources" label="Resources" />
@@ -215,6 +236,32 @@ export default async function DashboardPage({
             <SummaryPanel title="Owners" items={ownerSummaries.map((owner) => `${owner.owner}: ${owner.open}/${owner.total} open`)} />
             <SummaryPanel title="Control families" items={categorySummaries.map((summary) => `${summary.category}: ${summary.completed}/${summary.total} complete`)} />
           </div>
+        </div>
+      </section>
+
+      <section id="scope" className="scroll-mt-28 rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Scope and SI Inventory</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Identify where federal Specified Information exists</h2>
+            <p className="mt-3 max-w-4xl text-sm leading-7 text-slate-600">
+              CPCSC Level 1 controls need to be applied to the systems and activities that handle federal Specified Information (SI). SI is sensitive, non-classified Government of Canada information that must be protected when handled, processed, or stored by non-Government of Canada organizations.
+            </p>
+          </div>
+          <Link href="/resources/specified-information-scope-worksheet.md" className="inline-flex items-center justify-center rounded-full border border-cyan-200 bg-cyan-50 px-4 py-3 text-sm font-medium text-cyan-800 transition hover:bg-cyan-100">
+            Download SI scope worksheet
+          </Link>
+        </div>
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {scopeInventoryItems.map((item) => (
+            <article key={item.title} className="rounded-[1.5rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
+              <h3 className="text-base font-semibold text-slate-950">{item.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
+            </article>
+          ))}
+        </div>
+        <div className="mt-6 rounded-[1.5rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-7 text-amber-950">
+          <span className="font-semibold">Scoping question:</span> Where will GC information be stored, which systems/devices/people can access it, and which cloud services or tools process it? Answering that first makes the 13 controls much easier to apply effectively.
         </div>
       </section>
 
