@@ -298,25 +298,12 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               <p className="mt-3 text-xs leading-6 text-slate-600">Use ready for review when the note and evidence could survive a buyer/security reviewer asking “show me.” Mark reviewed when that internal review is complete.</p>
               {activeMembers.length === 0 ? <p className="mt-3 text-xs leading-6 text-amber-700">No active members loaded. Add team members before assigning owners.</p> : null}
             </div>
-          <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Implementation details</h3>
-            <div className="mt-4 rounded-[1.2rem] border border-cyan-100 bg-cyan-50 px-4 py-3 text-sm leading-7 text-cyan-950">
-              <p className="font-semibold">Example implementation</p>
-              <p className="mt-1">{control.exampleImplementation}</p>
+          <div className="rounded-[1.7rem] border border-cyan-200 bg-[linear-gradient(180deg,#ecfeff_0%,#ffffff_100%)] p-5 shadow-sm ring-1 ring-cyan-100">
+            <div className="flex flex-col gap-1">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-800">Primary workflow</p>
+              <h3 className="text-xl font-semibold text-slate-950">Evidence and quality check</h3>
+              <p className="text-sm leading-6 text-slate-600">Attach the proof that supports the owner’s review decision.</p>
             </div>
-            <textarea
-              value={implementationDetails}
-              onChange={(event) => {
-                setImplementationDetails(event.target.value);
-                setDirty(true);
-              }}
-              rows={7}
-              placeholder="Describe how this control is implemented today, who owns it, how often it is reviewed, and what evidence supports it. Avoid vague claims like ‘we have a process.’"
-              className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-700 outline-none transition focus:border-cyan-400"
-            />
-          </div>
-          <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Evidence quality check</h3>
               <div className="mt-4 rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Evidence that usually helps prove this</p>
                 <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-700">
@@ -336,7 +323,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
                   <li>Is it current enough for a buyer conversation?</li>
                 </ul>
               </div>
-              <form id={`add-evidence-${control.id}`} onSubmit={addEvidence} className="mt-4 grid gap-3 rounded-[1.2rem] border border-cyan-100 bg-cyan-50/70 p-4">
+              <form id={`add-evidence-${control.id}`} onSubmit={addEvidence} className="mt-4 grid gap-3 rounded-[1.2rem] border border-cyan-200 bg-white p-4 shadow-sm">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-800">Add evidence to this control</p>
                   <p className="mt-1 text-xs leading-5 text-cyan-950">Record the document, screenshot, spreadsheet, or policy location that supports these implementation details.</p>
@@ -395,6 +382,23 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
                 )}
               </div>
             </div>
+          <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Implementation details</h3>
+            <div className="mt-4 rounded-[1.2rem] border border-cyan-100 bg-cyan-50 px-4 py-3 text-sm leading-7 text-cyan-950">
+              <p className="font-semibold">Example implementation</p>
+              <p className="mt-1">{control.exampleImplementation}</p>
+            </div>
+            <textarea
+              value={implementationDetails}
+              onChange={(event) => {
+                setImplementationDetails(event.target.value);
+                setDirty(true);
+              }}
+              rows={7}
+              placeholder="Describe how this control is implemented today, who owns it, how often it is reviewed, and what evidence supports it. Avoid vague claims like ‘we have a process.’"
+              className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-700 outline-none transition focus:border-cyan-400"
+            />
+          </div>
           {error ? <p className="text-sm text-rose-500">{error}</p> : null}
         </section>
       </div>
