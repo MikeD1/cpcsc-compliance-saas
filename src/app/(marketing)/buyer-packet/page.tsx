@@ -19,7 +19,7 @@ const notIncluded = [
   "Legal, security, or assessor advice",
   "Secure file vault or long-term records-management system",
   "Guarantee of contract eligibility or procurement acceptance",
-  "CPCSC Level 2/3 or broad GRC framework coverage",
+  "Broad GRC framework coverage beyond the CPCSC readiness workspace",
 ];
 
 const reportIncludes = [
@@ -61,12 +61,15 @@ export default function BuyerPacketPage() {
         </div>
       </TrustSection>
 
-      <TrustSection title="CPCSC Level 1 scope">
+      <TrustSection title="CPCSC scope and roadmap">
         <p>
-          The product is focused on CPCSC Level 1 readiness. The workspace maps practical work to the 13 Level 1 controls, including ownership, implementation notes, evidence references, review status, and reporting.
+          ComplianceOne currently focuses on CPCSC Level 1 readiness. The workspace maps practical work to the 13 Level 1 controls, including ownership, implementation notes, evidence references, review status, and reporting.
         </p>
         <p>
-          The current scope is intentionally narrow. It is designed to help teams prepare a credible readiness snapshot, not to replace a complete security program or external assessment process.
+          Level 2 and Level 3 support is on the roadmap. Once official requirements are released, ComplianceOne will prioritize adding those control sets after the requirements are reviewed and translated into practical workspace guidance.
+        </p>
+        <p>
+          The current scope is intentionally narrow so teams can start with Level 1 now and expand later without moving their readiness work into a new system. ComplianceOne is still not a certification service, government platform, assessor replacement, or guarantee of procurement acceptance.
         </p>
       </TrustSection>
 
