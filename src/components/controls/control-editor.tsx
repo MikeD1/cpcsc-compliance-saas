@@ -247,25 +247,6 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               <h3 className="text-xl font-semibold text-slate-950">Evidence and quality check</h3>
               <p className="text-sm leading-6 text-slate-600">Attach the proof that supports the owner’s review decision.</p>
             </div>
-              <div className="mt-4 rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Evidence that usually helps prove this</p>
-                <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-700">
-                  {control.evidenceExamples.map((example) => (
-                    <li key={example} className="flex gap-2">
-                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-500" />
-                      <span>{example}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="mt-4 rounded-[1.2rem] border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
-                <p className="font-semibold">Before marking complete, check:</p>
-                <ul className="mt-2 list-disc space-y-1 pl-5">
-                  <li>Does the record show where proof lives?</li>
-                  <li>Would someone outside the team understand it?</li>
-                  <li>Is it current enough for a buyer conversation?</li>
-                </ul>
-              </div>
               <form id={`add-evidence-${control.id}`} onSubmit={addEvidence} className="mt-4 grid gap-3 rounded-[1.2rem] border border-cyan-200 bg-white p-4 shadow-sm">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-800">Add evidence to this control</p>
@@ -366,6 +347,31 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
             <p className="mt-3 rounded-[1rem] border border-cyan-200 bg-white/80 px-3 py-2 text-sm leading-6 text-cyan-950">
               <span className="font-semibold">Suggested next action:</span> {control.readinessGuidance.suggestedNextAction}
             </p>
+          </details>
+
+          <details className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm">
+            <summary className="cursor-pointer text-sm font-semibold text-slate-800">Evidence helpers</summary>
+            <div className="mt-3 grid gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Evidence that usually helps prove this</p>
+                <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-700">
+                  {control.evidenceExamples.map((example) => (
+                    <li key={example} className="flex gap-2">
+                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-500" />
+                      <span>{example}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-[1rem] border border-amber-200 bg-amber-50 px-3 py-2 text-sm leading-6 text-amber-950">
+                <p className="font-semibold">Before marking complete, check:</p>
+                <ul className="mt-2 list-disc space-y-1 pl-5">
+                  <li>Does the record show where proof lives?</li>
+                  <li>Would someone outside the team understand it?</li>
+                  <li>Is it current enough for a buyer conversation?</li>
+                </ul>
+              </div>
+            </div>
           </details>
 
           <details className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm">
