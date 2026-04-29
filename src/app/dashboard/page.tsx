@@ -45,12 +45,12 @@ const policyItems = [
 ];
 
 const resourceItems = [
-  "Separation of duties worksheet",
-  "Control owner assignment tracker",
-  "Evidence folder structure guide",
-  "Quarterly access review template",
-  "System inventory worksheet",
-  "Policy template starter pack",
+  { title: "Separation of duties worksheet", href: "/resources/separation-of-duties-worksheet.md", description: "Map duties, conflicts, mitigations, and follow-up owners." },
+  { title: "Control owner assignment tracker", href: "/resources/control-owner-assignment-tracker.md", description: "Assign each CPCSC control to an accountable owner and track next actions." },
+  { title: "Evidence folder structure guide", href: "/resources/evidence-folder-structure-guide.md", description: "Create a practical source-evidence folder structure and naming convention." },
+  { title: "Quarterly access review template", href: "/resources/quarterly-access-review-template.md", description: "Document user access reviews, exceptions, remediation, and sign-off." },
+  { title: "System inventory worksheet", href: "/resources/system-inventory-worksheet.md", description: "Define systems, owners, data handled, criticality, and readiness scope." },
+  { title: "Policy template starter pack", href: "/resources/policy-template-starter-pack.md", description: "Starter outlines for access control, acceptable use, incident response, and asset management policies." },
 ];
 
 export default async function DashboardPage({
@@ -253,10 +253,10 @@ export default async function DashboardPage({
         <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Resources</p>
         <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Worksheets and templates</h2>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-          Add practical materials organizations can use while preparing their readiness records. The first pass lists the resource areas; downloadable templates can be added next.
+          Add practical materials organizations can use while preparing their readiness records. Download starter worksheets and templates your team can adapt while preparing readiness records.
         </p>
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {resourceItems.map((item) => <ResourceCard key={item} title={item} description="Resource placeholder for a worksheet, checklist, or template." />)}
+          {resourceItems.map((item) => <ResourceCard key={item.title} title={item.title} description={item.description} href={item.href} />)}
         </div>
       </section>
 
@@ -346,8 +346,20 @@ function SummaryPanel({ title, items }: { title: string; items: string[] }) {
   );
 }
 
-function ResourceCard({ title, description }: { title: string; description: string }) {
-  return <article className="rounded-[1.5rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm"><h3 className="text-base font-semibold text-slate-950">{title}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{description}</p></article>;
+function ResourceCard({ title, description, href }: { title: string; description: string; href?: string }) {
+  const content = (
+    <>
+      <h3 className="text-base font-semibold text-slate-950">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+      {href ? <span className="mt-4 inline-flex text-sm font-semibold text-cyan-700">Download template →</span> : null}
+    </>
+  );
+
+  if (href) {
+    return <Link href={href} className="rounded-[1.5rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:shadow-md">{content}</Link>;
+  }
+
+  return <article className="rounded-[1.5rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">{content}</article>;
 }
 
 function MetaRow({ label, value }: { label: string; value: string }) {
