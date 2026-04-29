@@ -10,7 +10,17 @@ export type ControlDefinition = {
   evidenceExamples: string[];
 };
 
-export type CriteriaAlignment = {
+export type AssessmentCriterion = {
+  id: string;
+  text: string;
+};
+
+export type CriteriaChecklist = {
+  determinationStatements: AssessmentCriterion[];
+  organizationDefinedParameters: AssessmentCriterion[];
+};
+
+export type CriteriaAlignmentSummary = {
   assessmentObjectives: string[];
   assessmentObjects: {
     examine: string[];
@@ -18,6 +28,11 @@ export type CriteriaAlignment = {
     test: string[];
   };
   organizationDefinedParameters: string[];
+};
+
+export type CriteriaAlignment = CriteriaAlignmentSummary & {
+  determinationStatements: AssessmentCriterion[];
+  organizationDefinedParameterDetails: AssessmentCriterion[];
 };
 
 export type ControlReadinessGuidance = {
@@ -348,9 +363,421 @@ export const controls: ControlDefinition[] = [
   },
 ];
 
+export const exactCriteriaByOfficialId: Record<string, CriteriaChecklist> = {
+  "03.01.01": {
+    "organizationDefinedParameters": [
+      {
+        "id": "A.03.01.01.ODP[01]",
+        "text": "the time period for account inactivity before disabling is defined"
+      },
+      {
+        "id": "A.03.01.01.ODP[02]",
+        "text": "the time period within which to notify account managers and designated personnel or roles when accounts are no longer required is defined"
+      },
+      {
+        "id": "A.03.01.01.ODP[03]",
+        "text": "the time period within which to notify account managers and designated personnel or roles when users are terminated or transferred is defined"
+      },
+      {
+        "id": "A.03.01.01.ODP[04]",
+        "text": "the time period within which to notify account managers and designated personnel or roles when system usage or the need-to-know changes for an individual is defined"
+      },
+      {
+        "id": "A.03.01.01.ODP[05]",
+        "text": "the time period of expected inactivity requiring users to log out of the system is defined"
+      },
+      {
+        "id": "A.03.01.01.ODP[06]",
+        "text": "circumstances requiring users to log out of the system are defined"
+      }
+    ],
+    "determinationStatements": [
+      {
+        "id": "A.03.01.01.a[01]",
+        "text": "system account types allowed are defined"
+      },
+      {
+        "id": "A.03.01.01.a[02]",
+        "text": "system account types prohibited are defined"
+      },
+      {
+        "id": "A.03.01.01.b[01]",
+        "text": "system accounts are created in accordance with organizational policy, procedures, prerequisites, and criteria"
+      },
+      {
+        "id": "A.03.01.01.b[02]",
+        "text": "system accounts are enabled in accordance with organizational policy, procedures, prerequisites, and criteria"
+      },
+      {
+        "id": "A.03.01.01.b[03]",
+        "text": "system accounts are modified in accordance with organizational policy, procedures, prerequisites, and criteria"
+      },
+      {
+        "id": "A.03.01.01.b[04]",
+        "text": "system accounts are disabled in accordance with organizational policy, procedures, prerequisites, and criteria"
+      },
+      {
+        "id": "A.03.01.01.b[05]",
+        "text": "system accounts are removed in accordance with organizational policy, procedures, prerequisites, and criteria"
+      },
+      {
+        "id": "A.03.01.01.c.01",
+        "text": "authorized users of the system are specified"
+      },
+      {
+        "id": "A.03.01.01.c.02",
+        "text": "group and role memberships are specified"
+      },
+      {
+        "id": "A.03.01.01.c.03",
+        "text": "access authorizations (in other words, privileges) for each account are specified"
+      },
+      {
+        "id": "A.03.01.01.d.01",
+        "text": "access to the system is authorized based on a valid access authorization"
+      },
+      {
+        "id": "A.03.01.01.d.02",
+        "text": "access to the system is authorized based on intended system usage"
+      },
+      {
+        "id": "A.03.01.01.e",
+        "text": "the use of system accounts is monitored"
+      },
+      {
+        "id": "A.03.01.01.f.01",
+        "text": "system accounts are disabled when the accounts have expired"
+      },
+      {
+        "id": "A.03.01.01.f.02",
+        "text": "system accounts are disabled when the accounts have been inactive for <A.03.01.01.ODP[01]: time period>"
+      },
+      {
+        "id": "A.03.01.01.f.03",
+        "text": "system accounts are disabled when the accounts are no longer associated with a user or individual"
+      },
+      {
+        "id": "A.03.01.01.f.04",
+        "text": "system accounts are disabled when the accounts violate organizational policy"
+      },
+      {
+        "id": "A.03.01.01.f.05",
+        "text": "system accounts are disabled when significant risks associated with individuals are discovered"
+      },
+      {
+        "id": "A.03.01.01.g.01",
+        "text": "account managers and designated personnel or roles are notified within <A.03.01.01.ODP[02]: time period> when accounts are no longer required"
+      },
+      {
+        "id": "A.03.01.01.g.02",
+        "text": "account managers and designated personnel or roles are notified within <A.03.01.01.ODP[03]: time period> when users are terminated or transferred"
+      },
+      {
+        "id": "A.03.01.01.g.03",
+        "text": "account managers and designated personnel or roles are notified within <A.03.01.01.ODP[04]: time period> when system usage or the need-to-know changes for an individual"
+      },
+      {
+        "id": "A.03.01.01.h",
+        "text": "users are required to log out of the system after <A.03.01.01.ODP[05]: time period> of expected inactivity or when the following circumstances occur: <A.03.01.01.ODP[06]: circumstances>"
+      }
+    ]
+  },
+  "03.01.02": {
+    "organizationDefinedParameters": [],
+    "determinationStatements": [
+      {
+        "id": "A.03.01.02[01]",
+        "text": "approved authorizations for logical access to specified information are enforced in accordance with applicable access control policies"
+      },
+      {
+        "id": "A.03.01.02[02]",
+        "text": "approved authorizations for logical access to system resources are enforced in accordance with applicable access control policies"
+      }
+    ]
+  },
+  "03.01.20": {
+    "organizationDefinedParameters": [
+      {
+        "id": "A.03.01.20.ODP",
+        "text": "security requirements to be satisfied on external systems prior to allowing the use of or access to those systems by authorized individuals are defined"
+      }
+    ],
+    "determinationStatements": [
+      {
+        "id": "A.03.01.20.a",
+        "text": "the use of external systems is prohibited unless the systems are specifically authorized"
+      },
+      {
+        "id": "A.03.01.20.b",
+        "text": "the following security requirements to be satisfied on external systems prior to allowing the use of or access to those systems by authorized individuals are established: <A.03.01.20.ODP: security requirements>"
+      },
+      {
+        "id": "A.03.01.20.c.01",
+        "text": "authorized individuals are permitted to use external systems to access the organizational system or to process, store, or transmit specified information only after verifying that the security requirements on the external systems as specified in the organization’s system security plans have been satisfied"
+      },
+      {
+        "id": "A.03.01.20.c.02",
+        "text": "authorized individuals are permitted to use external systems to access the organizational system or to process, store, or transmit specified information only after retaining approved system connection or processing agreements with the organizational entity hosting the external systems"
+      },
+      {
+        "id": "A.03.01.20.d",
+        "text": "the use of organization-controlled portable storage devices by authorized individuals on external systems is restricted"
+      }
+    ]
+  },
+  "03.01.22": {
+    "organizationDefinedParameters": [],
+    "determinationStatements": [
+      {
+        "id": "A.03.01.22.a",
+        "text": "authorized individuals are trained to ensure that publicly accessible information does not contain specified information"
+      },
+      {
+        "id": "A.03.01.22.b[01]",
+        "text": "the content on publicly accessible systems is reviewed for specified information"
+      },
+      {
+        "id": "A.03.01.22.b[02]",
+        "text": "specified information is removed from publicly accessible systems, if discovered"
+      }
+    ]
+  },
+  "03.05.01": {
+    "organizationDefinedParameters": [
+      {
+        "id": "A.03.05.01.ODP",
+        "text": "circumstances or situations that require re-authentication are defined"
+      }
+    ],
+    "determinationStatements": [
+      {
+        "id": "A.03.05.01.a[01]",
+        "text": "system users are uniquely identified"
+      },
+      {
+        "id": "A.03.05.01.a[02]",
+        "text": "system users are authenticated"
+      },
+      {
+        "id": "A.03.05.01.a[03]",
+        "text": "processes acting on behalf of users are associated with uniquely identified and authenticated system users"
+      },
+      {
+        "id": "A.03.05.01.b",
+        "text": "users are re-authenticated when <A.03.05.01.ODP: circumstances or situations>"
+      }
+    ]
+  },
+  "03.05.02": {
+    "organizationDefinedParameters": [
+      {
+        "id": "A.03.05.02.ODP",
+        "text": "devices or types of devices to be uniquely identified and authenticated before establishing a connection are defined"
+      }
+    ],
+    "determinationStatements": [
+      {
+        "id": "A.03.05.02[01]",
+        "text": "<A.03.05.02.ODP: devices or types of devices> are uniquely identified before establishing a system connection"
+      },
+      {
+        "id": "A.03.05.02[02]",
+        "text": "<A.03.05.02.ODP: devices or types of devices> are authenticated before establishing a system connection"
+      }
+    ]
+  },
+  "03.05.03": {
+    "organizationDefinedParameters": [],
+    "determinationStatements": [
+      {
+        "id": "A.03.05.03[01]",
+        "text": "strong multi-factor authentication for access to privileged accounts is implemented"
+      },
+      {
+        "id": "A.03.05.03[02]",
+        "text": "strong multi-factor authentication for access to non-privileged accounts is implemented"
+      }
+    ]
+  },
+  "03.08.03": {
+    "organizationDefinedParameters": [],
+    "determinationStatements": [
+      {
+        "id": "A.03.08.03",
+        "text": "system media that contain specified information are sanitized prior to disposal, release out of organizational control, or release for reuse"
+      }
+    ]
+  },
+  "03.10.01": {
+    "organizationDefinedParameters": [
+      {
+        "id": "A.03.10.01.ODP",
+        "text": "the frequency at which to review the access list detailing authorized physical access by individuals is defined"
+      }
+    ],
+    "determinationStatements": [
+      {
+        "id": "A.03.10.01.a[01]",
+        "text": "a list of individuals with authorized access to the facility where the system resides is developed"
+      },
+      {
+        "id": "A.03.10.01.a[02]",
+        "text": "a list of individuals with authorized access to the facility where the system resides is approved"
+      },
+      {
+        "id": "A.03.10.01.a[03]",
+        "text": "a list of individuals with authorized access to the facility where the system resides is maintained"
+      },
+      {
+        "id": "A.03.10.01.b",
+        "text": "authorization credentials for facility access are issued"
+      },
+      {
+        "id": "A.03.10.01.c",
+        "text": "the physical access list is reviewed <A.03.10.01.ODP: frequency>"
+      },
+      {
+        "id": "A.03.10.01.d",
+        "text": "individuals from the physical access list are removed when access is no longer required"
+      }
+    ]
+  },
+  "03.10.07": {
+    "organizationDefinedParameters": [],
+    "determinationStatements": [
+      {
+        "id": "A.03.10.07.a.01",
+        "text": "physical access authorizations are enforced at entry and exit points to the facility where the system resides by verifying individual physical access authorizations before granting access"
+      },
+      {
+        "id": "A.03.10.07.a.02",
+        "text": "physical access authorizations are enforced at entry and exit points to the facility where the system resides by controlling ingress and egress with physical access control systems, devices, or guards"
+      },
+      {
+        "id": "A.03.10.07.b",
+        "text": "physical access audit logs for entry or exit points are maintained"
+      },
+      {
+        "id": "A.03.10.07.c[01]",
+        "text": "visitors are escorted"
+      },
+      {
+        "id": "A.03.10.07.c[02]",
+        "text": "visitor activity is controlled"
+      },
+      {
+        "id": "A.03.10.07.d",
+        "text": "keys, combinations, and other physical access devices are secured"
+      },
+      {
+        "id": "A.03.10.07.e",
+        "text": "physical access to output devices is controlled to prevent unauthorized individuals from obtaining access to specified information"
+      }
+    ]
+  },
+  "03.13.01": {
+    "organizationDefinedParameters": [],
+    "determinationStatements": [
+      {
+        "id": "A.03.13.01.a[01]",
+        "text": "communications at external managed interfaces to the system are monitored"
+      },
+      {
+        "id": "A.03.13.01.a[02]",
+        "text": "communications at external managed interfaces to the system are controlled"
+      },
+      {
+        "id": "A.03.13.01.a[03]",
+        "text": "communications at key internal managed interfaces within the system are monitored"
+      },
+      {
+        "id": "A.03.13.01.a[04]",
+        "text": "communications at key internal managed interfaces within the system are controlled"
+      },
+      {
+        "id": "A.03.13.01.b",
+        "text": "subnetworks are implemented for publicly accessible system components that are physically or logically separated from internal networks"
+      },
+      {
+        "id": "A.03.13.01.c",
+        "text": "external system connections are only made through managed interfaces that consist of boundary protection devices arranged in accordance with an organizational security architecture"
+      }
+    ]
+  },
+  "03.14.01": {
+    "organizationDefinedParameters": [
+      {
+        "id": "A.03.14.01.ODP[01]",
+        "text": "the time period within which to install security-relevant software updates after the release of the updates is defined"
+      },
+      {
+        "id": "A.03.14.01.ODP[02]",
+        "text": "the time period within which to install security-relevant firmware updates after the release of the updates is defined"
+      }
+    ],
+    "determinationStatements": [
+      {
+        "id": "A.03.14.01.a[01]",
+        "text": "system flaws are identified"
+      },
+      {
+        "id": "A.03.14.01.a[02]",
+        "text": "system flaws are reported"
+      },
+      {
+        "id": "A.03.14.01.a[03]",
+        "text": "system flaws are corrected"
+      },
+      {
+        "id": "A.03.14.01.b[01]",
+        "text": "security-relevant software updates are installed within <A.03.14.01.ODP[01]: time period> of the release of the updates"
+      },
+      {
+        "id": "A.03.14.01.b[02]",
+        "text": "security-relevant firmware updates are installed within <A.03.14.01.ODP[02]: time period> of the release of the updates"
+      }
+    ]
+  },
+  "03.14.02": {
+    "organizationDefinedParameters": [
+      {
+        "id": "A.03.14.02.ODP",
+        "text": "the frequency at which malicious code protection mechanisms perform scans is defined"
+      }
+    ],
+    "determinationStatements": [
+      {
+        "id": "A.03.14.02.a[01]",
+        "text": "malicious code protection mechanisms are implemented at system entry and exit points to detect malicious code"
+      },
+      {
+        "id": "A.03.14.02.a[02]",
+        "text": "malicious code protection mechanisms are implemented at system entry and exit points to eradicate malicious code"
+      },
+      {
+        "id": "A.03.14.02.b",
+        "text": "malicious code protection mechanisms are updated as new releases are available in accordance with configuration management policy and procedures"
+      },
+      {
+        "id": "A.03.14.02.c.01[01]",
+        "text": "malicious code protection mechanisms are configured to perform scans of the system <A.03.14.02.ODP: frequency>"
+      },
+      {
+        "id": "A.03.14.02.c.01[02]",
+        "text": "malicious code protection mechanisms are configured to perform real-time scans of files from external sources at endpoints or system entry and exit points as the files are downloaded, opened, or executed"
+      },
+      {
+        "id": "A.03.14.02.c.02",
+        "text": "malicious code protection mechanisms are configured to block or quarantine malicious code, or take other mitigation actions in response to malicious code detection"
+      }
+    ]
+  }
+} as const;
+
+
 const commonPolicyObjects = ["policy", "procedures", "system security plan", "relevant records"];
 
-export const criteriaAlignmentByOfficialId: Record<string, CriteriaAlignment> = {
+export const criteriaAlignmentByOfficialId: Record<string, CriteriaAlignmentSummary> = {
   "03.01.01": {
     assessmentObjectives: [
       "A.03.01.01.a: System account types allowed and prohibited are defined.",
@@ -515,7 +942,16 @@ export const criteriaAlignmentByOfficialId: Record<string, CriteriaAlignment> = 
 };
 
 export function getCriteriaAlignment(control: ControlDefinition): CriteriaAlignment {
-  return criteriaAlignmentByOfficialId[control.officialId] ?? {
+  const exactCriteria = exactCriteriaByOfficialId[control.officialId] ?? {
+    determinationStatements: [
+      {
+        id: control.officialId,
+        text: "Confirm the control is implemented and operating for systems handling specified information.",
+      },
+    ],
+    organizationDefinedParameters: [],
+  };
+  const summaryAlignment = criteriaAlignmentByOfficialId[control.officialId] ?? {
     assessmentObjectives: [`${control.officialId}: Confirm the control is implemented and operating for systems handling specified information.`],
     assessmentObjects: {
       examine: [...commonPolicyObjects, ...control.evidenceExamples],
@@ -523,6 +959,12 @@ export function getCriteriaAlignment(control: ControlDefinition): CriteriaAlignm
       test: ["mechanisms or procedures implementing the control"],
     },
     organizationDefinedParameters: [],
+  };
+
+  return {
+    ...summaryAlignment,
+    determinationStatements: exactCriteria.determinationStatements,
+    organizationDefinedParameterDetails: exactCriteria.organizationDefinedParameters,
   };
 }
 

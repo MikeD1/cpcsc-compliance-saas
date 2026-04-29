@@ -19,12 +19,14 @@ type WorkspaceControl = {
   evidenceExamples: string[];
   criteriaAlignment: {
     assessmentObjectives: string[];
+    determinationStatements: Array<{ id: string; text: string }>;
     assessmentObjects: {
       examine: string[];
       interview: string[];
       test: string[];
     };
     organizationDefinedParameters: string[];
+    organizationDefinedParameterDetails: Array<{ id: string; text: string }>;
   };
   readinessGuidance: {
     plainEnglishGoal: string;

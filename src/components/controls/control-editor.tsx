@@ -18,12 +18,14 @@ type ControlEditorProps = {
     evidenceExamples: string[];
     criteriaAlignment: {
       assessmentObjectives: string[];
+      determinationStatements: Array<{ id: string; text: string }>;
       assessmentObjects: {
         examine: string[];
         interview: string[];
         test: string[];
       };
       organizationDefinedParameters: string[];
+      organizationDefinedParameterDetails: Array<{ id: string; text: string }>;
     };
     readinessGuidance: {
       plainEnglishGoal: string;
@@ -355,6 +357,38 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
             <p className="mt-3 rounded-[1rem] border border-cyan-200 bg-white/80 px-3 py-2 text-sm leading-6 text-cyan-950">
               <span className="font-semibold">Suggested next action:</span> {control.readinessGuidance.suggestedNextAction}
             </p>
+          </details>
+
+          <details open className="rounded-[1.5rem] border border-indigo-100 bg-indigo-50/80 p-4 shadow-sm">
+            <summary className="cursor-pointer text-sm font-semibold text-indigo-950">Official criteria checklist</summary>
+            <div className="mt-3 grid gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-indigo-700">Exact Canada.ca determination statements</p>
+                <p className="mt-1 text-xs leading-5 text-indigo-900">{control.criteriaAlignment.determinationStatements.length} exact criteria statements for this control. Checkboxes are display-only for now; evidence and review status still live at the control level.</p>
+                <div className="mt-2 max-h-72 space-y-2 overflow-auto pr-1 text-sm leading-6 text-indigo-950">
+                  {control.criteriaAlignment.determinationStatements.map((criterion) => (
+                    <label key={criterion.id} className="flex gap-3 rounded-[0.9rem] border border-indigo-100 bg-white/75 px-3 py-2">
+                      <input type="checkbox" disabled className="mt-1 h-4 w-4 rounded border-indigo-200" aria-label={`Criteria coverage placeholder for ${criterion.id}`} />
+                      <span><span className="font-semibold">{criterion.id}:</span> {criterion.text}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              {control.criteriaAlignment.organizationDefinedParameterDetails.length > 0 ? (
+                <div className="rounded-[1rem] border border-amber-200 bg-amber-50 px-3 py-2 text-sm leading-6 text-amber-950">
+                  <p className="font-semibold">Organization-defined parameters to decide:</p>
+                  <ul className="mt-2 list-disc space-y-1 pl-5">
+                    {control.criteriaAlignment.organizationDefinedParameterDetails.map((parameter) => <li key={parameter.id}><span className="font-semibold">{parameter.id}:</span> {parameter.text}</li>)}
+                  </ul>
+                </div>
+              ) : null}
+              <div className="grid gap-2 text-sm leading-6 text-indigo-950">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-indigo-700">Assessment methods to cover</p>
+                <p><span className="font-semibold">Examine:</span> {control.criteriaAlignment.assessmentObjects.examine.slice(0, 4).join(", ")}</p>
+                <p><span className="font-semibold">Interview:</span> {control.criteriaAlignment.assessmentObjects.interview.slice(0, 3).join(", ")}</p>
+                <p><span className="font-semibold">Test:</span> {control.criteriaAlignment.assessmentObjects.test.slice(0, 3).join(", ")}</p>
+              </div>
+            </div>
           </details>
 
           <details className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm">
