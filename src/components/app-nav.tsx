@@ -37,12 +37,6 @@ export function AppNav() {
             </Link>
           );
         })}
-        <Link
-          href="/exports/assessment.pdf"
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-[0.85rem] border border-slate-200 bg-white/70 px-3 py-2.5 text-sm font-medium text-slate-700 outline-none transition hover:bg-white hover:text-slate-950 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2"
-        >
-          Export PDF
-        </Link>
         <LogoutButton variant="nav" />
       </div>
     </nav>
