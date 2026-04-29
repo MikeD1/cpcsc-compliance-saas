@@ -166,30 +166,6 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
             <p className="mt-2 text-sm text-slate-300">{reviewedAt ? `Last reviewed ${new Date(reviewedAt).toISOString().slice(0, 10)}` : "Not reviewed yet"}</p>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-cyan-100">Work this like a readiness coach: understand what good looks like, write implementation details, attach evidence references, then decide whether it is strong enough for a buyer conversation.</p>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <select
-              value={status}
-              onChange={(event) => {
-                setStatus(event.target.value as typeof status);
-                setDirty(true);
-              }}
-              className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-white outline-none"
-            >
-              {statuses.map((option) => (
-                <option key={option.value} value={option.value} className="text-slate-900">
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              onClick={() => saveControl()}
-              disabled={saving}
-              className="rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-slate-100 disabled:opacity-60"
-            >
-              {saving ? "Saving…" : dirty ? "Save changes" : saved ?? "Save control"}
-            </button>
-          </div>
         </div>
       </div>
 
@@ -250,11 +226,80 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
         </section>
 
         <section className="grid gap-4">
-          <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-            <div className="flex items-center justify-between gap-4">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Implementation details</h3>
-              <span className={`text-xs font-medium ${error ? "text-rose-600" : dirty ? "text-amber-700" : "text-emerald-700"}`}>{error ? "Save failed" : saving ? "Saving…" : dirty ? "Unsaved changes" : saved ?? "Saved"}</span>
+          <div className="rounded-[1.7rem] border border-cyan-200 bg-[linear-gradient(180deg,#ecfeff_0%,#ffffff_100%)] p-5 shadow-sm ring-1 ring-cyan-100">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-800">Primary workflow</p>
+                <h3 className="mt-1 text-xl font-semibold text-slate-950">Ownership and review</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">Assign who owns this control, set its working status, and move it through review.</p>
+              </div>
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${error ? "bg-rose-50 text-rose-700" : dirty ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}`}>{error ? "Save failed" : saving ? "Saving…" : dirty ? "Unsaved" : saved ?? "Saved"}</span>
             </div>
+            <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_0.7fr]">
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold text-slate-800">Control owner</span>
+                <select
+                value={ownerMembershipId}
+                onChange={(event) => {
+                  setOwnerMembershipId(event.target.value);
+                  setDirty(true);
+                }}
+                className="w-full rounded-[1rem] border border-cyan-100 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-cyan-400"
+              >
+                <option value="">Unassigned</option>
+                {activeMembers.map((member) => (
+                  <option key={member.membershipId} value={member.membershipId}>
+                    {memberLabel(member)}
+                  </option>
+                ))}
+                </select>
+              </label>
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold text-slate-800">Status</span>
+                <select
+                  value={status}
+                  onChange={(event) => {
+                    setStatus(event.target.value as typeof status);
+                    setDirty(true);
+                  }}
+                  className="w-full rounded-[1rem] border border-cyan-100 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-cyan-400"
+                >
+                  {statuses.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button type="button" onClick={() => saveControl("request-review")} disabled={saving} className="rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-medium text-sky-800 transition hover:bg-sky-100 disabled:opacity-60">
+                  Mark ready for review
+                </button>
+                <button type="button" onClick={() => saveControl("mark-reviewed")} disabled={saving} className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800 transition hover:bg-emerald-100 disabled:opacity-60">
+                  Mark reviewed
+                </button>
+                {reviewedAt ? (
+                  <button type="button" onClick={() => saveControl("clear-review")} disabled={saving} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60">
+                    Clear review date
+                  </button>
+                ) : null}
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => saveControl()}
+                  disabled={saving}
+                  className="rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-60"
+                >
+                  {saving ? "Saving…" : dirty ? "Save changes" : saved ?? "Save control"}
+                </button>
+              </div>
+              <p className="mt-3 text-xs leading-6 text-slate-600">Use ready for review when the note and evidence could survive a buyer/security reviewer asking “show me.” Mark reviewed when that internal review is complete.</p>
+              {activeMembers.length === 0 ? <p className="mt-3 text-xs leading-6 text-amber-700">No active members loaded. Add team members before assigning owners.</p> : null}
+            </div>
+          <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Implementation details</h3>
             <div className="mt-4 rounded-[1.2rem] border border-cyan-100 bg-cyan-50 px-4 py-3 text-sm leading-7 text-cyan-950">
               <p className="font-semibold">Example implementation</p>
               <p className="mt-1">{control.exampleImplementation}</p>
@@ -270,41 +315,8 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-700 outline-none transition focus:border-cyan-400"
             />
           </div>
-            <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Ownership and review</h3>
-              <select
-                value={ownerMembershipId}
-                onChange={(event) => {
-                  setOwnerMembershipId(event.target.value);
-                  setDirty(true);
-                }}
-                className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-cyan-400"
-              >
-                <option value="">Unassigned</option>
-                {activeMembers.map((member) => (
-                  <option key={member.membershipId} value={member.membershipId}>
-                    {memberLabel(member)}
-                  </option>
-                ))}
-              </select>
-              <div className="mt-4 grid gap-2">
-                <button type="button" onClick={() => saveControl("request-review")} disabled={saving} className="rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-medium text-sky-800 transition hover:bg-sky-100 disabled:opacity-60">
-                  Mark ready for review
-                </button>
-                <button type="button" onClick={() => saveControl("mark-reviewed")} disabled={saving} className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800 transition hover:bg-emerald-100 disabled:opacity-60">
-                  Mark reviewed
-                </button>
-                {reviewedAt ? (
-                  <button type="button" onClick={() => saveControl("clear-review")} disabled={saving} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60">
-                    Clear review date
-                  </button>
-                ) : null}
-              </div>
-              <p className="mt-3 text-xs leading-6 text-slate-500">Use ready for review when the note and evidence could survive a buyer/security reviewer asking “show me.” Mark reviewed when that internal review is complete.</p>
-              {activeMembers.length === 0 ? <p className="mt-3 text-xs leading-6 text-amber-700">No active members loaded. Add team members before assigning owners.</p> : null}
-            </div>
-            <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Evidence quality check</h3>
+          <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Evidence quality check</h3>
               <div className="mt-4 rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Evidence that usually helps prove this</p>
                 <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-700">
