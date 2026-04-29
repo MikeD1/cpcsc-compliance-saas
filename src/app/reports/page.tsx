@@ -65,7 +65,7 @@ export default async function ReportsPage() {
               href="/exports/assessment.pdf"
               className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
             >
-              Download buyer-ready PDF
+              Export compliance assessment
             </Link>
             <Link
               href="/controls"

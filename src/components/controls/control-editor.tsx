@@ -172,6 +172,86 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
       <div className="grid gap-6 p-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(22rem,0.55fr)] xl:p-8">
         <section className="grid gap-4" aria-label="Control work area">
           <div className="rounded-[1.7rem] border border-cyan-200 bg-[linear-gradient(180deg,#ecfeff_0%,#ffffff_100%)] p-5 shadow-sm ring-1 ring-cyan-100">
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold text-slate-950">Implementation details</h3>
+              <p className="text-sm leading-6 text-slate-600">Enter the description of how this control is implemented today.</p>
+            </div>
+            <textarea
+              value={implementationDetails}
+              onChange={(event) => {
+                setImplementationDetails(event.target.value);
+                setDirty(true);
+              }}
+              rows={4}
+              placeholder="Describe how this control is implemented today, who owns it, how often it is reviewed, and what evidence supports it. Avoid vague claims like ‘we have a process.’"
+              className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-700 outline-none transition focus:border-cyan-400"
+            />
+          </div>
+          <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold text-slate-950">Evidence and quality check</h3>
+              <p className="text-sm leading-6 text-slate-600">Attach a document reference or enter the location of the evidence, then describe what the evidence is.</p>
+            </div>
+              <form id={`add-evidence-${control.id}`} onSubmit={addEvidence} className="mt-4 grid gap-3 rounded-[1.2rem] border border-cyan-200 bg-white p-4 shadow-sm">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-800">Add evidence to this control</p>
+                  <p className="mt-1 text-xs leading-5 text-cyan-950">Add the evidence name/description and where the source evidence lives.</p>
+                </div>
+                <input
+                  value={evidenceTitle}
+                  onChange={(event) => setEvidenceTitle(event.target.value)}
+                  placeholder="Evidence description, e.g. Quarterly access review export showing active users"
+                  className="rounded-[0.9rem] border border-cyan-100 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-cyan-400"
+                />
+                <input
+                  value={evidenceLocation}
+                  onChange={(event) => setEvidenceLocation(event.target.value)}
+                  placeholder="Document location or evidence reference, e.g. SharePoint > CPCSC > Access Reviews"
+                  className="rounded-[0.9rem] border border-cyan-100 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-cyan-400"
+                />
+                <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+                  <select
+                    value={evidenceType}
+                    onChange={(event) => setEvidenceType(event.target.value)}
+                    className="rounded-[0.9rem] border border-cyan-100 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-cyan-400"
+                  >
+                    <option>Document</option>
+                    <option>Screenshot</option>
+                    <option>Spreadsheet</option>
+                    <option>Policy</option>
+                    <option>Procedure</option>
+                    <option>Ticket</option>
+                    <option>Other</option>
+                  </select>
+                  <button type="submit" disabled={savingEvidence} className="rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-60">
+                    {savingEvidence ? "Adding…" : "Add evidence"}
+                  </button>
+                </div>
+                {evidenceMessage ? <p className="text-xs font-medium text-emerald-700">{evidenceMessage}</p> : null}
+              </form>
+
+              <div className="mt-4 grid gap-3">
+                {evidenceItems.length === 0 ? (
+                  <div className="rounded-[1.2rem] border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500">
+                    No evidence attached yet. Add a register entry that points to where the proof lives, not just a note saying the control exists.
+                  </div>
+                ) : (
+                  evidenceItems.map((item) => (
+                    <div key={item.id} className="rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-medium text-slate-900">{item.title}</p>
+                          <p className="mt-1 text-slate-500">{item.location}</p>
+                          <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-400">{item.artifactType ?? "Document"}</p>
+                        </div>
+                      </div>
+                      <EvidenceRecordActions evidence={item} controlId={control.id} controls={[{ id: control.id, displayId: control.displayId, title: control.title }]} />
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex flex-col gap-1">
                 <h3 className="text-xl font-semibold text-slate-950">Ownership and review</h3>
@@ -241,86 +321,6 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               </div>
               <p className="mt-3 text-xs leading-6 text-slate-600">Use ready for review when the note and evidence could survive a buyer/security reviewer asking “show me.” Mark reviewed when that internal review is complete.</p>
               {activeMembers.length === 0 ? <p className="mt-3 text-xs leading-6 text-amber-700">No active members loaded. Add team members before assigning owners.</p> : null}
-            </div>
-          <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-            <div className="flex flex-col gap-1">
-              <h3 className="text-xl font-semibold text-slate-950">Implementation details</h3>
-              <p className="text-sm leading-6 text-slate-600">Describe how this control works today and what proof supports it.</p>
-            </div>
-            <textarea
-              value={implementationDetails}
-              onChange={(event) => {
-                setImplementationDetails(event.target.value);
-                setDirty(true);
-              }}
-              rows={4}
-              placeholder="Describe how this control is implemented today, who owns it, how often it is reviewed, and what evidence supports it. Avoid vague claims like ‘we have a process.’"
-              className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-700 outline-none transition focus:border-cyan-400"
-            />
-          </div>
-          <div className="rounded-[1.7rem] border border-cyan-200 bg-[linear-gradient(180deg,#ecfeff_0%,#ffffff_100%)] p-5 shadow-sm ring-1 ring-cyan-100">
-            <div className="flex flex-col gap-1">
-              <h3 className="text-xl font-semibold text-slate-950">Evidence and quality check</h3>
-              <p className="text-sm leading-6 text-slate-600">Attach the proof that supports the owner’s review decision.</p>
-            </div>
-              <form id={`add-evidence-${control.id}`} onSubmit={addEvidence} className="mt-4 grid gap-3 rounded-[1.2rem] border border-cyan-200 bg-white p-4 shadow-sm">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-800">Add evidence to this control</p>
-                  <p className="mt-1 text-xs leading-5 text-cyan-950">Record the document, screenshot, spreadsheet, or policy location that supports these implementation details.</p>
-                </div>
-                <input
-                  value={evidenceTitle}
-                  onChange={(event) => setEvidenceTitle(event.target.value)}
-                  placeholder="Evidence title, e.g. Quarterly access review export"
-                  className="rounded-[0.9rem] border border-cyan-100 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-cyan-400"
-                />
-                <input
-                  value={evidenceLocation}
-                  onChange={(event) => setEvidenceLocation(event.target.value)}
-                  placeholder="Storage path / reference, e.g. SharePoint > CPCSC > Access Reviews"
-                  className="rounded-[0.9rem] border border-cyan-100 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-cyan-400"
-                />
-                <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
-                  <select
-                    value={evidenceType}
-                    onChange={(event) => setEvidenceType(event.target.value)}
-                    className="rounded-[0.9rem] border border-cyan-100 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-cyan-400"
-                  >
-                    <option>Document</option>
-                    <option>Screenshot</option>
-                    <option>Spreadsheet</option>
-                    <option>Policy</option>
-                    <option>Procedure</option>
-                    <option>Ticket</option>
-                    <option>Other</option>
-                  </select>
-                  <button type="submit" disabled={savingEvidence} className="rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-60">
-                    {savingEvidence ? "Adding…" : "Add evidence"}
-                  </button>
-                </div>
-                {evidenceMessage ? <p className="text-xs font-medium text-emerald-700">{evidenceMessage}</p> : null}
-              </form>
-
-              <div className="mt-4 grid gap-3">
-                {evidenceItems.length === 0 ? (
-                  <div className="rounded-[1.2rem] border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500">
-                    No evidence attached yet. Add a register entry that points to where the proof lives, not just a note saying the control exists.
-                  </div>
-                ) : (
-                  evidenceItems.map((item) => (
-                    <div key={item.id} className="rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="font-medium text-slate-900">{item.title}</p>
-                          <p className="mt-1 text-slate-500">{item.location}</p>
-                          <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-400">{item.artifactType ?? "Document"}</p>
-                        </div>
-                      </div>
-                      <EvidenceRecordActions evidence={item} controlId={control.id} controls={[{ id: control.id, displayId: control.displayId, title: control.title }]} />
-                    </div>
-                  ))
-                )}
-              </div>
             </div>
           {error ? <p className="text-sm text-rose-500">{error}</p> : null}
         </section>
