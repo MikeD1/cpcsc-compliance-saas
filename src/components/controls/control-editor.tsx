@@ -270,7 +270,6 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-700 outline-none transition focus:border-cyan-400"
             />
           </div>
-          <div className="grid gap-4 lg:grid-cols-[0.48fr_0.52fr]">
             <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Ownership and review</h3>
               <select
@@ -384,7 +383,6 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
                 )}
               </div>
             </div>
-          </div>
           {error ? <p className="text-sm text-rose-500">{error}</p> : null}
         </section>
       </div>
