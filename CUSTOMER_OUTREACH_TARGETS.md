@@ -166,3 +166,42 @@ Mike
 
 | Date | Target | Contact/role | Segment | Location | Current workflow | Buyer/security trigger | Biggest pain | Sample report reaction | Price reaction | Design partner? | Referral? | Follow-up |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+## Market timing notes
+
+Official Government of Canada pages currently say:
+
+- CPCSC Level 1 became available to suppliers in April 2026.
+- Level 1 requires an annual self-assessment against 13 controls.
+- Beginning in summer 2026, suppliers bidding on defence contracts may need Level 1 certification.
+- Level 1 self-assessment is required at contract award, not during the bidding process.
+- Level 2 and Level 3 are separate future/higher-assurance levels and should not be described as supported by ComplianceOne today.
+
+Sources:
+
+- https://www.canada.ca/en/public-services-procurement/news/2026/04/canadian-program-for-cyber-security-certification-level-1.html
+- https://www.canada.ca/en/public-services-procurement/services/industrial-security/security-requirements-contracting/cyber-security-certification-defence-suppliers-canada/meet-level1-certification-requirements.html
+- https://www.canada.ca/en/public-services-procurement/services/industrial-security/security-requirements-contracting/cyber-security-certification-defence-suppliers-canada/program-overview.html
+
+Use this validation angle:
+
+> How are you preparing for CPCSC Level 1 appearing in defence contracts beginning in summer 2026, especially scoping, evidence retention, and annual self-assessment?
+
+## Additional market-scout targets to research/qualify
+
+These should be added to the outreach queue after confirming current contact paths and fit:
+
+| Target | Location | Why consider | Contact path / role |
+| --- | --- | --- | --- |
+| FBT Inc. | St. Catharines / Niagara | Precision defence/aerospace CNC manufacturer; likely quality-led and supplier-readiness aware. | President/GM, quality manager, IT/ops lead |
+| Velatron Technologies | Kitchener-Waterloo | AS9100D, ISO9001, Controlled Goods supplier for defence/space electrical components. | President/CEO, quality/compliance, operations |
+| Hepburn Engineering | Toronto | Naval systems supplier; useful for defence-program and subcontractor burden insight. | Business development, contracts, IT/security, quality |
+| Jroberts Defence & Security | Toronto | Small defence-focused firm; potentially strong SME readiness profile. | President, operations, contracts |
+| Roshel | Brampton | Armoured vehicle manufacturer; larger than first ICP but useful for supply-chain/channel learning. | Supply chain, contracts, IT/security, quality |
+| J-Squared Technologies | Mississauga/Ottawa | Rugged embedded systems for defence/mission-critical applications. | Military sector lead, quality/compliance, IT/security |
+| Rocket Lab Toronto ADCS unit | Toronto | Space components and government/space customer exposure; useful nuance though multinational. | Business development, contracts, security/compliance |
+| Qoherent | Toronto/Ottawa | Defence/space AI signal-processing startup; useful for software/technology supplier feedback. | Founder/CEO, CTO, BD lead |
+| Palitronica | Waterloo/Ottawa | Hardware cybersecurity/electronics assurance; possible partner/advisor as much as customer. | CEO/founder, BD/product/security lead |
+| MDA Space | Brampton | Major prime/supply-chain insight target, not first SMB buyer. | Supplier quality, supply chain risk, cybersecurity/GRC |
+| L3Harris WESCAM / Ontario operations | Ontario | Enterprise defence supplier-network insight. | Supply chain management, supplier quality, security compliance |
+| AIAC member directory / Ontario aerospace SMEs | Ontario | Broad directory for filtering Ontario + defence/space/Controlled Goods prospects. | Member companies' quality, contracts, IT, ops leaders |
