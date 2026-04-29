@@ -173,9 +173,9 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
         <section className="grid gap-4" aria-label="Control work area">
           <div className="rounded-[1.7rem] border border-cyan-200 bg-[linear-gradient(180deg,#ecfeff_0%,#ffffff_100%)] p-5 shadow-sm ring-1 ring-cyan-100">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-              <div>
+              <div className="flex flex-col gap-1">
                 <h3 className="text-xl font-semibold text-slate-950">Ownership and review</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">Assign who owns this control, set its working status, and move it through review.</p>
+                <p className="text-sm leading-6 text-slate-600">Assign who owns this control, set its working status, and move it through review.</p>
               </div>
               <span className={`rounded-full px-3 py-1 text-xs font-semibold ${error ? "bg-rose-50 text-rose-700" : dirty ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}`}>{error ? "Save failed" : saving ? "Saving…" : dirty ? "Unsaved" : saved ?? "Saved"}</span>
             </div>
@@ -243,7 +243,10 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               {activeMembers.length === 0 ? <p className="mt-3 text-xs leading-6 text-amber-700">No active members loaded. Add team members before assigning owners.</p> : null}
             </div>
           <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Implementation details</h3>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold text-slate-950">Implementation details</h3>
+              <p className="text-sm leading-6 text-slate-600">Describe how this control works today and what proof supports it.</p>
+            </div>
             <textarea
               value={implementationDetails}
               onChange={(event) => {
