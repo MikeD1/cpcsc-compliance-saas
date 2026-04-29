@@ -124,10 +124,10 @@ export function buildAssessmentPdf(payload: ExportPayload) {
   doc.text(payload.organizationName, margin + 24, y + 58);
   doc.text(`Generated ${payload.generatedAt}`, margin + 24, y + 78);
   doc.setFontSize(9);
-  doc.text("Internal readiness snapshot — not a certification, audit opinion, or government approval.", margin + 24, y + 96);
+  doc.text("Buyer-ready internal snapshot — not a certification, audit opinion, or government approval.", margin + 24, y + 96);
   y += 140;
 
-  heading("Executive summary", 17);
+  heading("Executive readiness interpretation", 17);
   writeParagraph(executiveSummary, 11, 12);
   writeParagraph(`Scope: ${payload.scopeSummary ?? "Not provided"}`, 10, 10);
   writeParagraph(`Status note: ${payload.riskStatement ?? "Not provided"}`, 10, 18);
@@ -140,9 +140,9 @@ export function buildAssessmentPdf(payload: ExportPayload) {
   card(margin + (cardWidth + 8) * 3, cardWidth, "Review", String(ready), "ready for review");
   y += 104;
 
-  heading("Readiness score explanation", 15);
+  heading("Readiness score and confidence basis", 15);
   writeParagraph(
-    `Confidence level: ${payload.readinessDiagnosis.confidenceLevel}. The readiness score is the percentage of CPCSC Level 1 controls marked complete in this workspace. ${complete} of ${totalControls} controls are complete. Controls that are ready for review, in progress, or not started are not counted as complete.`,
+    `Confidence level: ${payload.readinessDiagnosis.confidenceLevel}. The readiness score is the percentage of CPCSC Level 1 controls marked complete in this workspace. ${complete} of ${totalControls} controls are complete. The confidence narrative also considers owners, evidence references, and review state. Controls that are ready for review, in progress, or not started are not counted as complete.`,
     10,
     10,
   );
@@ -161,7 +161,7 @@ export function buildAssessmentPdf(payload: ExportPayload) {
     writeParagraph(`Evidence quality watchlist: ${payload.readinessDiagnosis.evidenceQualityWarnings.join(", ")}.`, 9, 14);
   }
 
-  heading("Action plan", 15);
+  heading("Action plan to strengthen the buyer story", 15);
   if (payload.actionPlan.length === 0) {
     writeParagraph("No priority actions are currently queued. Export this report for review or begin a deeper assessment pass.", 10, 18);
   } else {
@@ -182,8 +182,8 @@ export function buildAssessmentPdf(payload: ExportPayload) {
     y += 6;
   });
 
-  heading("Evidence coverage summary", 15);
-  writeParagraph(`${totalControls - evidenceGaps} of ${totalControls} controls have at least one evidence reference. ${evidenceGaps} controls still need supporting evidence. Evidence entries are register references unless storage/file retention has been separately configured.`, 10, 18);
+  heading("Evidence coverage and proof quality", 15);
+  writeParagraph(`${totalControls - evidenceGaps} of ${totalControls} controls have at least one evidence reference. ${evidenceGaps} controls still need supporting evidence. A useful evidence record should point to where proof lives, be understandable to someone outside the immediate team, and be current enough for a buyer conversation. Evidence entries are register references unless storage/file retention has been separately configured.`, 10, 18);
 
   heading("Control detail appendix", 15);
   payload.controls.forEach((response) => {

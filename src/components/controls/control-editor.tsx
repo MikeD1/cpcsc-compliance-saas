@@ -115,7 +115,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
               {control.displayId}: {control.title}
             </h2>
             <p className="mt-2 text-sm text-slate-300">{reviewedAt ? `Last reviewed ${new Date(reviewedAt).toISOString().slice(0, 10)}` : "Not reviewed yet"}</p>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-cyan-100">Work this like an assistant queue: confirm what is expected, adapt the example notes, attach evidence, then mark it ready for review.</p>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-cyan-100">Work this like a readiness coach: understand what good looks like, write a defensible implementation note, attach evidence references, then decide whether it is strong enough for a buyer conversation.</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <select
@@ -203,11 +203,11 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
         <section className="grid gap-4">
           <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
             <div className="flex items-center justify-between gap-4">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Implementation narrative</h3>
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Defensible implementation narrative</h3>
               <span className={`text-xs font-medium ${error ? "text-rose-600" : dirty ? "text-amber-700" : "text-emerald-700"}`}>{error ? "Save failed" : saving ? "Saving…" : dirty ? "Unsaved changes" : saved ?? "Saved"}</span>
             </div>
             <div className="mt-4 rounded-[1.2rem] border border-cyan-100 bg-cyan-50 px-4 py-3 text-sm leading-7 text-cyan-950">
-              <p className="font-semibold">Example notes</p>
+              <p className="font-semibold">Consultant-style example</p>
               <p className="mt-1">{control.exampleImplementation}</p>
             </div>
             <textarea
@@ -217,7 +217,7 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
                 setDirty(true);
               }}
               rows={7}
-              placeholder="Describe how your organization implements this control. You can adapt the example notes above."
+              placeholder="Describe who owns this, how it works today, how often it is reviewed, and what evidence proves it. Avoid vague claims like ‘we have a process.’"
               className="mt-4 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-700 outline-none transition focus:border-cyan-400"
             />
           </div>
@@ -252,13 +252,13 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
                   </button>
                 ) : null}
               </div>
-              <p className="mt-3 text-xs leading-6 text-slate-500">Use ready for review when notes and evidence are good enough for an owner or reviewer to inspect. Mark reviewed when that review is complete.</p>
+              <p className="mt-3 text-xs leading-6 text-slate-500">Use ready for review when the note and evidence could survive a buyer/security reviewer asking “show me.” Mark reviewed when that internal review is complete.</p>
               {activeMembers.length === 0 ? <p className="mt-3 text-xs leading-6 text-amber-700">No active members loaded. Add team members before assigning owners.</p> : null}
             </div>
             <div className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Evidence attached</h3>
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-700">Evidence quality check</h3>
               <div className="mt-4 rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Good evidence examples</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Evidence that usually helps prove this</p>
                 <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-700">
                   {control.evidenceExamples.map((example) => (
                     <li key={example} className="flex gap-2">
@@ -268,10 +268,18 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
                   ))}
                 </ul>
               </div>
+              <div className="mt-4 rounded-[1.2rem] border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
+                <p className="font-semibold">Before marking complete, check:</p>
+                <ul className="mt-2 list-disc space-y-1 pl-5">
+                  <li>Does the record show where proof lives?</li>
+                  <li>Would someone outside the team understand it?</li>
+                  <li>Is it current enough for a buyer conversation?</li>
+                </ul>
+              </div>
               <div className="mt-4 grid gap-3">
                 {(control.response?.evidenceItems ?? []).length === 0 ? (
                   <div className="rounded-[1.2rem] border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500">
-                    No evidence attached yet.
+                    No evidence attached yet. Add a register entry that points to where the proof lives, not just a note saying the control exists.
                   </div>
                 ) : (
                   (control.response?.evidenceItems ?? []).map((item) => (

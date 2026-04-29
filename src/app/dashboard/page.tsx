@@ -55,17 +55,20 @@ export default async function DashboardPage({
     <AppShell organizationName={access.user.organization?.name}>
       <section className="grid gap-6 2xl:grid-cols-[1.12fr_0.88fr]">
         <div className="rounded-[2rem] border border-white/50 bg-white/92 p-8 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
-          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Command center</p>
+          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Readiness command center</p>
           <div className="mt-3 flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div>
               <h1 className="text-4xl font-semibold tracking-tight text-slate-950 lg:text-5xl">
                 {organization.legalName ?? organization.name}
               </h1>
-              <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600">{assessment.scopeSummary}</p>
+              <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600">
+                {assessment.scopeSummary} This dashboard is designed to answer the question a spreadsheet cannot: what is risky, what is credible, and what should your team do next?
+              </p>
             </div>
             <div className="rounded-[1.75rem] border border-slate-200 bg-slate-50 px-5 py-4 shadow-sm">
               <p className="text-[11px] uppercase tracking-[0.24em] text-slate-500">Assessment</p>
               <p className="mt-2 text-lg font-semibold text-slate-950">{assessment.title}</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">Confidence, judgment, and buyer-ready proof — not just control tracking.</p>
             </div>
           </div>
           <div className="mt-8 grid gap-4 md:grid-cols-5">
@@ -101,7 +104,7 @@ export default async function DashboardPage({
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Readiness diagnosis</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{readinessDiagnosis.confidenceLevel} confidence</h2>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{readinessDiagnosis.confidenceLevel} buyer-readiness confidence</h2>
             <p className="mt-3 max-w-3xl text-base leading-8 text-slate-700">{readinessDiagnosis.headline}</p>
           </div>
           <Link href="/reports" className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800">
@@ -111,7 +114,7 @@ export default async function DashboardPage({
 
         <div className="mt-6 grid gap-4 lg:grid-cols-[1fr_0.9fr]">
           <div className="rounded-[1.6rem] border border-slate-200 bg-slate-50 p-5">
-            <h3 className="text-sm font-semibold text-slate-950">Why this diagnosis</h3>
+            <h3 className="text-sm font-semibold text-slate-950">Why this diagnosis matters</h3>
             <ul className="mt-4 grid gap-3 text-sm leading-6 text-slate-700 sm:grid-cols-2">
               {readinessDiagnosis.why.map((reason) => (
                 <li key={reason} className="rounded-[1rem] border border-slate-200 bg-white px-4 py-3">{reason}</li>
@@ -150,7 +153,7 @@ export default async function DashboardPage({
             <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Next best actions</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">What to do next</h2>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-              A prioritized queue based on ownership, evidence coverage, and review status. Clear these first to move the readiness score instead of hunting through every control.
+              A prioritized queue based on ownership, evidence coverage, and review status. Clear these first because they improve the buyer story, not just the percentage score.
             </p>
           </div>
           <Link href="/reports" className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 transition hover:border-cyan-200 hover:text-cyan-800">
@@ -193,7 +196,7 @@ export default async function DashboardPage({
                     <p className="mt-1 font-medium text-slate-950">{action.owner}</p>
                   </div>
                   <Link href={action.href} className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800">
-                    Open task
+                    Improve proof
                   </Link>
                 </div>
               </div>

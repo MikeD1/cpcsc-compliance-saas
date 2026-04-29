@@ -55,17 +55,17 @@ export default async function ReportsPage() {
     <AppShell organizationName={access.user.organization?.name}>
       <section className="grid gap-6 2xl:grid-cols-[1.02fr_0.98fr]">
         <div id="download-report" className="scroll-mt-28 rounded-[2rem] border border-white/50 bg-white/92 p-8 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
-          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Buyer-ready reporting</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950 lg:text-5xl">CPCSC Level 1 readiness report</h1>
+          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Buyer-proof reporting</p>
+          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950 lg:text-5xl">CPCSC Level 1 readiness packet</h1>
           <p className="mt-4 text-base leading-8 text-slate-600">
-            Package the current readiness picture into an executive summary, score explanation, priority gaps, action plan, and evidence coverage snapshot for customer, leadership, or procurement conversations.
+            Turn workspace activity into a buyer-facing readiness story: confidence level, why it matters, what proof exists, which gaps are risky, and what should happen next.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/exports/assessment.pdf"
               className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
             >
-              Download credible PDF
+              Download buyer-ready PDF
             </Link>
             <Link
               href="/controls"
@@ -90,7 +90,7 @@ export default async function ReportsPage() {
       </section>
 
       <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
-        <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Executive summary</p>
+        <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Readiness interpretation</p>
         <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">What a buyer should take away</h2>
         <p className="mt-4 max-w-4xl text-sm leading-7 text-slate-600">{executiveSummary}</p>
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -100,11 +100,11 @@ export default async function ReportsPage() {
           <SummaryCard label="Review queue" value={String(actionSummary.readyForReview)} detail="Controls ready for a review decision before completion." />
         </div>
         <div className="mt-5 rounded-[1.4rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-7 text-amber-900">
-          <span className="font-semibold">Readiness score explanation:</span> The score is the percentage of CPCSC Level 1 controls marked complete in this workspace. It is a management readiness metric, not a certification, audit opinion, or Government of Canada approval.
+          <span className="font-semibold">Readiness score explanation:</span> The score is the percentage of CPCSC Level 1 controls marked complete in this workspace. The confidence narrative also considers owners, evidence references, and review state. It is a management readiness metric, not a certification, audit opinion, or Government of Canada approval.
         </div>
         <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_0.9fr]">
           <div className="rounded-[1.4rem] border border-slate-200 bg-slate-50 px-5 py-4">
-            <h3 className="text-sm font-semibold text-slate-950">Assessment basis</h3>
+            <h3 className="text-sm font-semibold text-slate-950">Assessment basis, not just counts</h3>
             <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-700">
               {readinessDiagnosis.why.map((reason) => (
                 <li key={reason}>• {reason}</li>
@@ -154,7 +154,7 @@ export default async function ReportsPage() {
 
         <div className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
           <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Action plan</p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Next work to close the report</h2>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Next work to strengthen the buyer story</h2>
           <div className="mt-6 grid gap-3">
             {priorityActions.length === 0 ? <p className="rounded-[1.2rem] border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">No priority actions are currently queued. Export the report or start a deeper review pass.</p> : null}
             {priorityActions.map((action, index) => (
