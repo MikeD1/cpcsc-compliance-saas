@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { DeleteUserButton } from "@/components/admin/delete-user-button";
+import { PageBackground } from "@/components/page-background";
 import { getCurrentAdminAccess } from "@/lib/admin";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
@@ -49,8 +50,9 @@ export default async function AdminPage() {
   const authUsers = authUsersResult.data.users;
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,#163257_0%,transparent_28%),linear-gradient(180deg,#050b16_0%,#0b1630_18%,#eef3ff_18%,#f5f7fb_100%)] px-4 py-8 text-slate-900">
-      <div className="mx-auto flex max-w-[1400px] flex-col gap-6">
+    <PageBackground>
+      <main className="px-4 py-8 text-slate-900">
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-6">
         <section className="rounded-[2rem] border border-white/50 bg-white/92 p-8 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
           <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Support console</p>
           <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950 lg:text-5xl">Organization billing overview</h1>
@@ -139,8 +141,9 @@ export default async function AdminPage() {
             );
           })}
         </section>
-      </div>
-    </main>
+        </div>
+      </main>
+    </PageBackground>
   );
 }
 
