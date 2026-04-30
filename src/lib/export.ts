@@ -119,36 +119,38 @@ export function buildAssessmentPdf(payload: ExportPayload) {
   };
 
   const sectionTitle = (eyebrow: string, title: string, detail?: string) => {
-    ensureSpace(detail ? 72 : 48);
+    ensureSpace(detail ? 88 : 58);
+    if (y > margin + 8) y += 8;
     setText(cyan700);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
+    doc.setFontSize(7.5);
     doc.text(eyebrow.toUpperCase(), margin, y);
-    y += 15;
+    y += 21;
     setText(slate950);
     doc.setFontSize(17);
     doc.text(title, margin, y);
-    y += 18;
-    if (detail) writeText(detail, { size: 9, gap: 12, color: slate500 });
+    y += 23;
+    if (detail) writeText(detail, { size: 9, gap: 16, color: slate500 });
   };
 
-  const metricCard = (x: number, width: number, label: string, value: string, detail: string, accent: [number, number, number]) => {
+  const metricCard = (x: number, cardY: number, width: number, label: string, value: string, detail: string, accent: [number, number, number]) => {
     setDraw([214, 226, 240]);
     setFill([255, 255, 255]);
-    doc.roundedRect(x, y, width, 88, 14, 14, "FD");
+    doc.roundedRect(x, cardY, width, 92, 14, 14, "FD");
     setFill(accent);
-    doc.roundedRect(x, y, width, 5, 14, 14, "F");
+    doc.roundedRect(x, cardY, width, 5, 14, 14, "F");
     setText(slate500);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7.5);
-    doc.text(label.toUpperCase(), x + 14, y + 24);
+    doc.text(label.toUpperCase(), x + 14, cardY + 23);
     setText(slate950);
-    doc.setFontSize(value.length > 10 ? 14 : 23);
-    doc.text(textLines(value, width - 28).slice(0, 2), x + 14, y + 50);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(value.length > 12 ? 15 : 22);
+    doc.text(value, x + 14, cardY + 49, { maxWidth: width - 28 });
     setText(slate700);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
-    doc.text(textLines(detail, width - 28), x + 14, y + 70);
+    doc.text(textLines(detail, width - 28).slice(0, 2), x + 14, cardY + 73);
   };
 
   const pill = (x: number, yPos: number, label: string, fill: [number, number, number], color: [number, number, number]) => {
@@ -194,13 +196,15 @@ export function buildAssessmentPdf(payload: ExportPayload) {
 
   sectionTitle("Executive summary", "Readiness snapshot", payload.readinessDiagnosis.headline);
 
-  const cardWidth = (usableWidth - 30) / 4;
-  ensureSpace(110);
-  metricCard(margin, cardWidth, "Readiness", `${payload.readinessPercent}%`, `${complete}/${totalControls} controls complete`, [8, 145, 178]);
-  metricCard(margin + cardWidth + 10, cardWidth, "Evidence", `${evidenceCoverage}%`, `${totalControls - evidenceGaps}/${totalControls} controls covered`, [5, 150, 105]);
-  metricCard(margin + (cardWidth + 10) * 2, cardWidth, "Criteria", `${payload.criteriaCoverage.percent}%`, `${payload.criteriaCoverage.covered}/${payload.criteriaCoverage.total} statements`, [37, 99, 235]);
-  metricCard(margin + (cardWidth + 10) * 3, cardWidth, "Renewal", payload.attestationPackage.renewalStatus, payload.attestationPackage.expiresAt ?? "expiry not set", [217, 119, 6]);
-  y += 112;
+  const cardWidth = (usableWidth - 14) / 2;
+  ensureSpace(210);
+  const topMetricY = y;
+  metricCard(margin, topMetricY, cardWidth, "Readiness", `${payload.readinessPercent}%`, `${complete}/${totalControls} controls complete`, [8, 145, 178]);
+  metricCard(margin + cardWidth + 14, topMetricY, cardWidth, "Evidence", `${evidenceCoverage}%`, `${totalControls - evidenceGaps}/${totalControls} controls covered`, [5, 150, 105]);
+  const bottomMetricY = topMetricY + 106;
+  metricCard(margin, bottomMetricY, cardWidth, "Criteria", `${payload.criteriaCoverage.percent}%`, `${payload.criteriaCoverage.covered}/${payload.criteriaCoverage.total} statements`, [37, 99, 235]);
+  metricCard(margin + cardWidth + 14, bottomMetricY, cardWidth, "Renewal", payload.attestationPackage.renewalStatus, payload.attestationPackage.expiresAt ?? "expiry not set", [217, 119, 6]);
+  y += 220;
 
   const halfWidth = (usableWidth - 14) / 2;
   ensureSpace(112);
