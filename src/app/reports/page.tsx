@@ -29,7 +29,7 @@ export default async function ReportsPage() {
     );
   }
 
-  const { statusCounts, categorySummaries, actionSummary, recentEvidence, controlCards, priorityActions, readinessDiagnosis, organization } = await getDashboardData();
+  const { statusCounts, categorySummaries, actionSummary, recentEvidence, controlCards, priorityActions, readinessDiagnosis, organization, attestationPackage, criteriaCoverage, scopeInventory, evidenceQuality } = await getDashboardData();
   const totalControls = controlCards.length;
   const controlsWithEvidence = totalControls - actionSummary.missingEvidence;
   const evidenceCoveragePercent = Math.round((controlsWithEvidence / Math.max(totalControls, 1)) * 100);
@@ -85,6 +85,36 @@ export default async function ReportsPage() {
             <Snapshot label="Readiness" value={`${actionSummary.readinessPercent}%`} />
             <Snapshot label="Evidence coverage" value={`${evidenceCoveragePercent}%`} />
             <Snapshot label="Open gaps" value={String(totalControls - statusCounts.complete)} />
+            <Snapshot label="Criteria" value={`${criteriaCoverage.percent}%`} />
+            <Snapshot label="Renewal" value={attestationPackage.renewalStatus} />
+          </div>
+        </div>
+      </section>
+
+
+      <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+        <div className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
+          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">CanadaBuys self-assessment package</p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Attestation support checklist</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-600">A sellable package view for contract-award conversations: identity, scope, evidence coverage, owners, and renewal dates.</p>
+          <div className="mt-5 grid gap-2">
+            {attestationPackage.checklist.map((item) => (
+              <div key={item.label} className="flex items-center justify-between gap-3 rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+                <span className="text-slate-700">{item.label}</span>
+                <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${item.complete ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{item.complete ? "Ready" : "Missing"}</span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-sm leading-6 text-slate-600">Expiry / renewal: {attestationPackage.expiresAt ?? "not set"} {attestationPackage.daysUntilExpiry !== null ? `(${attestationPackage.daysUntilExpiry} days)` : ""}</p>
+        </div>
+        <div className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
+          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Assessment criteria and scope</p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">{criteriaCoverage.covered}/{criteriaCoverage.total} exact criteria covered</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-600">Criteria coverage is based on complete controls. Scope inventory is {scopeInventory.percent}% documented.</p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <SummaryCard label="ODPs" value={String(criteriaCoverage.totalOdps)} detail="Organization-defined parameters to decide." />
+            <SummaryCard label="Strong evidence" value={String(evidenceQuality.strong)} detail="Evidence plus owner plus implementation detail." />
+            <SummaryCard label="Thin evidence" value={String(evidenceQuality.weak)} detail="Evidence exists but record may be weak." />
           </div>
         </div>
       </section>

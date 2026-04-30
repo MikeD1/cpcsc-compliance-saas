@@ -54,15 +54,6 @@ const roadmapPhases = [
   },
 ];
 
-const policyItems = [
-  "Access control policy",
-  "Acceptable use policy",
-  "Incident response policy",
-  "Asset management procedure",
-  "Backup and recovery procedure",
-  "Supplier/security responsibility statement",
-];
-
 const resourceItems = [
   { title: "Separation of duties worksheet", href: "/resources/separation-of-duties-worksheet.md", description: "Map duties, conflicts, mitigations, and follow-up owners." },
   { title: "Control owner assignment tracker", href: "/resources/control-owner-assignment-tracker.md", description: "Assign each CPCSC control to an accountable owner and track next actions." },
@@ -114,7 +105,7 @@ export default async function DashboardPage({
     );
   }
 
-  const { organization, assessment, controlCards, statusCounts, actionSummary, priorityActions, readinessDiagnosis, members, categorySummaries } = await getDashboardData();
+  const { organization, assessment, controlCards, statusCounts, actionSummary, priorityActions, readinessDiagnosis, members, categorySummaries, attestationPackage, criteriaCoverage, scopeInventory, evidenceQuality, shortSecurityRules } = await getDashboardData();
   const ownerSummaries = Array.from(
     new Map(
       controlCards.map((control) => [
@@ -164,9 +155,47 @@ export default async function DashboardPage({
           <dl className="mt-6 grid gap-4 text-sm">
             <MetaRow label="Workspace status" value={assessment.riskStatement ?? "Not provided"} />
             <MetaRow label="CanadaBuys" value={organization.canadaBuysId ?? "Pending"} />
+            <MetaRow label="Attestation" value={attestationPackage.renewalStatus} />
             <MetaRow label="Primary contact" value={organization.primaryContact ?? "Unassigned"} />
             <MetaRow label="Contact email" value={organization.primaryEmail ?? "Not set"} />
           </dl>
+        </div>
+      </section>
+
+
+      <section className="grid gap-6 xl:grid-cols-[1fr_1fr_1fr]">
+        <div className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
+          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Self-assessment package</p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">CanadaBuys readiness</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-600">Track the practical records needed before entering or renewing the Level 1 self-assessment.</p>
+          <div className="mt-5 grid gap-2">
+            {attestationPackage.checklist.map((item) => (
+              <div key={item.label} className="flex items-center justify-between gap-3 rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+                <span className="text-slate-700">{item.label}</span>
+                <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${item.complete ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{item.complete ? "Ready" : "Missing"}</span>
+              </div>
+            ))}
+          </div>
+          <Link href="/reports" className="mt-5 inline-flex rounded-full bg-slate-950 px-4 py-2.5 text-sm font-medium text-white">Open package</Link>
+        </div>
+        <div className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
+          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Criteria coverage</p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">{criteriaCoverage.covered}/{criteriaCoverage.total} criteria covered</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-600">Exact Canada.ca determination statements are tracked under each control. Coverage currently follows completed control status.</p>
+          <div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-cyan-500" style={{ width: `${criteriaCoverage.percent}%` }} /></div>
+          <p className="mt-3 text-sm text-slate-600">{criteriaCoverage.totalOdps} organization-defined parameters require decisions across Level 1.</p>
+        </div>
+        <div className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
+          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Evidence quality</p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Proof quality checks</h2>
+          <div className="mt-5 grid grid-cols-3 gap-2 text-center text-sm">
+            <div className="rounded-[1rem] bg-emerald-50 px-3 py-3 text-emerald-800"><strong className="block text-2xl">{evidenceQuality.strong}</strong>strong</div>
+            <div className="rounded-[1rem] bg-amber-50 px-3 py-3 text-amber-800"><strong className="block text-2xl">{evidenceQuality.weak}</strong>thin</div>
+            <div className="rounded-[1rem] bg-rose-50 px-3 py-3 text-rose-800"><strong className="block text-2xl">{evidenceQuality.missing}</strong>missing</div>
+          </div>
+          <ul className="mt-4 space-y-1 text-sm leading-6 text-slate-600">
+            {evidenceQuality.checks.slice(0, 4).map((check) => <li key={check}>• {check}</li>)}
+          </ul>
         </div>
       </section>
 
@@ -260,8 +289,13 @@ export default async function DashboardPage({
             </article>
           ))}
         </div>
-        <div className="mt-6 rounded-[1.5rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-7 text-amber-950">
-          <span className="font-semibold">Scoping question:</span> Where will GC information be stored, which systems/devices/people can access it, and which cloud services or tools process it? Answering that first makes the 13 controls much easier to apply effectively.
+        <div className="mt-6 grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="rounded-[1.5rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-7 text-amber-950">
+            <span className="font-semibold">Scope completion:</span> {scopeInventory.completedFields}/{scopeInventory.totalFields} scope areas documented. Where will GC information be stored, which systems/devices/people can access it, and which cloud services or tools process it?
+          </div>
+          <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4 text-sm leading-7 text-slate-700">
+            <span className="font-semibold text-slate-950">Current SI notes:</span> {organization.readinessScope ?? "Add readiness scope in Settings."}
+          </div>
         </div>
       </section>
 
@@ -272,7 +306,10 @@ export default async function DashboardPage({
           Use this area to track the policy set that supports CPCSC readiness. These are preparation aids and should be adapted to the organization before use.
         </p>
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {policyItems.map((item) => <ResourceCard key={item} title={item} description="Template or working policy area to prepare and maintain." />)}
+          {shortSecurityRules.map((item) => <ResourceCard key={item.title} title={item.title} description={item.text} />)}
+        </div>
+        <div className="mt-5 rounded-[1.4rem] border border-cyan-100 bg-cyan-50 px-5 py-4 text-sm leading-7 text-cyan-950">
+          <span className="font-semibold">Rules generator:</span> These short rules are generated from the official Level 1 themes and can be adapted in Settings as the organization formalizes its policy set.
         </div>
       </section>
 

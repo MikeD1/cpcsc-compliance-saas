@@ -16,7 +16,7 @@ export async function getDashboardData() {
   const [{ data: organizations }, { data: subscriptions }, { data: controls }, { data: evidenceItems }, members] = await Promise.all([
     supabase
       .from("organizations")
-      .select("id, name, slug, plan_code, subscription_status")
+      .select("id, name, slug, plan_code, subscription_status, canada_buys_id, primary_contact_name, primary_contact_email, readiness_scope, systems_in_scope, attestation_cycle_started_at, attestation_completed_at, attestation_expires_at, si_information_inventory, si_storage_locations, si_people_access, si_cloud_services, short_security_rules")
       .eq("id", organizationId)
       .single(),
     supabase
@@ -46,9 +46,19 @@ export async function getDashboardData() {
     id: organizations.id,
     name: organizations.name,
     legalName: organizations.name,
-    canadaBuysId: null,
-    primaryContact: [currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ") || null,
-    primaryEmail: currentUser.email,
+    canadaBuysId: organizations.canada_buys_id ?? null,
+    primaryContact: organizations.primary_contact_name ?? ([currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ") || null),
+    primaryEmail: organizations.primary_contact_email ?? currentUser.email,
+    readinessScope: organizations.readiness_scope ?? null,
+    systemsInScope: organizations.systems_in_scope ?? null,
+    attestationCycleStartedAt: organizations.attestation_cycle_started_at ?? null,
+    attestationCompletedAt: organizations.attestation_completed_at ?? null,
+    attestationExpiresAt: organizations.attestation_expires_at ?? null,
+    siInformationInventory: organizations.si_information_inventory ?? null,
+    siStorageLocations: organizations.si_storage_locations ?? null,
+    siPeopleAccess: organizations.si_people_access ?? null,
+    siCloudServices: organizations.si_cloud_services ?? null,
+    shortSecurityRules: organizations.short_security_rules ?? null,
   };
 
   const latestSubscription = subscriptions?.[0] ?? null;
@@ -274,6 +284,70 @@ export async function getDashboardData() {
     evidenceQualityWarnings,
   };
 
+
+  const totalCriteria = controlCards.reduce((sum, control) => sum + control.criteriaAlignment.determinationStatements.length, 0);
+  const coveredCriteria = controlCards.reduce((sum, control) => sum + (control.response?.status === "COMPLETE" ? control.criteriaAlignment.determinationStatements.length : 0), 0);
+  const totalOdps = controlCards.reduce((sum, control) => sum + control.criteriaAlignment.organizationDefinedParameterDetails.length, 0);
+  const scopeFields = [organization.readinessScope, organization.systemsInScope, organization.siInformationInventory, organization.siStorageLocations, organization.siPeopleAccess, organization.siCloudServices];
+  const completedScopeFields = scopeFields.filter((value) => Boolean(value?.trim())).length;
+  const now = new Date();
+  const expiryDate = organization.attestationExpiresAt ? new Date(`${organization.attestationExpiresAt}T00:00:00Z`) : null;
+  const daysUntilExpiry = expiryDate ? Math.ceil((expiryDate.getTime() - now.getTime()) / 86_400_000) : null;
+  const attestationPackage = {
+    canadaBuysReady: Boolean(organization.canadaBuysId && organization.attestationExpiresAt && actionSummary.missingEvidence === 0 && actionSummary.unassigned === 0),
+    cycleStartedAt: organization.attestationCycleStartedAt,
+    completedAt: organization.attestationCompletedAt,
+    expiresAt: organization.attestationExpiresAt,
+    daysUntilExpiry,
+    renewalStatus: !expiryDate ? "Not scheduled" : daysUntilExpiry !== null && daysUntilExpiry < 0 ? "Expired" : daysUntilExpiry !== null && daysUntilExpiry <= 60 ? "Renewal soon" : "Current",
+    checklist: [
+      { label: "CanadaBuys supplier ID recorded", complete: Boolean(organization.canadaBuysId) },
+      { label: "Specified Information scope documented", complete: completedScopeFields >= 4 },
+      { label: "All 13 controls have evidence references", complete: actionSummary.missingEvidence === 0 },
+      { label: "All controls have owners", complete: actionSummary.unassigned === 0 },
+      { label: "Attestation expiry date recorded", complete: Boolean(organization.attestationExpiresAt) },
+    ],
+  };
+  const criteriaCoverage = {
+    total: totalCriteria,
+    covered: coveredCriteria,
+    percent: Math.round((coveredCriteria / Math.max(totalCriteria, 1)) * 100),
+    totalOdps,
+    unresolvedOdps: totalOdps,
+  };
+  const scopeInventory = {
+    completedFields: completedScopeFields,
+    totalFields: scopeFields.length,
+    percent: Math.round((completedScopeFields / scopeFields.length) * 100),
+  };
+  const evidenceQuality = {
+    strong: controlCards.filter((control) => (control.response?.evidenceItems.length ?? 0) > 0 && (control.response?.implementationDetails?.trim().length ?? 0) >= 120 && Boolean(control.response?.ownerMembershipId)).length,
+    weak: controlCards.filter((control) => (control.response?.evidenceItems.length ?? 0) > 0 && ((control.response?.implementationDetails?.trim().length ?? 0) < 120 || !control.response?.ownerMembershipId)).length,
+    missing: actionSummary.missingEvidence,
+    checks: ["Evidence exists", "Evidence has a known location", "Evidence maps to scoped SI systems", "Implementation details explain current practice", "Owner/reviewer is assigned"],
+  };
+  const defaultShortSecurityRules: Array<{ title: string; text: string }> = [
+    { title: "Approved systems rule", text: "Specified Information may only be stored, processed, or transmitted in approved business systems listed in the SI scope inventory." },
+    { title: "Account and access rule", text: "Every user must have an individual account, access must match business need, and access must be removed when no longer required." },
+    { title: "MFA and authentication rule", text: "Privileged accounts and systems handling SI must use multifactor authentication and documented re-authentication/session controls." },
+    { title: "Device approval rule", text: "Only approved and managed devices may connect to systems or services that handle SI." },
+    { title: "Media disposal rule", text: "Devices and media containing SI must be sanitized or destroyed before disposal, transfer, or reuse, with records retained." },
+    { title: "Public content rule", text: "Public websites, marketing, and external content must be reviewed to ensure SI is not disclosed." },
+  ];
+  const customShortSecurityRules: Array<{ title: string; text: string }> | undefined = typeof organization.shortSecurityRules === "string"
+    ? organization.shortSecurityRules
+        .split("\n")
+        .map((line: string) => line.trim())
+        .filter(Boolean)
+        .map((line: string, index: number) => {
+      const [title, ...rest] = line.split(":");
+      return rest.length > 0
+        ? { title: title.trim(), text: rest.join(":").trim() }
+        : { title: `Security rule ${index + 1}`, text: line };
+        })
+    : undefined;
+  const shortSecurityRules = customShortSecurityRules?.length ? customShortSecurityRules : defaultShortSecurityRules;
+
   const recentEvidence = controlCards
     .flatMap((item) =>
       (item.response?.evidenceItems ?? []).map((evidence) => ({
@@ -291,7 +365,7 @@ export async function getDashboardData() {
     organization,
     assessment: {
       title: "CPCSC Level 1 Readiness",
-      scopeSummary: "Track the 13 Level 1 controls, ownership, implementation notes, and evidence references your team needs for readiness reviews.",
+      scopeSummary: organization.readinessScope ?? "Track the 13 Level 1 controls, ownership, implementation notes, and evidence references your team needs for readiness reviews.",
       riskStatement: latestSubscription?.status
         ? `Subscription status: ${latestSubscription.status}`
         : `Workspace status: ${organizations.subscription_status}`,
@@ -301,6 +375,11 @@ export async function getDashboardData() {
     actionSummary,
     priorityActions,
     readinessDiagnosis,
+    attestationPackage,
+    criteriaCoverage,
+    scopeInventory,
+    evidenceQuality,
+    shortSecurityRules,
     categorySummaries,
     recentEvidence,
     members,

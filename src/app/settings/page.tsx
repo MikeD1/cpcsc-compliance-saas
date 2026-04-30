@@ -43,8 +43,19 @@ export default async function SettingsPage() {
 
       <OrganizationSettingsForm
         organizationName={organization.name}
+        canadaBuysId={organization.canadaBuysId}
         primaryContactName={organization.primaryContact ?? ""}
         primaryContactEmail={organization.primaryEmail}
+        readinessScope={organization.readinessScope}
+        systemsInScope={organization.systemsInScope}
+        attestationCycleStartedAt={organization.attestationCycleStartedAt}
+        attestationCompletedAt={organization.attestationCompletedAt}
+        attestationExpiresAt={organization.attestationExpiresAt}
+        siInformationInventory={organization.siInformationInventory}
+        siStorageLocations={organization.siStorageLocations}
+        siPeopleAccess={organization.siPeopleAccess}
+        siCloudServices={organization.siCloudServices}
+        shortSecurityRules={organization.shortSecurityRules}
       />
 
       <BillingSettingsCard plan={access.latestSubscription?.planSlug} status={access.latestSubscription?.status} />

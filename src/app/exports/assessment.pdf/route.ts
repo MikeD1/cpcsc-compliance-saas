@@ -3,7 +3,7 @@ import { getDashboardData } from "@/lib/dashboard";
 import { buildAssessmentPdf } from "@/lib/export";
 
 export async function GET() {
-  const { organization, assessment, controlCards, actionSummary, priorityActions, readinessDiagnosis } = await getDashboardData();
+  const { organization, assessment, controlCards, actionSummary, priorityActions, readinessDiagnosis, attestationPackage, criteriaCoverage, scopeInventory, evidenceQuality } = await getDashboardData();
 
   const pdf = buildAssessmentPdf({
     organizationName: organization.legalName ?? organization.name,
@@ -13,6 +13,10 @@ export async function GET() {
     generatedAt: new Date().toISOString().slice(0, 10),
     readinessPercent: actionSummary.readinessPercent,
     readinessDiagnosis,
+    attestationPackage,
+    criteriaCoverage,
+    scopeInventory,
+    evidenceQuality,
     actionPlan: priorityActions.map((action) => ({ 
       officialId: action.officialId,
       title: action.title,

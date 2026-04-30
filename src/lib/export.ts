@@ -41,6 +41,15 @@ type ExportPayload = {
     riskiestGaps: Array<{ officialId: string; title: string; reason: string }>;
     evidenceQualityWarnings: string[];
   };
+  attestationPackage: {
+    renewalStatus: string;
+    expiresAt: string | null;
+    daysUntilExpiry: number | null;
+    checklist: Array<{ label: string; complete: boolean }>;
+  };
+  criteriaCoverage: { total: number; covered: number; percent: number; totalOdps: number; unresolvedOdps: number };
+  scopeInventory: { completedFields: number; totalFields: number; percent: number };
+  evidenceQuality: { strong: number; weak: number; missing: number; checks: string[] };
   actionPlan: ExportAction[];
   controls: ExportControl[];
 };
@@ -124,13 +133,14 @@ export function buildAssessmentPdf(payload: ExportPayload) {
   doc.text(payload.organizationName, margin + 24, y + 58);
   doc.text(`Generated ${payload.generatedAt}`, margin + 24, y + 78);
   doc.setFontSize(9);
-  doc.text("Buyer-ready internal snapshot — not a certification, audit opinion, or government approval.", margin + 24, y + 96);
+  doc.text("CPCSC Level 1 self-assessment support package for internal readiness and future assessment conversations.", margin + 24, y + 96);
   y += 140;
 
   heading("Executive readiness interpretation", 17);
   writeParagraph(executiveSummary, 11, 12);
   writeParagraph(`Scope: ${payload.scopeSummary ?? "Not provided"}`, 10, 10);
-  writeParagraph(`Status note: ${payload.riskStatement ?? "Not provided"}`, 10, 18);
+  writeParagraph(`Status note: ${payload.riskStatement ?? "Not provided"}`, 10, 10);
+  writeParagraph(`Attestation renewal status: ${payload.attestationPackage.renewalStatus}. Expiry date: ${payload.attestationPackage.expiresAt ?? "not set"}.`, 10, 18);
 
   ensureSpace(100);
   const cardWidth = (usableWidth - 24) / 4;
@@ -139,6 +149,10 @@ export function buildAssessmentPdf(payload: ExportPayload) {
   card(margin + (cardWidth + 8) * 2, cardWidth, "Owner gaps", String(ownerGaps), "unassigned controls");
   card(margin + (cardWidth + 8) * 3, cardWidth, "Review", String(ready), "ready for review");
   y += 104;
+
+  heading("CanadaBuys self-assessment support package", 15);
+  payload.attestationPackage.checklist.forEach((item) => writeParagraph(`${item.complete ? "✓" : "•"} ${item.label}: ${item.complete ? "ready" : "missing"}`, 9, 4));
+  writeParagraph(`Exact criteria coverage: ${payload.criteriaCoverage.covered}/${payload.criteriaCoverage.total} (${payload.criteriaCoverage.percent}%). Scope inventory: ${payload.scopeInventory.completedFields}/${payload.scopeInventory.totalFields} areas documented. Evidence quality: ${payload.evidenceQuality.strong} strong, ${payload.evidenceQuality.weak} thin, ${payload.evidenceQuality.missing} missing.`, 10, 16);
 
   heading("Readiness score and confidence basis", 15);
   writeParagraph(
