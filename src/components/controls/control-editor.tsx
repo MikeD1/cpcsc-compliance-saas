@@ -180,8 +180,8 @@ export function ControlEditor({ control, members }: ControlEditorProps) {
         </div>
       </div>
 
-      <div className="grid gap-6 p-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(22rem,0.55fr)] xl:p-8">
-        <section className="grid gap-4" aria-label="Control work area">
+      <div className="grid items-start gap-6 p-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(22rem,0.55fr)] xl:p-8">
+        <section className="grid content-start gap-4" aria-label="Control work area">
           <div className="rounded-[1.7rem] border border-cyan-200 bg-[linear-gradient(180deg,#ecfeff_0%,#ffffff_100%)] p-5 shadow-sm ring-1 ring-cyan-100">
             <div className="flex flex-col gap-1">
               <h3 className="text-xl font-semibold text-slate-950">Implementation details</h3>
