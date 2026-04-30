@@ -1,68 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
-import { StatusBadge } from "@/components/status-badge";
 import { SubscriptionGate } from "@/components/auth/subscription-gate";
-import { FirstRunChecklist } from "@/components/onboarding/first-run-checklist";
 import { getCurrentAccess } from "@/lib/access";
 import { syncCheckoutSessionForOrganization } from "@/lib/billing-sync";
 import { getDashboardData } from "@/lib/dashboard";
-
-const scopeInventoryItems = [
-  {
-    title: "Specified Information content",
-    description: "Identify federal SI records, files, data sets, contract artifacts, controlled goods information, and protected information that must be safeguarded.",
-  },
-  {
-    title: "Storage locations",
-    description: "List where GC information is stored, including SharePoint, file shares, email, endpoints, SaaS tools, cloud storage, and backups.",
-  },
-  {
-    title: "Systems, devices, and people",
-    description: "Document which systems, devices, roles, employees, contractors, and administrators can access or process SI.",
-  },
-  {
-    title: "Cloud services and tools",
-    description: "Identify cloud services, collaboration platforms, ticketing systems, security tools, and external providers that handle SI.",
-  },
-];
-
-const roadmapPhases = [
-  {
-    phase: "Phase 1",
-    title: "Implementation planning and self-assessment",
-    description: "Build the working picture of where federal Specified Information exists and where CPCSC readiness gaps remain.",
-    actions: ["Scope your system", "Catalog SI content and assets", "Create plans for controls", "Test and self-assess"],
-  },
-  {
-    phase: "Phase 2",
-    title: "Implement controls",
-    description: "Execute the control plans and turn readiness intent into operational practice.",
-    actions: ["Assign control owners", "Implement required practices", "Update policies and procedures", "Record implementation details"],
-  },
-  {
-    phase: "Phase 3",
-    title: "Collect evidence and validate quality",
-    description: "Create a buyer-readable evidence trail that shows where proof lives and why it supports the control.",
-    actions: ["Attach evidence references", "Describe what each evidence item proves", "Check for currency and clarity", "Resolve weak or missing proof"],
-  },
-  {
-    phase: "Phase 4",
-    title: "Internal review and readiness package",
-    description: "Review the control record, close remaining gaps, and prepare a compliance assessment package for conversations with buyers or assessors.",
-    actions: ["Review controls", "Export compliance assessment", "Prepare leadership summary", "Plan the next readiness cycle"],
-  },
-];
-
-const resourceItems = [
-  { title: "Separation of duties worksheet", href: "/resources/separation-of-duties-worksheet.md", description: "Map duties, conflicts, mitigations, and follow-up owners." },
-  { title: "Control owner assignment tracker", href: "/resources/control-owner-assignment-tracker.md", description: "Assign each CPCSC control to an accountable owner and track next actions." },
-  { title: "Evidence folder structure guide", href: "/resources/evidence-folder-structure-guide.md", description: "Create a practical source-evidence folder structure and naming convention." },
-  { title: "Quarterly access review template", href: "/resources/quarterly-access-review-template.md", description: "Document user access reviews, exceptions, remediation, and sign-off." },
-  { title: "System inventory worksheet", href: "/resources/system-inventory-worksheet.md", description: "Define systems, owners, data handled, criticality, and readiness scope." },
-  { title: "Specified Information scope worksheet", href: "/resources/specified-information-scope-worksheet.md", description: "Map where federal SI content exists, who accesses it, and which tools handle it." },
-  { title: "Policy template starter pack", href: "/resources/policy-template-starter-pack.md", description: "Starter outlines for access control, acceptable use, incident response, and asset management policies." },
-];
+import { workspaceCards } from "@/lib/workspace-content";
 
 export default async function DashboardPage({
   searchParams,
@@ -105,19 +48,7 @@ export default async function DashboardPage({
     );
   }
 
-  const { organization, assessment, controlCards, statusCounts, actionSummary, priorityActions, readinessDiagnosis, members, categorySummaries, attestationPackage, criteriaCoverage, scopeInventory, evidenceQuality, shortSecurityRules } = await getDashboardData();
-  const ownerSummaries = Array.from(
-    new Map(
-      controlCards.map((control) => [
-        control.response?.owner ?? "Unassigned",
-        {
-          owner: control.response?.owner ?? "Unassigned",
-          total: controlCards.filter((item) => (item.response?.owner ?? "Unassigned") === (control.response?.owner ?? "Unassigned")).length,
-          open: controlCards.filter((item) => (item.response?.owner ?? "Unassigned") === (control.response?.owner ?? "Unassigned") && item.response?.status !== "COMPLETE").length,
-        },
-      ]),
-    ).values(),
-  );
+  const { organization, assessment, statusCounts, actionSummary, priorityActions, readinessDiagnosis, attestationPackage, criteriaCoverage, scopeInventory, evidenceQuality } = await getDashboardData();
 
   return (
     <AppShell organizationName={access.user.organization?.name}>
@@ -130,7 +61,7 @@ export default async function DashboardPage({
                 {organization.legalName ?? organization.name}
               </h1>
               <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600">
-                Track CPCSC Level 1 control status, Specified Information scope, policies, roadmap progress, and the evidence needed to support self-assessment and future assessment conversations.
+                A simple self-serve workspace for building your CPCSC Level 1 readiness path: scope SI, implement the 13 controls, collect evidence, and prepare a self-assessment support package.
               </p>
             </div>
             <div className="rounded-[1.75rem] border border-slate-200 bg-slate-50 px-5 py-4 shadow-sm">
@@ -153,221 +84,85 @@ export default async function DashboardPage({
           <h2 className="mt-3 text-2xl font-semibold">{readinessDiagnosis.confidenceLevel} confidence</h2>
           <p className="mt-4 text-sm leading-7 text-slate-300">{readinessDiagnosis.headline}</p>
           <dl className="mt-6 grid gap-4 text-sm">
-            <MetaRow label="Workspace status" value={assessment.riskStatement ?? "Not provided"} />
             <MetaRow label="CanadaBuys" value={organization.canadaBuysId ?? "Pending"} />
             <MetaRow label="Attestation" value={attestationPackage.renewalStatus} />
-            <MetaRow label="Primary contact" value={organization.primaryContact ?? "Unassigned"} />
-            <MetaRow label="Contact email" value={organization.primaryEmail ?? "Not set"} />
+            <MetaRow label="Criteria coverage" value={`${criteriaCoverage.covered}/${criteriaCoverage.total} criteria`} />
+            <MetaRow label="Scope inventory" value={`${scopeInventory.completedFields}/${scopeInventory.totalFields} areas documented`} />
           </dl>
         </div>
       </section>
 
-
-      <section className="grid gap-6 xl:grid-cols-[1fr_1fr_1fr]">
-        <div className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
-          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Self-assessment package</p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">CanadaBuys readiness</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">Track the practical records needed before entering or renewing the Level 1 self-assessment.</p>
-          <div className="mt-5 grid gap-2">
-            {attestationPackage.checklist.map((item) => (
-              <div key={item.label} className="flex items-center justify-between gap-3 rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
-                <span className="text-slate-700">{item.label}</span>
-                <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${item.complete ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{item.complete ? "Ready" : "Missing"}</span>
-              </div>
-            ))}
-          </div>
-          <Link href="/reports" className="mt-5 inline-flex rounded-full bg-slate-950 px-4 py-2.5 text-sm font-medium text-white">Open package</Link>
-        </div>
-        <div className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
-          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Criteria coverage</p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">{criteriaCoverage.covered}/{criteriaCoverage.total} criteria covered</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">Exact Canada.ca determination statements are tracked under each control. Coverage currently follows completed control status.</p>
-          <div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-cyan-500" style={{ width: `${criteriaCoverage.percent}%` }} /></div>
-          <p className="mt-3 text-sm text-slate-600">{criteriaCoverage.totalOdps} organization-defined parameters require decisions across Level 1.</p>
-        </div>
-        <div className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
-          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Evidence quality</p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Proof quality checks</h2>
-          <div className="mt-5 grid grid-cols-3 gap-2 text-center text-sm">
-            <div className="rounded-[1rem] bg-emerald-50 px-3 py-3 text-emerald-800"><strong className="block text-2xl">{evidenceQuality.strong}</strong>strong</div>
-            <div className="rounded-[1rem] bg-amber-50 px-3 py-3 text-amber-800"><strong className="block text-2xl">{evidenceQuality.weak}</strong>thin</div>
-            <div className="rounded-[1rem] bg-rose-50 px-3 py-3 text-rose-800"><strong className="block text-2xl">{evidenceQuality.missing}</strong>missing</div>
-          </div>
-          <ul className="mt-4 space-y-1 text-sm leading-6 text-slate-600">
-            {evidenceQuality.checks.slice(0, 4).map((check) => <li key={check}>• {check}</li>)}
-          </ul>
-        </div>
-      </section>
-
-      <FirstRunChecklist
-        organizationName={organization.name}
-        memberCount={members.length}
-        unassignedControls={actionSummary.unassigned}
-        missingEvidence={actionSummary.missingEvidence}
-        reviewedControls={actionSummary.reviewed}
-      />
-
-      <nav aria-label="Dashboard sections" className="rounded-[1.6rem] border border-white/50 bg-white/92 p-2 shadow-[0_18px_45px_rgba(15,23,42,0.08)]">
-        <div className="grid gap-2 md:grid-cols-5">
-          <TabLink href="#control-status" label="CPCSC Control Status" />
-          <TabLink href="#scope" label="Scope and SI Inventory" />
-          <TabLink href="#policies" label="Policies" />
-          <TabLink href="#roadmap" label="Roadmap" />
-          <TabLink href="#resources" label="Resources" />
-        </div>
-      </nav>
-
-      <section id="control-status" className="scroll-mt-28 rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">CPCSC Control Status</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Statuses, owners, and control families</h2>
+            <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">My Workspace</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Start here and follow the work</h2>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-              Start here to see what is complete, who owns the work, and which control families need attention.
+              If you are doing CPCSC Level 1 yourself instead of starting with a consultant, this is the path: build the roadmap, work the controls, use templates, then export the assessment package.
             </p>
           </div>
-          <Link href="/reports" className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800">
-            Export compliance assessment
+          <Link href="/roadmap" className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800">
+            Begin Roadmap Development
           </Link>
         </div>
 
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <NextStep title="Assign owners" description={`${actionSummary.unassigned} controls are unassigned.`} tone="amber" href="/controls#assign-owners" />
-          <NextStep title="Add evidence" description={`${actionSummary.missingEvidence} controls have no evidence records.`} tone="sky" href="/controls#assign-owners" />
-          <NextStep title="Review controls" description={`${actionSummary.readyForReview} controls are ready for review.`} tone="emerald" href="/controls" />
-          <NextStep title="Reviewed" description={`${actionSummary.reviewed} controls have a review date recorded.`} tone="slate" href="/reports" />
+          {workspaceCards.map((card) => (
+            <Link key={card.title} href={card.href} className="group rounded-[1.6rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:shadow-md">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-cyan-700">{card.eyebrow}</p>
+              <h3 className="mt-3 text-lg font-semibold text-slate-950 group-hover:text-cyan-800">{card.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-slate-600">{card.description}</p>
+              <span className="mt-5 inline-flex text-sm font-semibold text-cyan-700">Open →</span>
+            </Link>
+          ))}
         </div>
+      </section>
 
-        <div className="mt-7 grid gap-6 xl:grid-cols-[1fr_0.9fr]">
-          <div className="grid gap-4">
-            <h3 className="text-lg font-semibold text-slate-950">Readiness actions</h3>
+      <section className="grid gap-6 xl:grid-cols-[1fr_0.9fr]">
+        <div className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Next actions</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">What needs attention now</h2>
+            </div>
+            <Link href="/controls" className="inline-flex rounded-full border border-cyan-200 bg-cyan-50 px-4 py-2.5 text-sm font-medium text-cyan-800 transition hover:bg-cyan-100">Open controls</Link>
+          </div>
+          <div className="mt-5 grid gap-3">
             {priorityActions.length === 0 ? (
-              <div className="rounded-[1.6rem] border border-emerald-200 bg-emerald-50 p-5 text-sm leading-7 text-emerald-800">
-                No priority actions right now. Export the readiness assessment or start a deeper review pass.
+              <div className="rounded-[1.4rem] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm leading-7 text-emerald-800">
+                No priority actions right now. Review the roadmap or export the readiness package.
               </div>
             ) : null}
-            {priorityActions.map((action, index) => (
-              <article key={`${action.actionType}-${action.controlId}`} className="rounded-[1.6rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
+            {priorityActions.slice(0, 4).map((action, index) => (
+              <article key={`${action.actionType}-${action.controlId}`} className="rounded-[1.4rem] border border-slate-200 bg-white px-5 py-4 shadow-sm">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="rounded-full bg-slate-950 px-3 py-1 text-xs font-semibold text-white">#{index + 1}</span>
                   <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-cyan-800">{action.actionType}</span>
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">{action.category}</span>
                 </div>
-                <h4 className="mt-3 text-base font-semibold text-slate-950">{action.officialId}: {action.title}</h4>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{action.reason}</p>
-                <p className="mt-2 text-sm leading-6 text-slate-800"><span className="font-semibold">Next:</span> {action.nextStep}</p>
+                <h3 className="mt-3 text-base font-semibold text-slate-950">{action.officialId}: {action.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{action.nextStep}</p>
               </article>
             ))}
           </div>
+        </div>
 
-          <div className="grid content-start gap-4">
-            <StatusPanel statusCounts={statusCounts} />
-            <SummaryPanel title="Owners" items={ownerSummaries.map((owner) => `${owner.owner}: ${owner.open}/${owner.total} open`)} />
-            <SummaryPanel title="Control families" items={categorySummaries.map((summary) => `${summary.category}: ${summary.completed}/${summary.total} complete`)} />
+        <div className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
+          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Package health</p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Evidence and readiness signals</h2>
+          <div className="mt-5 grid grid-cols-3 gap-2 text-center text-sm">
+            <div className="rounded-[1rem] bg-emerald-50 px-3 py-3 text-emerald-800"><strong className="block text-2xl">{evidenceQuality.strong}</strong>strong</div>
+            <div className="rounded-[1rem] bg-amber-50 px-3 py-3 text-amber-800"><strong className="block text-2xl">{evidenceQuality.weak}</strong>thin</div>
+            <div className="rounded-[1rem] bg-rose-50 px-3 py-3 text-rose-800"><strong className="block text-2xl">{evidenceQuality.missing}</strong>missing</div>
           </div>
-        </div>
-      </section>
-
-      <section id="scope" className="scroll-mt-28 rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Scope and SI Inventory</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Identify where federal Specified Information exists</h2>
-            <p className="mt-3 max-w-4xl text-sm leading-7 text-slate-600">
-              CPCSC Level 1 controls need to be applied to the systems and activities that handle federal Specified Information (SI). SI is sensitive, non-classified Government of Canada information that must be protected when handled, processed, or stored by non-Government of Canada organizations.
-            </p>
-          </div>
-          <Link href="/resources/specified-information-scope-worksheet.md" className="inline-flex items-center justify-center rounded-full border border-cyan-200 bg-cyan-50 px-4 py-3 text-sm font-medium text-cyan-800 transition hover:bg-cyan-100">
-            Download SI scope worksheet
-          </Link>
-        </div>
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {scopeInventoryItems.map((item) => (
-            <article key={item.title} className="rounded-[1.5rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-              <h3 className="text-base font-semibold text-slate-950">{item.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
-            </article>
-          ))}
-        </div>
-        <div className="mt-6 grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="rounded-[1.5rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-7 text-amber-950">
-            <span className="font-semibold">Scope completion:</span> {scopeInventory.completedFields}/{scopeInventory.totalFields} scope areas documented. Where will GC information be stored, which systems/devices/people can access it, and which cloud services or tools process it?
-          </div>
-          <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4 text-sm leading-7 text-slate-700">
-            <span className="font-semibold text-slate-950">Current SI notes:</span> {organization.readinessScope ?? "Add readiness scope in Settings."}
-          </div>
-        </div>
-      </section>
-
-      <section id="policies" className="scroll-mt-28 rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
-        <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Policies</p>
-        <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Policy workspace</h2>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-          Use this area to track the policy set that supports CPCSC readiness. These are preparation aids and should be adapted to the organization before use.
-        </p>
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {shortSecurityRules.map((item) => <ResourceCard key={item.title} title={item.title} description={item.text} />)}
-        </div>
-        <div className="mt-5 rounded-[1.4rem] border border-cyan-100 bg-cyan-50 px-5 py-4 text-sm leading-7 text-cyan-950">
-          <span className="font-semibold">Rules generator:</span> These short rules are generated from the official Level 1 themes and can be adapted in Settings as the organization formalizes its policy set.
-        </div>
-      </section>
-
-      <section id="roadmap" className="scroll-mt-28 rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
-        <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Roadmap</p>
-        <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Roadmap toward CPCSC readiness</h2>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-          A practical preparation path inspired by NIST CSF-style lifecycle thinking: identify the environment, plan controls, implement, collect evidence, and review readiness before external conversations.
-        </p>
-        <div className="mt-6 grid gap-4 xl:grid-cols-2">
-          {roadmapPhases.map((phase) => (
-            <article key={phase.phase} className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-              <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-cyan-800">{phase.phase}</span>
-              <h3 className="mt-4 text-xl font-semibold text-slate-950">{phase.title}</h3>
-              <p className="mt-2 text-sm leading-7 text-slate-600">{phase.description}</p>
-              <ul className="mt-4 grid gap-2 text-sm leading-6 text-slate-700">
-                {phase.actions.map((action) => <li key={action} className="rounded-[1rem] border border-slate-200 bg-white px-4 py-3">{action}</li>)}
-              </ul>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section id="resources" className="scroll-mt-28 rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
-        <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Resources</p>
-        <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Worksheets and templates</h2>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-          Add practical materials organizations can use while preparing their readiness records. Download starter worksheets and templates your team can adapt while preparing readiness records.
-        </p>
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {resourceItems.map((item) => <ResourceCard key={item.title} title={item.title} description={item.description} href={item.href} />)}
-        </div>
-      </section>
-
-      <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Control portfolio</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">All controls at a glance</h2>
-          </div>
-        </div>
-        <div className="mt-6 grid gap-4 xl:grid-cols-2">
-          {controlCards.map((control) => (
-            <article key={control.id} className="rounded-[1.7rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-slate-500">{control.category}</p>
-                  <h3 className="mt-2 text-lg font-semibold text-slate-950">{control.officialId}: {control.title}</h3>
-                </div>
-                {control.response ? <StatusBadge status={control.response.status} /> : null}
+          <div className="mt-5 grid gap-2 text-sm leading-6 text-slate-700">
+            {attestationPackage.checklist.map((item) => (
+              <div key={item.label} className="flex items-center justify-between gap-3 rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3">
+                <span>{item.label}</span>
+                <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${item.complete ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{item.complete ? "Ready" : "Missing"}</span>
               </div>
-              <p className="mt-4 text-sm leading-7 text-slate-600">{control.objective}</p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <InfoCard label="Owner" value={control.response?.owner ?? "Unassigned"} />
-                <InfoCard label="Evidence items" value={String(control.response?.evidenceItems.length ?? 0)} />
-              </div>
-            </article>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
     </AppShell>
@@ -390,66 +185,6 @@ function Kpi({ title, value, tone }: { title: string; value: string; tone: "emer
   );
 }
 
-function TabLink({ href, label }: { href: string; label: string }) {
-  return <Link href={href} className="rounded-[1.1rem] bg-slate-50 px-4 py-3 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-950 hover:text-white">{label}</Link>;
-}
-
-function NextStep({ title, description, tone, href }: { title: string; description: string; tone: "emerald" | "sky" | "amber" | "slate"; href: string }) {
-  const tones = {
-    emerald: "border-emerald-200 bg-emerald-50 text-emerald-800",
-    sky: "border-sky-200 bg-sky-50 text-sky-800",
-    amber: "border-amber-200 bg-amber-50 text-amber-800",
-    slate: "border-slate-200 bg-slate-50 text-slate-800",
-  };
-
-  return <Link href={href} className={`rounded-[1.4rem] border p-4 transition hover:-translate-y-0.5 hover:shadow-md ${tones[tone]}`}><h3 className="text-sm font-semibold">{title}</h3><p className="mt-2 text-sm leading-6">{description}</p></Link>;
-}
-
-function StatusPanel({ statusCounts }: { statusCounts: { complete: number; review: number; inProgress: number; notStarted: number } }) {
-  return (
-    <div className="rounded-[1.6rem] border border-slate-200 bg-slate-50 p-5">
-      <h3 className="text-sm font-semibold text-slate-950">Statuses</h3>
-      <div className="mt-4 grid gap-2 text-sm text-slate-700">
-        <InfoCard label="Complete" value={String(statusCounts.complete)} />
-        <InfoCard label="Ready for review" value={String(statusCounts.review)} />
-        <InfoCard label="In progress" value={String(statusCounts.inProgress)} />
-        <InfoCard label="Not started" value={String(statusCounts.notStarted)} />
-      </div>
-    </div>
-  );
-}
-
-function SummaryPanel({ title, items }: { title: string; items: string[] }) {
-  return (
-    <div className="rounded-[1.6rem] border border-slate-200 bg-slate-50 p-5">
-      <h3 className="text-sm font-semibold text-slate-950">{title}</h3>
-      <ul className="mt-4 grid gap-2 text-sm leading-6 text-slate-700">
-        {items.map((item) => <li key={item} className="rounded-[1rem] border border-slate-200 bg-white px-4 py-3">{item}</li>)}
-      </ul>
-    </div>
-  );
-}
-
-function ResourceCard({ title, description, href }: { title: string; description: string; href?: string }) {
-  const content = (
-    <>
-      <h3 className="text-base font-semibold text-slate-950">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
-      {href ? <span className="mt-4 inline-flex text-sm font-semibold text-cyan-700">Download template →</span> : null}
-    </>
-  );
-
-  if (href) {
-    return <Link href={href} className="rounded-[1.5rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:shadow-md">{content}</Link>;
-  }
-
-  return <article className="rounded-[1.5rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-sm">{content}</article>;
-}
-
 function MetaRow({ label, value }: { label: string; value: string }) {
   return <div className="border-b border-white/10 pb-4 last:border-0 last:pb-0"><dt className="text-slate-400">{label}</dt><dd className="mt-2 font-medium leading-7 text-white">{value}</dd></div>;
-}
-
-function InfoCard({ label, value }: { label: string; value: string }) {
-  return <div className="rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3 shadow-sm"><p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">{label}</p><p className="mt-2 text-sm font-medium text-slate-900">{value}</p></div>;
 }
