@@ -143,8 +143,8 @@ export function buildAssessmentPdf(payload: ExportPayload) {
     doc.setFontSize(7.5);
     doc.text(label.toUpperCase(), x + 14, y + 24);
     setText(slate950);
-    doc.setFontSize(23);
-    doc.text(value, x + 14, y + 52);
+    doc.setFontSize(value.length > 10 ? 14 : 23);
+    doc.text(textLines(value, width - 28).slice(0, 2), x + 14, y + 50);
     setText(slate700);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
@@ -160,6 +160,13 @@ export function buildAssessmentPdf(payload: ExportPayload) {
     doc.setFontSize(7.5);
     doc.text(label, x + 9, yPos + 2);
     return width;
+  };
+
+  const rightPill = (rightX: number, yPos: number, label: string, fill: [number, number, number], color: [number, number, number]) => {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7.5);
+    const width = doc.getTextWidth(label) + 18;
+    return pill(rightX - width, yPos, label, fill, color);
   };
 
   // Cover / hero.
@@ -216,7 +223,7 @@ export function buildAssessmentPdf(payload: ExportPayload) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.text(item.label, margin + 12, rowY);
-    pill(pageWidth - margin - 70, rowY - 1, item.complete ? "Ready" : "Missing", item.complete ? [209, 250, 229] : [254, 243, 199], item.complete ? [6, 95, 70] : [146, 64, 14]);
+    rightPill(pageWidth - margin - 12, rowY - 1, item.complete ? "Ready" : "Missing", item.complete ? [209, 250, 229] : [254, 243, 199], item.complete ? [6, 95, 70] : [146, 64, 14]);
   });
   y += payload.attestationPackage.checklist.length * checklistItemHeight + 12;
   writeText(
@@ -249,22 +256,24 @@ export function buildAssessmentPdf(payload: ExportPayload) {
     writeText("No priority actions are currently queued. Export this report for review or begin a deeper assessment pass.", { size: 10, gap: 18 });
   } else {
     payload.actionPlan.slice(0, 6).forEach((action, index) => {
-      ensureSpace(52);
+      const nextLines = textLines(`Next: ${action.nextStep}`, usableWidth - 24).slice(0, 3);
+      const rowHeight = 56 + nextLines.length * 10;
+      ensureSpace(rowHeight + 8);
       setDraw(slate200);
       setFill([255, 255, 255]);
-      doc.roundedRect(margin, y, usableWidth, 44, 12, 12, "FD");
+      doc.roundedRect(margin, y, usableWidth, rowHeight, 12, 12, "FD");
       setText(cyan700);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(8);
       doc.text(`${index + 1}. ${action.priority} • ${action.actionType}`.toUpperCase(), margin + 12, y + 15);
       setText(slate950);
       doc.setFontSize(9.5);
-      doc.text(`${action.officialId}: ${action.title}`, margin + 12, y + 29);
+      doc.text(textLines(`${action.officialId}: ${action.title}`, usableWidth - 24).slice(0, 1), margin + 12, y + 31);
       setText(slate700);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
-      doc.text(textLines(`Next: ${action.nextStep}`, usableWidth - 220), margin + 190, y + 15);
-      y += 52;
+      doc.text(nextLines, margin + 12, y + 48);
+      y += rowHeight + 8;
     });
   }
 
@@ -289,25 +298,6 @@ export function buildAssessmentPdf(payload: ExportPayload) {
 
   sectionTitle("Appendix", "Control detail appendix", "Detailed implementation notes and evidence references by CPCSC Level 1 control.");
   payload.controls.forEach((control) => {
-    ensureSpace(122);
-    const startY = y;
-    setDraw([203, 213, 225]);
-    setFill([255, 255, 255]);
-    doc.roundedRect(margin, y, usableWidth, 104, 14, 14, "FD");
-    setFill([248, 250, 252]);
-    doc.roundedRect(margin, y, usableWidth, 30, 14, 14, "F");
-    setText(slate950);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10.5);
-    doc.text(`${control.officialId}: ${control.title}`, margin + 12, y + 19);
-    const tone = statusTone[control.status];
-    pill(pageWidth - margin - 100, y + 18, statusLabel[control.status], [240, 249, 255], tone);
-
-    y += 44;
-    writeCompactLine("Official control", control.officialName);
-    writeCompactLine("Priority / family", `${priorityLabel(control.controlId)} • ${control.category}`);
-    writeCompactLine("Owner / review", `${control.owner ?? "Not assigned"} • ${control.reviewCadence ?? "Not reviewed yet"}`);
-
     const implementation = control.implementationDetails || "No implementation details recorded.";
     const evidenceText = control.evidenceItems.length
       ? control.evidenceItems
@@ -315,12 +305,37 @@ export function buildAssessmentPdf(payload: ExportPayload) {
           .map((item, index) => `${index + 1}. ${item.title}${item.artifactType ? ` (${item.artifactType})` : ""}${item.location ? ` — ${item.location}` : ""}`)
           .join("  ")
       : "No evidence items recorded.";
+    const titleLines = textLines(`${control.officialId}: ${control.title}`, usableWidth - 150).slice(0, 2);
+    const officialLines = textLines(control.officialName, usableWidth - 154).slice(0, 2);
+    const familyLines = textLines(`${priorityLabel(control.controlId)} • ${control.category}`, usableWidth - 154).slice(0, 2);
+    const ownerLines = textLines(`${control.owner ?? "Not assigned"} • ${control.reviewCadence ?? "Not reviewed yet"}`, usableWidth - 154).slice(0, 2);
+    const implementationLines = textLines(implementation, usableWidth - 24).slice(0, 4);
+    const evidenceLines = textLines(`${evidenceText}${control.evidenceItems.length > 3 ? ` + ${control.evidenceItems.length - 3} more` : ""}`, usableWidth - 24).slice(0, 3);
+    const rowHeight = 54 + titleLines.length * 12 + officialLines.length * 10 + familyLines.length * 10 + ownerLines.length * 10 + implementationLines.length * 10 + evidenceLines.length * 10 + 52;
+    ensureSpace(rowHeight + 12);
 
-    y = Math.max(y, startY + 104) + 10;
-    writeText(`Implementation: ${implementation}`, { size: 8.5, gap: 4 });
-    writeText(`Evidence: ${evidenceText}${control.evidenceItems.length > 3 ? ` + ${control.evidenceItems.length - 3} more` : ""}`, { size: 8.5, gap: 10 });
+    const cardY = y;
+    setDraw([203, 213, 225]);
+    setFill([255, 255, 255]);
+    doc.roundedRect(margin, cardY, usableWidth, rowHeight, 14, 14, "FD");
+    setFill([248, 250, 252]);
+    doc.roundedRect(margin, cardY, usableWidth, 34, 14, 14, "F");
+    setText(slate950);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10.5);
+    doc.text(titleLines, margin + 12, cardY + 17);
+    const tone = statusTone[control.status];
+    rightPill(pageWidth - margin - 12, cardY + 18, statusLabel[control.status], [240, 249, 255], tone);
+
+    y = cardY + 52;
+    writeCompactLine("Official control", officialLines);
+    writeCompactLine("Priority / family", familyLines);
+    writeCompactLine("Owner / review", ownerLines);
+    y += 5;
+    writeBlockInCard("Implementation", implementationLines);
+    writeBlockInCard("Evidence", evidenceLines);
+    y = cardY + rowHeight + 12;
   });
-
   addFooters();
 
   function writeCardText(x: number, startY: number, width: number, label: string, value: string) {
@@ -334,7 +349,7 @@ export function buildAssessmentPdf(payload: ExportPayload) {
     doc.text(textLines(value, width), x, startY + 17);
   }
 
-  function writeCompactLine(label: string, value: string) {
+  function writeCompactLine(label: string, lines: string[]) {
     setText(slate500);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7.5);
@@ -342,8 +357,21 @@ export function buildAssessmentPdf(payload: ExportPayload) {
     setText(slate700);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
-    doc.text(textLines(value, usableWidth - 142), margin + 118, y);
-    y += 14;
+    doc.text(lines, margin + 118, y);
+    y += Math.max(14, lines.length * 10 + 4);
+  }
+
+  function writeBlockInCard(label: string, lines: string[]) {
+    setText(slate500);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7.5);
+    doc.text(label.toUpperCase(), margin + 12, y);
+    y += 11;
+    setText(slate700);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.text(lines, margin + 12, y);
+    y += Math.max(15, lines.length * 10 + 7);
   }
 
   function addFooters() {
