@@ -7,7 +7,7 @@ export function AppShell({ children, organizationName }: { children: ReactNode; 
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,#163257_0%,transparent_28%),linear-gradient(180deg,#050b16_0%,#0b1630_18%,#eef3ff_18%,#f5f7fb_100%)] text-slate-900">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1500px] flex-col gap-5 px-4 py-4 lg:px-6 lg:py-5">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1800px] flex-col gap-5 px-4 py-4 lg:px-6 lg:py-5 2xl:px-8">
         <header className="sticky top-3 z-20 overflow-hidden rounded-[1.4rem] border border-white/50 bg-white/88 shadow-[0_18px_50px_rgba(15,23,42,0.10)] backdrop-blur">
           <div className="flex flex-col gap-4 px-4 py-4 lg:flex-row lg:items-center lg:justify-between lg:px-5 lg:py-4">
             <Link href="/dashboard" className="flex items-center gap-3 rounded-[1rem] outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2">
