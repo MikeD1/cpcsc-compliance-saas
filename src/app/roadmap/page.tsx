@@ -83,7 +83,7 @@ export default async function RoadmapPage() {
       <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
         <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Future roadmaps</p>
         <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">After Level 1 is under control</h2>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">Keep the current product focused on Level 1 readiness, while showing clients there is a path toward larger CPCSC and ITSP.10.171/NIST-aligned programs later.</p>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">Complete the Level 1 readiness foundation first, then use these future planning areas to prepare for larger CPCSC and ITSP.10.171/NIST-aligned programs later.</p>
         <div className="mt-6 grid gap-4 lg:grid-cols-3">
           {futureRoadmaps.map((roadmap) => (
             <article key={roadmap.title} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5">

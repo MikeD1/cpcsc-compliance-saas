@@ -14,7 +14,7 @@ export const workspaceCards = [
   {
     title: "Tools and Templates",
     href: "/resources",
-    eyebrow: "Built-in value",
+    eyebrow: "Work aids",
     description: "Use guided worksheets, policy starters, evidence planning tools, owner trackers, and review templates as part of the readiness workflow.",
   },
   {
@@ -167,7 +167,7 @@ export const resourceToolkits = [
     id: "evidence-folder-structure",
     title: "Evidence pack organizer",
     stage: "Roadmap step 3",
-    value: "Makes evidence easy to find, understand, and explain later without turning ComplianceOne into a file vault yet.",
+    value: "Keeps evidence easy to find, understand, and explain later while source files remain in the approved repository.",
     outcome: "Folder structure, naming convention, evidence record checklist, and control-to-proof map.",
     downloadHref: "/resources/evidence-folder-structure-guide.md",
     primaryHref: "/controls",

@@ -75,7 +75,7 @@ export default function SampleReportPage() {
 
       <TrustSection title="Evidence register preview">
         <p>
-          ComplianceOne currently tracks evidence references, not uploaded source files. The value is knowing what proof exists, where it lives, and which control it supports.
+          ComplianceOne currently tracks evidence references, not uploaded source files. Record what proof exists, where it lives, and which control it supports.
         </p>
         <div className="mt-4 grid gap-3">
           {evidenceExamples.map((item) => (

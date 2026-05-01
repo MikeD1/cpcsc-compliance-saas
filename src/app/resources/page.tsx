@@ -9,7 +9,7 @@ const toolkitMetrics = [
   { label: "Guided tools", value: String(resourceToolkits.length) },
   { label: "Roadmap stages", value: "3" },
   { label: "Evidence outputs", value: "25+" },
-  { label: "Downloads", value: String(resourceItems.length) },
+  { label: "Worksheet files", value: String(resourceItems.length) },
 ];
 
 const workflowPath = [
@@ -41,9 +41,9 @@ export default async function ResourcesPage() {
       <section className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
         <div className="rounded-[2rem] border border-white/50 bg-white/92 p-8 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
           <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Tools and Templates</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950 lg:text-5xl">Built-in readiness toolkit</h1>
+          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950 lg:text-5xl">Readiness toolkit</h1>
           <p className="mt-5 max-w-4xl text-base leading-8 text-slate-600">
-            These are no longer just files to download. Each tool explains when to use it, what it should produce, what evidence it supports, and where it connects back into the CPCSC Level 1 workflow.
+            Use these worksheets and review workflows to scope SI, document systems, assign owners, prepare policies, organize evidence, and support CPCSC Level 1 self-assessment work.
           </p>
           <div className="mt-7 grid gap-3 sm:grid-cols-4">
             {toolkitMetrics.map((metric) => (
@@ -56,8 +56,8 @@ export default async function ResourcesPage() {
         </div>
 
         <aside className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,#0a1222_0%,#0f1d36_100%)] p-8 text-white shadow-[0_30px_90px_rgba(15,23,42,0.25)]">
-          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-300">How this becomes product value</p>
-          <h2 className="mt-3 text-2xl font-semibold">From template to evidence trail</h2>
+          <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-300">How to use this section</p>
+          <h2 className="mt-3 text-2xl font-semibold">From worksheet to evidence trail</h2>
           <ol className="mt-5 grid gap-3 text-sm leading-6 text-slate-200">
             {workflowPath.map((step, index) => (
               <li key={step} className="flex gap-3 rounded-[1rem] border border-white/10 bg-white/5 px-4 py-3">
@@ -73,10 +73,10 @@ export default async function ResourcesPage() {
       <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Guided toolkit</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Use these as readiness workflows</h2>
+            <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Readiness workflows</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Complete the working records</h2>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-              Each card gives the user a purpose, expected output, fields to complete, evidence examples, and a next action inside ComplianceOne.
+              Start with the workflow that matches your current readiness step. Complete the prompts, store the finished record in your approved repository, and link its location back to the relevant control.
             </p>
           </div>
           <Link href="/controls" className="rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800">Open controls</Link>
@@ -89,7 +89,7 @@ export default async function ResourcesPage() {
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-cyan-800">{tool.stage}</span>
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">Built-in tool</span>
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">Worksheet workflow</span>
                   </div>
                   <h3 className="mt-4 text-2xl font-semibold tracking-tight text-slate-950">{tool.title}</h3>
                   <p className="mt-3 text-sm leading-7 text-slate-600">{tool.value}</p>
@@ -118,17 +118,17 @@ export default async function ResourcesPage() {
       </section>
 
       <section className="rounded-[2rem] border border-white/50 bg-white/92 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)] lg:p-8">
-        <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Raw downloads</p>
-        <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Downloadable copies are still available</h2>
+        <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700">Worksheet files</p>
+        <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Download copies for your records</h2>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-          The product value is now in the guided workflow above. These downloads remain useful when a customer needs to move the working record into SharePoint, Google Workspace, an internal file server, or a policy/document-management repository.
+          Download a copy when the completed record needs to live in SharePoint, Google Workspace, an internal file server, or a policy/document-management repository.
         </p>
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {resourceItems.map((item) => (
             <Link key={item.title} href={item.href} className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-5 transition hover:-translate-y-0.5 hover:border-cyan-200 hover:bg-white hover:shadow-md">
               <h3 className="text-base font-semibold text-slate-950">{item.title}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
-              <span className="mt-4 inline-flex text-sm font-semibold text-cyan-700">Download Markdown →</span>
+              <span className="mt-4 inline-flex text-sm font-semibold text-cyan-700">Download worksheet →</span>
             </Link>
           ))}
         </div>
